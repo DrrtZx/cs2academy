@@ -63,8 +63,22 @@ class AdminController extends Controller
 
     public function assignments()
     {
-        $assignments = Assignment::with("user")->latest()->get();
-        return view("admin.assignments", compact("assignments"));
+        // Hanya tugas dari user (bukan kiriman admin) yang muncul di tab "Tugas Masuk"
+        $assignments  = Assignment::with('user')
+            ->where('from_admin', false)
+            ->latest()
+            ->get();
+
+        // Data untuk tab "Kirim ke User"
+        $sentByAdmin  = Assignment::with('user')
+            ->where('from_admin', true)
+            ->latest()
+            ->take(20)
+            ->get();
+
+        $incomingCount = $assignments->count();
+
+        return view('admin.assignments', compact('assignments', 'sentByAdmin', 'incomingCount'));
     }
 
     public function updateAssignment(Request $request, Assignment $assignment)
@@ -78,6 +92,52 @@ class AdminController extends Controller
             "status" => $request->status,
         ]);
         return back()->with("success", "Balasan berhasil disimpan!");
+    }
+
+    // API: live search user by nama/email untuk form "Kirim ke User"
+    public function searchUsers(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $users = User::where('role', 'user')
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhere('email', 'like', "%{$q}%");
+            })
+            ->orderByDesc('has_paid') // user yang sudah beli muncul duluan
+            ->take(10)
+            ->get(['id', 'name', 'email', 'has_paid']);
+
+        return response()->json($users);
+    }
+
+    // Kirim assignment/pesan dari admin ke user yang dipilih
+    public function sendToUser(Request $request)
+    {
+        $request->validate([
+            'user_id'    => 'required|exists:users,id',
+            'judul'      => 'required|string|max:255',
+            'tugas_teks' => 'required|string',
+        ]);
+
+        // Pastikan target bukan admin
+        $target = User::findOrFail($request->user_id);
+        if ($target->isAdmin()) {
+            return back()->withErrors(['user_id' => 'Tidak bisa kirim ke sesama admin.']);
+        }
+
+        Assignment::create([
+            'user_id'    => $request->user_id,
+            'judul'      => $request->judul,
+            'tugas_teks' => $request->tugas_teks,
+            'status'     => 'diproses',
+            'from_admin' => true,
+        ]);
+
+        return back()->with('success', 'Pesan berhasil dikirim ke ' . $target->name . '!');
     }
 
     public function deleteAssignment(Assignment $assignment)

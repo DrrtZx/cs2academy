@@ -121,7 +121,7 @@
             <div class="modal-head">
                 <div class="modal-logo"><x-cs-logo size="20" /></div>
                 <h3 id="modalTitle">Selamat Datang</h3>
-                <p id="modalSub">Masuk atau buat akun untuk melanjutkan</p>
+                <p id="modalSub">Masuk ke akunmu dan lanjut belajar</p>
             </div>
 
             <div class="modal-tabs">
@@ -202,7 +202,7 @@
             </span>
             <h3>Akun Berhasil Dibuat!</h3>
             <p>Selamat datang di <strong>CS2Academy</strong>!<br>
-                Akun kamu sudah aktif. Sekarang kamu bisa mulai belajar dan pesan coaching session.</p>
+                Akun kamu udah aktif. Sekarang langsung mulai belajar atau pesan sesi coaching pertamamu.</p>
             <button class="success-btn" onclick="closeSuccessPopup()">
                 <x-cs-icon name="rocket" size="16" stroke="2" /> Mulai Sekarang!
             </button>
@@ -233,7 +233,7 @@
                 document.getElementById('modalSub').textContent = 'Masuk ke akun CS2Academy kamu';
             } else {
                 document.getElementById('modalTitle').textContent = 'Buat Akun Baru';
-                document.getElementById('modalSub').textContent = 'Gratis selamanya · Mulai belajar hari ini';
+                document.getElementById('modalSub').textContent = 'Gratis, gak perlu kartu kredit. Daftar sekarang!';
             }
         }
         // Tutup modal kalau klik di luar box

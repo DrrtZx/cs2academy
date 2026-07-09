@@ -16,13 +16,15 @@ textarea.f-inp{resize:vertical;min-height:100px;}
 .submit-btn{background:var(--grad-primary);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;width:100%;box-shadow:0 10px 24px -10px rgba(139,123,255,.65);transition:all .2s;}
 .submit-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
 .balasan-box{background:var(--bg3);border:1px solid var(--green);border-radius:10px;padding:1rem;margin-top:0.75rem;}
+.from-admin-card{border-color:rgba(124,111,224,.4);background:rgba(124,111,224,.04);}
+.badge-from-admin{display:inline-flex;align-items:center;gap:4px;font-size:0.65rem;font-weight:700;padding:3px 9px;border-radius:50px;background:rgba(124,111,224,.15);color:var(--purple2);}
 </style>
 @endpush
 
 @section('content')
 <div class="assign-wrap">
   <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.5rem;">📝 Tugas & Pertanyaan Saya</h2>
-  <p style="color:var(--text2);font-size:0.875rem;margin-bottom:2rem;">Kirim pertanyaan atau demo review ke admin/coach, dan lihat balasan di sini.</p>
+  <p style="color:var(--text2);font-size:0.875rem;margin-bottom:2rem;">Kirim pertanyaan atau demo game kamu ke coach, nanti dibalas langsung di sini.</p>
 
   {{-- Form Kirim Tugas --}}
   <div class="form-card">
@@ -45,31 +47,40 @@ textarea.f-inp{resize:vertical;min-height:100px;}
   <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">📋 Riwayat Tugas</h3>
 
   @forelse($assignments as $item)
-    <div class="assign-card">
+    <div class="assign-card {{ $item->from_admin ? 'from-admin-card' : '' }}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
         <div>
           <div style="font-weight:700;font-size:0.95rem;">{{ $item->judul }}</div>
-          <div style="font-size:0.75rem;color:var(--text3);margin-top:2px;">{{ $item->created_at->diffForHumans() }}</div>
+          <div style="font-size:0.75rem;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px;">
+            {{ $item->created_at->diffForHumans() }}
+            @if($item->from_admin)
+              <span class="badge-from-admin">📨 Dari Coach</span>
+            @endif
+          </div>
         </div>
+        @if(!$item->from_admin)
         <span class="status-badge status-{{ $item->status }}">
           {{ $item->status === 'menunggu' ? '⏳ Menunggu' : ($item->status === 'diproses' ? '🔄 Diproses' : '✅ Selesai') }}
         </span>
+        @endif
       </div>
       <p style="color:var(--text2);font-size:0.85rem;line-height:1.7;">{{ $item->tugas_teks }}</p>
 
-      @if($item->balasan_admin)
-        <div class="balasan-box">
-          <div style="font-size:0.72rem;font-weight:700;color:var(--green);margin-bottom:0.4rem;">💬 BALASAN COACH/ADMIN:</div>
-          <p style="font-size:0.875rem;line-height:1.7;color:var(--text);">{{ $item->balasan_admin }}</p>
-        </div>
-      @else
-        <div style="margin-top:0.75rem;font-size:0.78rem;color:var(--text3);font-style:italic;">⏳ Menunggu balasan dari coach/admin...</div>
+      @if(!$item->from_admin)
+        @if($item->balasan_admin)
+          <div class="balasan-box">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--green);margin-bottom:0.4rem;">💬 BALASAN COACH/ADMIN:</div>
+            <p style="font-size:0.875rem;line-height:1.7;color:var(--text);">{{ $item->balasan_admin }}</p>
+          </div>
+        @else
+          <div style="margin-top:0.75rem;font-size:0.78rem;color:var(--text3);font-style:italic;">⏳ Belum ada balasan dari coach. Harap ditunggu ya...</div>
+        @endif
       @endif
     </div>
   @empty
     <div style="text-align:center;padding:3rem;color:var(--text3);">
       <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
-      <p>Belum ada tugas yang dikirim. Kirim pertanyaan pertamamu di atas!</p>
+      <p>Belum ada tugas yang dikirim. Yuk kirim pertanyaan pertamamu di form atas!</p>
     </div>
   @endforelse
 </div>

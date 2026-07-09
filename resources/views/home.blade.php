@@ -14,8 +14,7 @@
             <h1 class="hero-title">Kuasai CS2
                 dengan<br><em>Pelatihan Eksklusif</em>
             </h1>
-            <p class="hero-desc">Platform edukasi CS2 terlengkap dengan pembelajaran interaktif, kuis praktikal, dan
-                coaching dari pro player. Naik rank lebih cepat.</p>
+            <p class="hero-desc">Belajar CS2 dengan cara yang beda — kursus interaktif, quiz langsung dipraktekkan, dan bisa langsung coaching sama pro player. Naikin rank kamu, beneran.</p>
             <div class="hero-cta">
                 <a href="{{ route('coaching') }}" class="btn-hero-primary">Mulai Sekarang</a>
                 <a href="{{ route('courses') }}" class="btn-hero-secondary">Lihat Kursus</a>
@@ -140,7 +139,7 @@
                 </span>
             </div>
             <h2 class="cta-title">Siap Naik Rank?</h2>
-            <p class="cta-desc">Bergabung dengan ribuan pemain yang sudah meningkatkan skill mereka.</p>
+            <p class="cta-desc">Banyak pemain udah buktiin sendiri. Sekarang giliran kamu.</p>
             <a href="{{ route('coaching') }}" class="btn-cta">
                 <x-cs-icon name="zap" size="16" stroke="2" /> Mulai Coaching Sekarang
             </a>

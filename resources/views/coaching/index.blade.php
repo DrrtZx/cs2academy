@@ -428,9 +428,9 @@
             <div
                 style="display:inline-block;background:rgba(124,111,224,0.15);color:var(--purple2);padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;margin-bottom:0.75rem;">
                 COACHING</div>
-            <h2 style="font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:0.6rem;">Pilih Program Latihan CS2
+            <h2 style="font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:0.6rem;">Pilih Program Coaching CS2
                 Kamu</h2>
-            <p style="color:var(--text2);font-size:0.9rem;">Dirancang bersama pro player untuk hasil yang maksimal</p>
+            <p style="color:var(--text2);font-size:0.9rem;">Langsung ditangani coach yang udah main di level kompetitif — bukan teori doang</p>
                 @guest
                     <div
                         style="margin-top:1rem;background:rgba(124,111,224,0.08);border:1px solid rgba(124,111,224,0.25);border-radius:12px;padding:10px 18px;display:inline-flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--purple2);">
@@ -453,12 +453,12 @@
                         'style' => 'font-size:.9rem;font-weight:900;color:var(--purple2);',
                         'title' => 'Textual Review',
                         'desc' =>
-                            'Sesi voice call 1 jam dengan coach profesional, diikuti laporan evaluasi tertulis lengkap. Diskusikan role, positioning, economy, mindset, dan decision making secara mendalam.',
+                            'Ngobrol 1 jam via voice call sama coach, terus kamu dapet catatan tertulis dari hasil sesinya. Bisa ngomongin apa aja — role, positioning, economy, mindset, sampai kebiasaan yang bikin kamu stuck di rank sekarang.',
                         'harga' => 'Rp 100.000',
-                        'sub' => '✦ Preview lengkap dari Pemain Profesional',
+                        'sub' => '✦ Langsung ditinjau oleh coach aktif',
                         'p1' => '⚡',
-                        'p1l' => 'Coach Assigned',
-                        'p1v' => '5 Menit',
+                        'p1l' => 'Coach Masuk',
+                        'p1v' => '< 5 Menit',
                         'p2' => '🕐',
                         'p2l' => 'Durasi Sesi',
                         'p2v' => '1 Jam',
@@ -469,12 +469,12 @@
                         'style' => '',
                         'title' => 'Panggil Pelatih',
                         'desc' =>
-                            'Voice call langsung dengan coach profesional CS2. Tanya, diskusi strategi, dan dapatkan feedback real-time. Coach menyesuaikan materi dengan level dan kebutuhanmu.',
+                            'Voice call langsung sama coach CS2. Tanya-tanya, bahas strategi, atau minta review gameplay kamu secara langsung. Coachnya nyesuain materi sama level dan masalah spesifik yang lagi kamu hadapi.',
                         'harga' => 'Rp 250.000',
-                        'sub' => '✦ Sesi 1-on-1 intensif via Discord',
+                        'sub' => '✦ Sesi 1-on-1 via Discord',
                         'p1' => '⚡',
-                        'p1l' => 'Coach Assigned',
-                        'p1v' => '5 Menit',
+                        'p1l' => 'Coach Masuk',
+                        'p1v' => '< 5 Menit',
                         'p2' => '🎙',
                         'p2l' => 'Platform',
                         'p2v' => 'Discord',
@@ -485,14 +485,14 @@
                         'style' => '',
                         'title' => 'Demo Review',
                         'desc' =>
-                            'Upload demo game kamu dan coach akan menontonnya secara menyeluruh. Dapat laporan lengkap tentang kesalahan, momen bagus, dan tips spesifik untuk berkembang lebih cepat.',
+                            'Upload demo game kamu, nanti coach yang nonton dan bedah semuanya. Kamu bakal dapet laporan yang isinya: momen bagus yang perlu dikembangin, kesalahan yang sering muncul, dan tips konkret buat naik rank lebih cepat.',
                         'harga' => 'Rp 300.000',
-                        'sub' => '✦ Laporan analisis mendalam',
+                        'sub' => '✦ Laporan pembahasan lengkap',
                         'p1' => '⚡',
-                        'p1l' => 'Analyst Assigned',
-                        'p1v' => '5 Menit',
+                        'p1l' => 'Analyst Masuk',
+                        'p1v' => '< 5 Menit',
                         'p2' => '🕐',
-                        'p2l' => 'Review Time',
+                        'p2l' => 'Waktu Review',
                         'p2v' => '24–48 Jam',
                         'param' => 'Demo+Review',
                     ],
@@ -523,11 +523,11 @@
                         @auth
                             <a href="{{ route('payment') }}?layanan={{ $s['param'] }}&harga={{ urlencode($s['harga']) }}"
                                 class="sel-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;">
-                                <x-cs-icon name="zap" size="15" stroke="2" /> Select Options
+                                <x-cs-icon name="zap" size="15" stroke="2" /> Pilih Paket Ini
                             </a>
                         @else
                             <button class="guest-lock" onclick="openCoachModal()">
-                                <x-cs-icon name="lock" size="15" stroke="2" /> Login untuk Membeli
+                                <x-cs-icon name="lock" size="15" stroke="2" /> Login dulu untuk beli
                             </button>
                         @endauth
                     </div>

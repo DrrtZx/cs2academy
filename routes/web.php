@@ -116,4 +116,13 @@ Route::middleware("auth")->group(function () {
     Route::delete("/admin/quiz/{quiz}", [AdminController::class, "deleteQuiz"])
         ->name("admin.quiz.delete")
         ->middleware("can:admin-only");
+
+    // Kirim pesan/tugas dari admin ke user
+    Route::get('/admin/users/search', [AdminController::class, 'searchUsers'])
+        ->name('admin.users.search')
+        ->middleware('can:admin-only');
+
+    Route::post('/admin/send-to-user', [AdminController::class, 'sendToUser'])
+        ->name('admin.send-to-user')
+        ->middleware('can:admin-only');
 });
