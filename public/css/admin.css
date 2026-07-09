@@ -1,0 +1,407 @@
+/* ═══════════════════════════════════════════
+   CS2 ACADEMY — Admin Stylesheet
+   admin.css · dipakai oleh views/admin/*.blade.php
+   ═══════════════════════════════════════════ */
+
+/* ── Shared Admin Layout ── */
+.admin-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+.admin-header {
+    margin-bottom: 1.5rem;
+}
+
+.admin-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.admin-header p {
+    color: var(--text2);
+    font-size: 0.875rem;
+}
+
+/* ── Admin Tabs ── */
+.admin-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+}
+
+.admin-tab:hover,
+.admin-tab.active {
+    background: var(--grad-primary);
+    border-color: transparent;
+    color: #fff;
+}
+
+.admin-tab-badge {
+    background: var(--grad-primary);
+    color: #fff;
+    border-radius: 50px;
+    padding: 1px 8px;
+    font-size: 0.7rem;
+    margin-left: 4px;
+}
+
+/* ── Stat Cards (Dashboard) ── */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    transition: transform .2s, border-color .2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(139, 123, 255, .4);
+}
+
+.stat-ic {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.stat-ic--purple { background: rgba(139, 123, 255, .15); color: var(--purple2); }
+.stat-ic--green  { background: rgba(43, 230, 186, .15);  color: var(--green); }
+.stat-ic--blue   { background: rgba(94, 200, 255, .15);  color: var(--blue); }
+.stat-ic--orange { background: rgba(255, 171, 92, .15);  color: var(--orange); }
+.stat-ic--pink   { background: rgba(255, 126, 196, .15); color: var(--pink); }
+
+.stat-val {
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: .76rem;
+    color: var(--text2);
+    font-weight: 600;
+}
+
+/* ── Dashboard Grid ── */
+.dash-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.dash-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dash-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.4rem 1.5rem;
+}
+
+.dash-card h3 {
+    font-size: .95rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Status Track (progress bar) ── */
+.status-track {
+    display: flex;
+    height: 10px;
+    border-radius: 50px;
+    overflow: hidden;
+    background: var(--bg4);
+    margin-bottom: .9rem;
+}
+
+.status-seg { height: 100%; }
+
+.status-legend {
+    display: flex;
+    gap: 1.1rem;
+    flex-wrap: wrap;
+    font-size: .76rem;
+    color: var(--text2);
+}
+
+.status-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-dot-legend {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ── Recent Items ── */
+.recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: .7rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.recent-item:last-child { border-bottom: none; padding-bottom: 0; }
+.recent-item:first-child { padding-top: 0; }
+
+.recent-title {
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.recent-sub {
+    font-size: .72rem;
+    color: var(--text3);
+    margin-top: 2px;
+}
+
+.recent-more {
+    margin-top: 1rem;
+    font-size: .78rem;
+    color: var(--purple2);
+    font-weight: 700;
+}
+
+.empty-mini {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text3);
+    font-size: .82rem;
+}
+
+/* ── Status Badges ── */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-menunggu { background: rgba(255, 171, 92, 0.18);  color: var(--orange); }
+.status-diproses  { background: rgba(94, 200, 255, 0.18);  color: var(--blue); }
+.status-selesai   { background: rgba(43, 230, 186, 0.15);  color: var(--green); }
+
+/* ── Assignments Page ── */
+.admin-wrap--narrow {
+    max-width: 1000px;
+}
+
+.admin-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-card-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.admin-card-meta {
+    font-size: 0.78rem;
+    color: var(--text3);
+    margin-top: 3px;
+}
+
+.admin-card-meta strong {
+    color: var(--purple2);
+}
+
+.admin-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.task-body {
+    background: var(--bg3);
+    border-radius: 9px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.task-body-label {
+    font-size: 0.7rem;
+    color: var(--text3);
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.task-body-text {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--text2);
+}
+
+/* Form inside assignment card */
+.reply-label {
+    font-size: 0.7rem;
+    color: var(--text2);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.f-inp {
+    width: 100%;
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 10px 13px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color .2s;
+}
+
+.f-inp:focus { border-color: var(--purple); }
+
+textarea.f-inp {
+    resize: vertical;
+    min-height: 80px;
+}
+
+select.f-inp { cursor: pointer; }
+
+.reply-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.reply-status-col {
+    flex: 1;
+    min-width: 160px;
+}
+
+.reply-btn-col {
+    padding-top: 1.2rem;
+}
+
+.save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green);
+    color: #13141a;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 0.75rem;
+}
+
+.save-btn:hover { opacity: 0.9; }
+
+.del-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 114, 114, 0.1);
+    color: var(--red);
+    border: 1px solid rgba(255, 114, 114, 0.3);
+    padding: 6px 11px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.del-btn:hover { background: rgba(255, 114, 114, 0.2); }
+
+/* ── Empty State ── */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text3);
+}
+
+.empty-state-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.empty-state-icon span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--bg3);
+    color: var(--text3);
+}
+
+/* ── Responsive ── */
+@media (max-width: 800px) {
+    .dash-grid { grid-template-columns: 1fr; }
+}

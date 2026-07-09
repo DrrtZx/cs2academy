@@ -1,0 +1,585 @@
+/* ═══════════════════════════════════════════
+   CS2 ACADEMY — Global Stylesheet
+   app.css · dipakai oleh layouts/app.blade.php
+   ═══════════════════════════════════════════ */
+
+/* ── Reset & Base ── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #100f1e;
+    --bg2: #181832;
+    --bg3: #20213f;
+    --bg4: #2a2c52;
+    --purple: #8b7bff;
+    --purple2: #b3a4ff;
+    --purple-btn: #7c5cf5;
+    --cyan: #3fd8ff;
+    --pink: #ff7ec4;
+    --text: #f2f2fb;
+    --text2: #a8a9d6;
+    --text3: #75769f;
+    --border: #2c2e54;
+    --green: #2be6ba;
+    --orange: #ffab5c;
+    --blue: #5ec8ff;
+    --red: #ff7272;
+    --grad-primary: linear-gradient(135deg, var(--purple) 0%, var(--cyan) 100%);
+    --grad-warm: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background:
+        radial-gradient(ellipse 900px 500px at 15% -10%, rgba(139, 123, 255, 0.16), transparent 60%),
+        radial-gradient(ellipse 800px 480px at 100% 0%, rgba(63, 216, 255, 0.10), transparent 55%),
+        var(--bg);
+    background-attachment: fixed;
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+}
+
+/* ── Navigation ── */
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(16, 15, 30, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    height: 68px;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+    letter-spacing: -0.2px;
+}
+
+.logo span {
+    background: var(--grad-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+}
+
+.nav-link {
+    padding: 8px 15px;
+    border-radius: 9px;
+    font-size: 0.875rem;
+    color: var(--text2);
+    transition: all .2s;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+}
+
+.nav-link:hover {
+    background: var(--bg3);
+    color: #fff;
+}
+
+.nav-link.active {
+    background: rgba(139, 123, 255, 0.14);
+    color: var(--purple2);
+}
+
+.nav-link--admin {
+    color: var(--orange);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-right {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* ── Buttons ── */
+.btn-g {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 17px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+}
+
+.btn-g:hover {
+    background: var(--bg3);
+    border-color: var(--purple);
+    color: var(--purple2);
+}
+
+.btn-g--back {
+    color: var(--orange);
+    border-color: var(--orange);
+}
+
+.btn-p {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 19px;
+    border-radius: 9px;
+    border: none;
+    background: var(--grad-primary);
+    color: #fff;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all .2s;
+    text-align: center;
+    box-shadow: 0 8px 20px -9px rgba(139, 123, 255, 0.75);
+}
+
+.btn-p:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px -8px rgba(139, 123, 255, 0.85);
+}
+
+/* Form wrapper di nav (reset margin default form) */
+.nav-form {
+    margin: 0;
+}
+
+/* ── User Badge ── */
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 5px 14px 5px 5px;
+    font-size: 0.85rem;
+}
+
+.user-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--grad-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.user-badge .uname {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* ── Flash Alerts ── */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 11px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 1rem 2rem;
+}
+
+.alert-success {
+    background: rgba(0, 212, 170, 0.15);
+    border: 1px solid var(--green);
+    color: var(--green);
+}
+
+.alert-error {
+    background: rgba(255, 107, 107, 0.15);
+    border: 1px solid var(--red);
+    color: var(--red);
+}
+
+/* ── Footer ── */
+footer {
+    position: relative;
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 2rem;
+    right: 2rem;
+    height: 1px;
+    background: var(--grad-primary);
+    opacity: 0.35;
+}
+
+.foot-links {
+    display: flex;
+    gap: 1.4rem;
+}
+
+.foot-links a {
+    font-size: 0.8rem;
+    color: var(--text3);
+}
+
+.foot-links a:hover {
+    color: var(--text);
+}
+
+.foot-copy {
+    font-size: 0.75rem;
+    color: var(--text3);
+}
+
+/* ── Modal Auth ── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+    transform: translateY(20px);
+    transition: transform .25s;
+}
+
+.modal-overlay.open .modal-box {
+    transform: translateY(0);
+}
+
+.modal-head {
+    padding: 1.75rem 2rem 1.25rem;
+    background: linear-gradient(135deg, var(--bg3), var(--bg4));
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+}
+
+.modal-logo {
+    font-size: 1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 0.9rem;
+    color: #fff;
+}
+
+.modal-logo span {
+    color: var(--purple);
+}
+
+.modal-head h3 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+}
+
+.modal-head p {
+    font-size: 0.82rem;
+    color: var(--text2);
+}
+
+.modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-tab {
+    flex: 1;
+    padding: 11px;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    border-bottom: 2px solid transparent;
+}
+
+.modal-tab.active {
+    color: var(--purple2);
+    border-bottom-color: var(--purple2);
+    background: rgba(124, 111, 224, 0.05);
+}
+
+.modal-pane {
+    display: none;
+    padding: 1.5rem 1.75rem;
+}
+
+.modal-pane.active {
+    display: block;
+}
+
+.modal-foot {
+    text-align: center;
+    padding: 0.9rem 1.75rem 1.4rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text2);
+}
+
+.modal-foot a {
+    color: var(--purple2);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: var(--text);
+}
+
+/* Link & hint di dalam modal */
+.modal-forgot {
+    text-align: right;
+    margin-top: 5px;
+}
+
+.modal-forgot a {
+    font-size: .72rem;
+    color: var(--purple2);
+    font-weight: 600;
+}
+
+.modal-demo {
+    margin-top: .75rem;
+    text-align: center;
+    font-size: .72rem;
+    color: var(--text3);
+}
+
+.modal-demo strong {
+    color: var(--purple2);
+}
+
+/* ── Form Elements (shared) ── */
+.f-group {
+    margin-bottom: 0.9rem;
+}
+
+.f-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.f-inp {
+    width: 100%;
+    background: var(--bg3);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 10px 13px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color .2s;
+}
+
+.f-inp:focus {
+    border-color: var(--purple);
+}
+
+.btn-full {
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    border: none;
+    background: var(--grad-primary);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 2px;
+    box-shadow: 0 8px 20px -9px rgba(139, 123, 255, 0.7);
+}
+
+.btn-full:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+/* ── Success Popup (Register) ── */
+.success-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s;
+}
+
+.success-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.success-box {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg2);
+    border: 1px solid rgba(0, 212, 170, 0.4);
+    border-radius: 22px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0, 212, 170, 0.15);
+    transform: scale(.9);
+    transition: transform .3s;
+}
+
+.success-overlay.open .success-box {
+    transform: scale(1);
+}
+
+.success-ic {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-box h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+}
+
+.success-box p {
+    color: var(--text2);
+    font-size: 0.875rem;
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+}
+
+.success-box p strong {
+    color: var(--purple2);
+}
+
+.success-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green);
+    color: #13141a;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 11px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: opacity .2s;
+}
+
+.success-btn:hover {
+    opacity: .85;
+}
