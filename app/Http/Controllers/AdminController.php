@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assignment;
+use App\Models\CoachingTransaction;
 use App\Models\Course;
 use App\Models\CourseProgress;
 use App\Models\Quiz;
@@ -15,35 +16,36 @@ class AdminController extends Controller
     public function dashboard()
     {
         $stats = [
-            "total_users" => User::where("role", "user")->count(),
-            "total_admins" => User::where("role", "admin")->count(),
-            "total_paid" => User::where("has_paid", true)->count(),
-            "total_courses" => Course::count(),
-            "total_quizzes" => Quiz::count(),
-            "total_completions" => CourseProgress::whereNotNull(
-                "completed_at",
-            )->count(),
-            "total_assignments" => Assignment::count(),
-            "assignments_menunggu" => Assignment::where(
-                "status",
-                "menunggu",
-            )->count(),
-            "assignments_diproses" => Assignment::where(
-                "status",
-                "diproses",
-            )->count(),
-            "assignments_selesai" => Assignment::where(
-                "status",
-                "selesai",
-            )->count(),
+            "total_users"            => User::where("role", "user")->count(),
+            "total_admins"           => User::where("role", "admin")->count(),
+            "total_paid"             => User::where("has_paid", true)->count(),
+            "total_courses"          => Course::count(),
+            "total_quizzes"          => Quiz::count(),
+            "total_completions"      => CourseProgress::whereNotNull("completed_at")->count(),
+            "total_assignments"      => Assignment::count(),
+            "assignments_menunggu"   => Assignment::where("status", "menunggu")->count(),
+            "assignments_diproses"   => Assignment::where("status", "diproses")->count(),
+            "assignments_selesai"    => Assignment::where("status", "selesai")->count(),
+            "total_pending_payments" => CoachingTransaction::pending()->count(),
         ];
 
-        $recentBuyers = User::where("has_paid", true)->latest()->take(5)->get();
         $recentAssignments = Assignment::with("user")->latest()->take(5)->get();
+
+        // Transaksi coaching pending — untuk tabel approval admin
+        $pendingTransactions = CoachingTransaction::with("user")
+            ->pending()
+            ->latest()
+            ->get();
+
+        // Feed aktivitas coaching terbaru (semua status) — untuk notifikasi dashboard
+        $recentCoachingActivity = CoachingTransaction::with("user")
+            ->latest()
+            ->take(8)
+            ->get();
 
         return view(
             "admin.dashboard",
-            compact("stats", "recentBuyers", "recentAssignments"),
+            compact("stats", "recentAssignments", "pendingTransactions", "recentCoachingActivity"),
         );
     }
 
@@ -61,35 +63,105 @@ class AdminController extends Controller
         return redirect()->route("admin.dashboard");
     }
 
+    /**
+     * Approve transaksi coaching: aktifkan akses user + buat pesan template otomatis.
+     */
+    public function approveTransaction(CoachingTransaction $transaction)
+    {
+        $transaction->update(['status' => 'approved']);
+
+        // Aktifkan akses coaching user dan simpan nama paket yang aktif
+        $transaction->user->update([
+            'has_paid'                => true,
+            'active_coaching_package' => $transaction->package_name,
+        ]);
+
+        // Tentukan pesan template berdasarkan paket yang dibeli
+        $templateMessages = [
+            'Textual Review' => 'Halo! Sesi Textual Review Anda telah aktif. Silakan tulis pertanyaan mendalam Anda mengenai gameplay di bawah ini.',
+            'Panggil Pelatih' => 'Halo! Sesi Panggil Pelatih aktif. Silakan masukkan ID Discord Anda beserta 3 opsi jadwal luang untuk sesi voice call.',
+            'Demo Review' => 'Halo! Sesi Demo Review aktif. Silakan tempelkan link download file demo match CS2 Anda yang ingin dianalisis.',
+        ];
+
+        // Fallback jika nama paket tidak persis cocok (misal ada URL-encoding "Textual+Review")
+        $cleanName = str_replace('+', ' ', $transaction->package_name);
+        $templateText = $templateMessages[$cleanName]
+            ?? "Halo! Sesi coaching \"{$cleanName}\" Anda telah aktif. Silakan mulai percakapan dengan coach Anda di bawah ini.";
+
+        // Buat record assignment otomatis sebagai pesan pembuka dari sistem
+        Assignment::create([
+            'user_id'    => $transaction->user_id,
+            'from_admin' => true,
+            'judul'      => 'Sesi ' . $cleanName,
+            'tugas_teks' => $templateText,
+            'status'     => 'diproses',
+        ]);
+
+        return back()->with('success', "✅ Pembayaran dari {$transaction->user->name} untuk paket \"{$cleanName}\" telah disetujui. Pesan selamat datang telah dikirim otomatis.");
+    }
+
+
+    /**
+     * Tolak transaksi coaching.
+     */
+    public function rejectTransaction(CoachingTransaction $transaction)
+    {
+        $transaction->update(['status' => 'rejected']);
+
+        return back()->with('success', "❌ Transaksi dari {$transaction->user->name} telah ditolak.");
+    }
+
     public function assignments()
     {
-        // Hanya tugas dari user (bukan kiriman admin) yang muncul di tab "Tugas Masuk"
-        $assignments  = Assignment::with('user')
+        // Tab 1: Tugas yang dikirim user sendiri (bukan dari admin)
+        $assignments = Assignment::with('user')
             ->where('from_admin', false)
             ->latest()
             ->get();
 
-        // Data untuk tab "Kirim ke User"
-        $sentByAdmin  = Assignment::with('user')
+        // Tab 2: Sesi coaching yang dibuat otomatis saat approval (from_admin=true)
+        // Dibagi: aktif (belum selesai) dan selesai
+        $coachingSessionsActive = Assignment::with('user')
+            ->where('from_admin', true)
+            ->where('status', '!=', 'selesai')
+            ->latest()
+            ->get();
+
+        $coachingSessionsFinished = Assignment::with('user')
+            ->where('from_admin', true)
+            ->where('status', 'selesai')
+            ->latest()
+            ->get();
+
+        // Tab 3: Riwayat pesan/tugas yang dikirim admin secara manual ke user
+        $sentByAdmin = Assignment::with('user')
             ->where('from_admin', true)
             ->latest()
             ->take(20)
             ->get();
 
         $incomingCount = $assignments->count();
+        $coachingCount = $coachingSessionsActive->count();
 
-        return view('admin.assignments', compact('assignments', 'sentByAdmin', 'incomingCount'));
+        return view('admin.assignments', compact(
+            'assignments',
+            'coachingSessionsActive',
+            'coachingSessionsFinished',
+            'sentByAdmin',
+            'incomingCount',
+            'coachingCount',
+        ));
     }
 
     public function updateAssignment(Request $request, Assignment $assignment)
     {
         $request->validate([
-            "balasan_admin" => "required|string",
-            "status" => "required|in:menunggu,diproses,selesai",
+            "balasan_admin" => "nullable|string",
+            "status"        => "required|in:menunggu,diproses,selesai",
         ]);
         $assignment->update([
             "balasan_admin" => $request->balasan_admin,
-            "status" => $request->status,
+            "status"        => $request->status,
         ]);
         return back()->with("success", "Balasan berhasil disimpan!");
     }
@@ -156,32 +228,30 @@ class AdminController extends Controller
     {
         $validated = $request->validate(
             [
-                "pertanyaan" => "required|string",
-                "opsi" => "required|array|min:4",
-                "opsi.*" => "required|string",
+                "pertanyaan"    => "required|string",
+                "opsi"          => "required|array|min:4",
+                "opsi.*"        => "required|string",
                 "jawaban_benar" => "required|integer|min:0|max:3",
-                "penjelasan" => "nullable|string",
-                "youtube_url" => [
+                "penjelasan"    => "nullable|string",
+                "youtube_url"   => [
                     "nullable",
                     "url",
                     'regex:/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/',
                 ],
             ],
             [
-                "youtube_url.url" =>
-                    "Format link tidak valid. Harus berupa URL lengkap (contoh: https://youtube.com/watch?v=xxxx).",
-                "youtube_url.regex" =>
-                    "Link harus berasal dari YouTube (youtube.com atau youtu.be).",
+                "youtube_url.url"   => "Format link tidak valid. Harus berupa URL lengkap (contoh: https://youtube.com/watch?v=xxxx).",
+                "youtube_url.regex" => "Link harus berasal dari YouTube (youtube.com atau youtu.be).",
             ],
         );
 
         Quiz::create([
-            "course_id" => $course->id,
-            "pertanyaan" => $validated["pertanyaan"],
-            "opsi" => $validated["opsi"],
+            "course_id"     => $course->id,
+            "pertanyaan"    => $validated["pertanyaan"],
+            "opsi"          => $validated["opsi"],
             "jawaban_benar" => $validated["jawaban_benar"],
-            "penjelasan" => $validated["penjelasan"] ?? null,
-            "youtube_url" => $validated["youtube_url"] ?? null,
+            "penjelasan"    => $validated["penjelasan"] ?? null,
+            "youtube_url"   => $validated["youtube_url"] ?? null,
         ]);
 
         return back()->with("success", "Soal baru berhasil ditambahkan!");
@@ -191,31 +261,29 @@ class AdminController extends Controller
     {
         $validated = $request->validate(
             [
-                "pertanyaan" => "required|string",
-                "opsi" => "required|array|min:4",
-                "opsi.*" => "required|string",
+                "pertanyaan"    => "required|string",
+                "opsi"          => "required|array|min:4",
+                "opsi.*"        => "required|string",
                 "jawaban_benar" => "required|integer|min:0|max:3",
-                "penjelasan" => "nullable|string",
-                "youtube_url" => [
+                "penjelasan"    => "nullable|string",
+                "youtube_url"   => [
                     "nullable",
                     "url",
                     'regex:/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/',
                 ],
             ],
             [
-                "youtube_url.url" =>
-                    "Format link tidak valid. Harus berupa URL lengkap (contoh: https://youtube.com/watch?v=xxxx).",
-                "youtube_url.regex" =>
-                    "Link harus berasal dari YouTube (youtube.com atau youtu.be).",
+                "youtube_url.url"   => "Format link tidak valid. Harus berupa URL lengkap (contoh: https://youtube.com/watch?v=xxxx).",
+                "youtube_url.regex" => "Link harus berasal dari YouTube (youtube.com atau youtu.be).",
             ],
         );
 
         $quiz->update([
-            "pertanyaan" => $validated["pertanyaan"],
-            "opsi" => $validated["opsi"],
+            "pertanyaan"    => $validated["pertanyaan"],
+            "opsi"          => $validated["opsi"],
             "jawaban_benar" => $validated["jawaban_benar"],
-            "penjelasan" => $validated["penjelasan"] ?? null,
-            "youtube_url" => $validated["youtube_url"] ?? null,
+            "penjelasan"    => $validated["penjelasan"] ?? null,
+            "youtube_url"   => $validated["youtube_url"] ?? null,
         ]);
 
         return back()->with("success", "Soal berhasil diupdate!");

@@ -424,6 +424,19 @@
     @endguest
 
     <div class="coaching-wrap">
+        {{-- Flash Messages --}}
+        @if(session('error'))
+            <div style="background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.875rem;color:#ff5f5f;display:flex;align-items:flex-start;gap:10px;">
+                <span style="flex-shrink:0;font-size:1.1rem;">⚠️</span>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+        @if(session('success'))
+            <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.875rem;color:var(--green);display:flex;align-items:flex-start;gap:10px;">
+                <span style="flex-shrink:0;font-size:1.1rem;">✅</span>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
         <div style="text-align:center;margin-bottom:2rem;">
             <div
                 style="display:inline-block;background:rgba(124,111,224,0.15);color:var(--purple2);padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;margin-bottom:0.75rem;">
@@ -521,10 +534,18 @@
                             </div>
                         </div>
                         @auth
-                            <a href="{{ route('payment') }}?layanan={{ $s['param'] }}&harga={{ urlencode($s['harga']) }}"
-                                class="sel-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;">
-                                <x-cs-icon name="zap" size="15" stroke="2" /> Pilih Paket Ini
-                            </a>
+                            @if(auth()->user()->hasPendingCoaching())
+                                <div style="background:rgba(255,140,66,0.1);border:1px solid rgba(255,140,66,0.35);border-radius:10px;padding:12px 14px;font-size:0.82rem;line-height:1.5;">
+                                    <div style="font-weight:700;color:var(--orange);margin-bottom:4px;">⏳ Sesi Masih Aktif</div>
+                                    <div style="color:var(--text2);">Kamu masih punya sesi coaching yang sedang berjalan atau menunggu verifikasi. Selesaikan sesi tersebut sebelum membeli paket baru.</div>
+                                    <a href="{{ route('payment.pending') }}" style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;background:rgba(255,140,66,0.15);color:var(--orange);padding:6px 12px;border-radius:7px;font-size:0.78rem;font-weight:700;">📋 Lihat Status</a>
+                                </div>
+                            @else
+                                <a href="{{ route('payment') }}?layanan={{ $s['param'] }}&harga={{ urlencode($s['harga']) }}"
+                                    class="sel-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;">
+                                    <x-cs-icon name="zap" size="15" stroke="2" /> Pilih Paket Ini
+                                </a>
+                            @endif
                         @else
                             <button class="guest-lock" onclick="openCoachModal()">
                                 <x-cs-icon name="lock" size="15" stroke="2" /> Login dulu untuk beli

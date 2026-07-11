@@ -40,6 +40,7 @@
     font-style: normal;
     background: linear-gradient(135deg, var(--purple), var(--purple2));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -218,9 +219,17 @@
     border: 3px solid var(--bg2);
 }
 
-.how-num--purple { background: linear-gradient(135deg, var(--purple), var(--purple-btn)); }
-.how-num--green  { background: linear-gradient(135deg, #1fe0b0, #00b894); }
-.how-num--blue   { background: linear-gradient(135deg, #6fd3fb, #2196c9); }
+.how-num--purple {
+    background: linear-gradient(135deg, var(--purple), var(--purple-btn));
+}
+
+.how-num--green {
+    background: linear-gradient(135deg, #1fe0b0, #00b894);
+}
+
+.how-num--blue {
+    background: linear-gradient(135deg, #6fd3fb, #2196c9);
+}
 
 .how-card h3 {
     font-size: 1.05rem;
@@ -228,7 +237,7 @@
     margin-bottom: .55rem;
 }
 
-.how-card > p {
+.how-card>p {
     color: var(--text2);
     font-size: .83rem;
     line-height: 1.7;
@@ -287,7 +296,10 @@
     font-size: .85rem;
 }
 
-.mock-dim { color: var(--text3); font-weight: 400; }
+.mock-dim {
+    color: var(--text3);
+    font-weight: 400;
+}
 
 .mock-track {
     position: relative;
@@ -332,8 +344,14 @@
     width: 70%;
 }
 
-.mock-bar.short { width: 45%; }
-.mock-bar.tiny  { width: 55%; height: 6px; }
+.mock-bar.short {
+    width: 45%;
+}
+
+.mock-bar.tiny {
+    width: 55%;
+    height: 6px;
+}
 
 .mock-toggle {
     width: 30px;
@@ -355,8 +373,14 @@
     background: var(--text3);
 }
 
-.mock-toggle.on { background: var(--purple-btn); }
-.mock-toggle.on::after { left: 16px; background: #fff; }
+.mock-toggle.on {
+    background: var(--purple-btn);
+}
+
+.mock-toggle.on::after {
+    left: 16px;
+    background: #fff;
+}
 
 .mock-btn {
     width: 100%;
@@ -448,15 +472,28 @@
     background: var(--bg3);
 }
 
-.chat-bubble .mock-bar { background: var(--bg4); margin-bottom: 4px; }
-.chat-bubble .mock-bar:last-child { margin-bottom: 0; }
-.chat-bubble.them { border-bottom-left-radius: 2px; }
+.chat-bubble .mock-bar {
+    background: var(--bg4);
+    margin-bottom: 4px;
+}
+
+.chat-bubble .mock-bar:last-child {
+    margin-bottom: 0;
+}
+
+.chat-bubble.them {
+    border-bottom-left-radius: 2px;
+}
+
 .chat-bubble.me {
     margin-left: auto;
     background: rgba(124, 111, 224, .2);
     border-bottom-right-radius: 2px;
 }
-.chat-bubble.me .mock-bar { background: rgba(157, 147, 240, .45); }
+
+.chat-bubble.me .mock-bar {
+    background: rgba(157, 147, 240, .45);
+}
 
 .chat-input {
     display: flex;
@@ -537,6 +574,11 @@
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
-    .how-grid { grid-template-columns: 1fr; }
-    .how-card { padding-top: 2.5rem; }
+    .how-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .how-card {
+        padding-top: 2.5rem;
+    }
 }

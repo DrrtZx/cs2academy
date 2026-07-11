@@ -26,17 +26,10 @@ require __DIR__ . "/auth.php";
 // ── HALAMAN YANG BUTUH LOGIN ──
 Route::middleware("auth")->group(function () {
     // Payment tetap butuh login
-    Route::get("/payment", [CoachingController::class, "payment"])->name(
-        "payment",
-    );
-    Route::post("/payment/confirm", [
-        CoachingController::class,
-        "confirmPayment",
-    ])->name("payment.confirm");
-    Route::get("/payment/success", [
-        CoachingController::class,
-        "success",
-    ])->name("payment.success");
+    Route::get("/payment", [CoachingController::class, "payment"])->name("payment");
+    Route::post("/payment/store", [CoachingController::class, "store"])->name("payment.store");
+    Route::get("/payment/pending", [CoachingController::class, "pendingStatus"])->name("payment.pending");
+    Route::get("/payment/success", [CoachingController::class, "success"])->name("payment.success");
 
     // Tugas User
     Route::get("/assignments", [AssignmentController::class, "index"])->name(
@@ -124,5 +117,14 @@ Route::middleware("auth")->group(function () {
 
     Route::post('/admin/send-to-user', [AdminController::class, 'sendToUser'])
         ->name('admin.send-to-user')
+        ->middleware('can:admin-only');
+
+    // Coaching transaction approval
+    Route::post('/admin/coaching/{transaction}/approve', [AdminController::class, 'approveTransaction'])
+        ->name('admin.coaching.approve')
+        ->middleware('can:admin-only');
+
+    Route::post('/admin/coaching/{transaction}/reject', [AdminController::class, 'rejectTransaction'])
+        ->name('admin.coaching.reject')
         ->middleware('can:admin-only');
 });

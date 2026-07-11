@@ -31,7 +31,7 @@
                         class="nav-link {{ request()->routeIs('coaching') ? 'active' : '' }}">Coaching</a>
                 @endif
                 @auth
-                    @if ($showUserNav && auth()->user()->hasCourseAccess())
+                    @if ($showUserNav && auth()->user()->assignments()->exists())
                         <a href="{{ route('assignments.index') }}"
                             class="nav-link {{ request()->routeIs('assignments.*') ? 'active' : '' }}">Tugas Saya</a>
                     @endif

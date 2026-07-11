@@ -10,7 +10,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ["name", "email", "password", "role", "has_paid"];
+    protected $fillable = ["name", "email", "password", "role", "has_paid", "active_coaching_package"];
 
     protected $hidden = ["password", "remember_token"];
 
@@ -18,8 +18,8 @@ class User extends Authenticatable
     {
         return [
             "email_verified_at" => "datetime",
-            "password" => "hashed",
-            "has_paid" => "boolean",
+            "password"          => "hashed",
+            "has_paid"          => "boolean",
         ];
     }
 
@@ -35,6 +35,12 @@ class User extends Authenticatable
         return $this->hasMany(CourseProgress::class);
     }
 
+    // Relasi: satu user punya banyak transaksi coaching
+    public function coachingTransactions()
+    {
+        return $this->hasMany(CoachingTransaction::class);
+    }
+
     // Helper: cek apakah user adalah admin
     public function isAdmin(): bool
     {
@@ -45,5 +51,23 @@ class User extends Authenticatable
     public function hasCourseAccess(): bool
     {
         return $this->has_paid || $this->isAdmin();
+    }
+
+    // Helper: cek apakah user masih punya sesi coaching yang aktif
+    // Return true jika: ada transaksi pending (menunggu verifikasi) ATAU
+    // ada transaksi approved dan masih ada assignment yang belum selesai
+    public function hasPendingCoaching(): bool
+    {
+        // Jika ada transaksi pending (menunggu verifikasi admin), blokir
+        if ($this->coachingTransactions()->where('status', 'pending')->exists()) {
+            return true;
+        }
+
+        // Jika ada transaksi approved, cek apakah masih ada sesi aktif
+        if ($this->coachingTransactions()->where('status', 'approved')->exists()) {
+            return $this->assignments()->where('status', '!=', 'selesai')->exists();
+        }
+
+        return false;
     }
 }

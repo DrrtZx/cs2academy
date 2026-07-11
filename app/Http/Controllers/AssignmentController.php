@@ -7,16 +7,31 @@ use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
-    // Tampilkan daftar tugas milik user yang login
+    /**
+     * Tampilkan halaman tugas user, dibagi menjadi sesi aktif dan arsip selesai.
+     */
     public function index()
     {
-        $assignments = Assignment::where('user_id', auth()->id())
-                                 ->latest()
-                                 ->get();
-        return view('assignments.index', compact('assignments'));
+        $userId = auth()->id();
+
+        // Sesi aktif: belum selesai (menunggu atau diproses)
+        $activeSessions = Assignment::where('user_id', $userId)
+            ->where('status', '!=', 'selesai')
+            ->latest()
+            ->get();
+
+        // Arsip: sesi yang sudah selesai (diurutkan ascending untuk timeline)
+        $archivedSessions = Assignment::where('user_id', $userId)
+            ->where('status', 'selesai')
+            ->orderBy('created_at')
+            ->get();
+
+        return view('assignments.index', compact('activeSessions', 'archivedSessions'));
     }
 
-    // Simpan tugas baru dari user
+    /**
+     * Simpan tugas baru dari user (hanya bisa jika has_paid).
+     */
     public function store(Request $request)
     {
         $request->validate([

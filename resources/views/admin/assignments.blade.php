@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Admin Panel')
+@section('title', 'Admin Panel — Tugas & Sesi')
 
 @push('styles')
     <link rel="stylesheet" href="/css/admin.css" />
@@ -120,7 +120,12 @@
         .send-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
         .send-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-        /* Tab active state for "kirim" tab */
+        /* Coaching tab badge accent */
+        .admin-tab.coaching-tab.active {
+            background: rgba(124,111,224,.15);
+            border-color: var(--purple);
+            color: var(--purple2);
+        }
         .admin-tab.send-tab.active {
             background: rgba(0,212,170,.12);
             border-color: var(--green);
@@ -153,6 +158,91 @@
             background: rgba(79,195,247,.15); color: var(--blue);
             white-space: nowrap;
         }
+
+        /* Coaching session cards */
+        .coaching-card {
+            background: var(--bg2);
+            border: 1px solid rgba(124,111,224,.3);
+            border-radius: 14px;
+            margin-bottom: 1.25rem;
+            overflow: hidden;
+        }
+        .coaching-card.finished {
+            border-color: rgba(0,212,170,.25);
+            opacity: 0.85;
+        }
+        .coaching-card-header {
+            background: rgba(124,111,224,.06);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(124,111,224,.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .coaching-card.finished .coaching-card-header {
+            background: rgba(0,212,170,.05);
+            border-bottom-color: rgba(0,212,170,.15);
+        }
+        .coaching-card-body { padding: 1.25rem; }
+        .coaching-msg-box {
+            background: var(--bg3);
+            border-radius: 10px;
+            padding: 0.9rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text2);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--purple);
+        }
+        .coaching-card.finished .coaching-msg-box {
+            border-left-color: var(--green);
+        }
+        .reply-divider {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+        .close-session-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(0,212,170,.12);
+            color: var(--green);
+            border: 1px solid rgba(0,212,170,.3);
+            border-radius: 9px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .close-session-btn:hover {
+            background: rgba(0,212,170,.22);
+        }
+
+        /* Section divider */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 1.75rem 0 1rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
     </style>
 @endpush
 
@@ -161,16 +251,22 @@
 
   <div class="admin-header">
     <h2><x-cs-icon name="settings" size="20" stroke="2" /> Admin Panel</h2>
-    <p>Kelola tugas user dan konten quiz kursus</p>
+    <p>Kelola tugas user, sesi coaching aktif, dan konten quiz</p>
   </div>
 
   <div class="admin-tabs">
     <a href="{{ route('admin.dashboard') }}" class="admin-tab">
       <x-cs-icon name="bar-chart" size="14" stroke="2" /> Dashboard
     </a>
-    <a href="{{ route('admin.assignments') }}" class="admin-tab {{ request()->query('tab') !== 'kirim' ? 'active' : '' }}">
+    <a href="{{ route('admin.assignments') }}" class="admin-tab {{ request()->query('tab') === null ? 'active' : '' }}">
       <x-cs-icon name="clipboard-list" size="14" stroke="2" /> Tugas Masuk
       <span class="admin-tab-badge">{{ $incomingCount }}</span>
+    </a>
+    <a href="{{ route('admin.assignments') }}?tab=coaching" class="admin-tab coaching-tab {{ request()->query('tab') === 'coaching' ? 'active' : '' }}">
+      <x-cs-icon name="zap" size="14" stroke="2" /> Sesi Coaching
+      @if($coachingCount > 0)
+        <span class="admin-tab-badge" style="background:rgba(124,111,224,.2);color:var(--purple2);">{{ $coachingCount }}</span>
+      @endif
     </a>
     <a href="{{ route('admin.assignments') }}?tab=kirim" class="admin-tab send-tab {{ request()->query('tab') === 'kirim' ? 'active' : '' }}">
       <x-cs-icon name="send" size="14" stroke="2" /> Kirim ke User
@@ -180,8 +276,10 @@
     </a>
   </div>
 
-  {{-- ══ TAB: TUGAS MASUK (default) ══ --}}
-  @if(request()->query('tab') !== 'kirim')
+  {{-- ════════════════════════════════════
+       TAB 1: TUGAS MASUK (dari user)
+  ════════════════════════════════════ --}}
+  @if(request()->query('tab') === null)
 
     @forelse($assignments as $item)
       <div class="admin-card">
@@ -243,16 +341,131 @@
     @empty
       <div class="empty-state">
         <div class="empty-state-icon">
-          <span>
-              <x-cs-icon name="inbox" size="28" stroke="1.5" />
-          </span>
+          <span><x-cs-icon name="inbox" size="28" stroke="1.5" /></span>
         </div>
         <p>Belum ada tugas yang masuk dari user.</p>
       </div>
     @endforelse
 
+  {{-- ════════════════════════════════════
+       TAB 2: SESI COACHING AKTIF
+  ════════════════════════════════════ --}}
+  @elseif(request()->query('tab') === 'coaching')
+
+    {{-- ── Sesi Aktif ── --}}
+    @if($coachingSessionsActive->isNotEmpty())
+      <div class="section-divider">🎮 Sesi Coaching Aktif ({{ $coachingSessionsActive->count() }})</div>
+
+      @foreach($coachingSessionsActive as $sesi)
+        <div class="coaching-card">
+          <div class="coaching-card-header">
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;margin-bottom:3px;">{{ $sesi->judul }}</div>
+              <div style="font-size:0.75rem;color:var(--text3);display:flex;align-items:center;gap:8px;">
+                User: <strong style="color:var(--text2);">{{ $sesi->user->name }}</strong>
+                · {{ $sesi->user->email }}
+                · {{ $sesi->created_at->diffForHumans() }}
+              </div>
+            </div>
+            <span class="status-badge status-{{ $sesi->status }}">
+              @if($sesi->status === 'menunggu')
+                ⏳ Menunggu
+              @else
+                🔄 Diproses
+              @endif
+            </span>
+          </div>
+
+          <div class="coaching-card-body">
+            {{-- Pesan template awal / isi sesi --}}
+            <div class="reply-divider">📨 Pesan Sistem kepada User:</div>
+            <div class="coaching-msg-box">{{ $sesi->tugas_teks }}</div>
+
+            {{-- Form: Balas + tutup sesi --}}
+            <form method="POST" action="{{ route('admin.assignments.update', $sesi) }}">
+              @csrf
+              <div class="reply-divider">✏️ Feedback / Balasan Coach:</div>
+              <textarea
+                name="balasan_admin"
+                class="f-inp"
+                style="margin-bottom:1rem;"
+                placeholder="Tulis feedback, catatan, atau link Discord/hasil review untuk user ini...">{{ old('balasan_admin_' . $sesi->id, $sesi->balasan_admin) }}</textarea>
+
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                {{-- Simpan feedback tanpa menutup --}}
+                <input type="hidden" name="status" value="{{ $sesi->status }}" id="status-hidden-{{ $sesi->id }}">
+                <button type="submit" class="save-btn" style="flex:1;min-width:160px;">
+                  <x-cs-icon name="save" size="14" stroke="2" /> Simpan Feedback
+                </button>
+
+                {{-- Tutup sesi: set status ke selesai --}}
+                <button
+                  type="button"
+                  class="close-session-btn"
+                  onclick="closeSession({{ $sesi->id }}, this)"
+                  title="Ubah status ke Selesai dan pindahkan ke Arsip User">
+                  ✅ Tutup Sesi
+                </button>
+              </div>
+
+              {{-- Hidden status yang berubah saat "Tutup Sesi" diklik --}}
+              <select name="status" id="status-select-{{ $sesi->id }}" style="display:none;">
+                <option value="menunggu"  {{ $sesi->status==='menunggu'  ? 'selected':'' }}>Menunggu</option>
+                <option value="diproses"  {{ $sesi->status==='diproses'  ? 'selected':'' }}>Diproses</option>
+                <option value="selesai"   {{ $sesi->status==='selesai'   ? 'selected':'' }}>Selesai</option>
+              </select>
+            </form>
+          </div>
+        </div>
+      @endforeach
+    @else
+      <div class="empty-state" style="margin-top:1.5rem;">
+        <div class="empty-state-icon"><span>🎮</span></div>
+        <p>Tidak ada sesi coaching yang sedang aktif.</p>
+      </div>
+    @endif
+
+    {{-- ── Sesi Selesai (Arsip) ── --}}
+    @if($coachingSessionsFinished->isNotEmpty())
+      <div class="section-divider" style="margin-top:2rem;">📦 Sesi Coaching Selesai / Arsip ({{ $coachingSessionsFinished->count() }})</div>
+
+      @foreach($coachingSessionsFinished as $sesi)
+        <div class="coaching-card finished">
+          <div class="coaching-card-header">
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;margin-bottom:3px;">{{ $sesi->judul }}</div>
+              <div style="font-size:0.75rem;color:var(--text3);display:flex;align-items:center;gap:8px;">
+                User: <strong style="color:var(--text2);">{{ $sesi->user->name }}</strong>
+                · {{ $sesi->user->email }}
+                · {{ $sesi->updated_at->diffForHumans() }}
+              </div>
+            </div>
+            <span class="status-badge status-selesai">✅ Selesai</span>
+          </div>
+
+          <div class="coaching-card-body">
+            <div class="reply-divider" style="color:var(--green);">📨 Pesan Sistem:</div>
+            <div class="coaching-msg-box" style="opacity:.75;">{{ $sesi->tugas_teks }}</div>
+
+            @if($sesi->balasan_admin)
+              <div class="reply-divider" style="color:var(--green);">💬 Feedback Coach (Final):</div>
+              <div style="background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.25);border-radius:10px;padding:0.9rem 1rem;font-size:0.85rem;color:var(--text2);line-height:1.7;">
+                {{ $sesi->balasan_admin }}
+              </div>
+            @endif
+
+            <div style="margin-top:0.9rem;font-size:0.75rem;color:var(--text3);display:flex;align-items:center;gap:6px;">
+              🔒 Sesi ini sudah ditutup — data tersimpan di arsip user.
+            </div>
+          </div>
+        </div>
+      @endforeach
+    @endif
+
+  {{-- ════════════════════════════════════
+       TAB 3: KIRIM KE USER (manual)
+  ════════════════════════════════════ --}}
   @else
-  {{-- ══ TAB: KIRIM KE USER ══ --}}
 
     <div style="max-width:560px;">
 
@@ -359,17 +572,36 @@
 
 @push('scripts')
 <script>
-(function () {
-  const searchInput  = document.getElementById('userSearchInput');
-  const dropdown     = document.getElementById('userDropdown');
-  const hiddenId     = document.getElementById('selectedUserId');
-  const selectedCard = document.getElementById('selectedUserCard');
-  const selectedName = document.getElementById('selectedUserName');
-  const selectedEmail= document.getElementById('selectedUserEmail');
-  const selectedAvatar = document.getElementById('selectedUserAvatar');
-  const sendBtn      = document.getElementById('sendBtn');
+// ── Tab: Tutup Sesi Coaching ──
+function closeSession(sesiId, btn) {
+  if (!confirm('Tutup sesi coaching ini? Status akan berubah menjadi "Selesai" dan sesi akan dipindahkan ke arsip user.')) return;
 
-  if (!searchInput) return; // tab tugas masuk tidak punya elemen ini
+  // Ganti hidden status ke 'selesai' lalu submit form-nya
+  var select = document.getElementById('status-select-' + sesiId);
+  if (select) {
+    select.value = 'selesai';
+    select.name  = 'status'; // pastikan ikut ter-submit
+  }
+  // Hapus hidden input duplikat agar tidak konflik
+  var hiddenInput = document.getElementById('status-hidden-' + sesiId);
+  if (hiddenInput) hiddenInput.remove();
+
+  // Submit form yang membungkus tombol ini
+  btn.closest('form').submit();
+}
+
+// ── Live Search User (hanya aktif di tab Kirim) ──
+(function () {
+  const searchInput   = document.getElementById('userSearchInput');
+  const dropdown      = document.getElementById('userDropdown');
+  const hiddenId      = document.getElementById('selectedUserId');
+  const selectedCard  = document.getElementById('selectedUserCard');
+  const selectedName  = document.getElementById('selectedUserName');
+  const selectedEmail = document.getElementById('selectedUserEmail');
+  const selectedAvatar = document.getElementById('selectedUserAvatar');
+  const sendBtn       = document.getElementById('sendBtn');
+
+  if (!searchInput) return;
 
   let debounceTimer;
 
@@ -380,7 +612,6 @@
     debounceTimer = setTimeout(() => fetchUsers(q), 280);
   });
 
-  // Tutup dropdown kalau klik di luar
   document.addEventListener('click', function (e) {
     if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.classList.remove('open');
@@ -421,8 +652,8 @@
 
   function selectUser(u) {
     hiddenId.value = u.id;
-    selectedName.textContent  = u.name;
-    selectedEmail.textContent = u.email;
+    selectedName.textContent   = u.name;
+    selectedEmail.textContent  = u.email;
     selectedAvatar.textContent = u.name.charAt(0).toUpperCase();
     selectedCard.classList.add('show');
     searchInput.value = '';
