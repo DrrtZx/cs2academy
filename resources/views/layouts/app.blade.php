@@ -62,11 +62,36 @@
                             </form>
                         @endif
                     @endif
-                    <div class="user-badge">
-                        <span class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                    <div class="user-badge" style="position:relative; cursor:pointer;" onclick="this.querySelector('.user-drop').classList.toggle('open')">
+                        <span class="user-avatar" style="position:relative; overflow:hidden;">
+                            @if(auth()->user()->avatar)
+                                <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="avatar" style="width:100%;height:100%;object-fit:cover;">
+                            @else
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            @endif
+                            @if(!$isAdminUser && auth()->user()->hasPendingCoaching())
+                                <span class="coaching-dot" title="Sesi coaching aktif"></span>
+                            @endif
+                        </span>
                         <span class="uname">{{ auth()->user()->name }}</span>
+                        <div class="user-drop" style="display:none;position:absolute;top:100%;right:0;margin-top:10px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;min-width:220px;box-shadow:0 12px 32px rgba(0,0,0,.5);z-index:200;overflow:hidden;">
+                            @if(!$isAdminUser && auth()->user()->hasPendingCoaching())
+                                <a href="{{ route('assignments.index') }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:12px;text-decoration:none;border-bottom:1px solid var(--border);">
+                                    <span style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0;animation:coaching-pulse 2s infinite;"></span>
+                                    <span style="color:var(--green);font-weight:700;">1 Sesi Aktif</span>
+                                    <span style="color:var(--text2);font-size:11px;margin-left:auto;">📋 Tugas Saya →</span>
+                                </a>
+                            @endif
+                            <a href="{{ route('profile.edit') }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;color:var(--text);text-decoration:none;">👤 Profile Settings</a>
+                            <div style="border-top:1px solid var(--border);">
+                                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                                    @csrf
+                                    <button type="submit" style="width:100%;text-align:left;background:none;border:none;padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;">🚪 Keluar</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" class="nav-form">
+                    <form method="POST" action="{{ route('logout') }}" class="nav-form" style="display:none;">
                         @csrf
                         <button type="submit" class="btn-g">
                             <x-cs-icon name="log-out" size="14" /> Keluar
@@ -240,8 +265,14 @@
         document.getElementById('authModal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
-        // Buka modal otomatis jika ada error validasi dari Breeze
-        @if ($errors->hasBag('default') || $errors->any())
+        // Tutup user dropdown kalau klik di luar
+        document.addEventListener('click', function(e) {
+            document.querySelectorAll('.user-drop.open').forEach(function(d) {
+                if (!d.parentElement.contains(e.target)) d.classList.remove('open');
+            });
+        });
+        // Buka modal otomatis jika ada error validasi dari Breeze (auth forms only)
+        @if ($errors->any() && (request()->routeIs('login') || request()->routeIs('register') || request()->routeIs('password.*')))
             document.addEventListener('DOMContentLoaded', function() {
                 @if (old('name') || old('password_confirmation'))
                     openModal('register');

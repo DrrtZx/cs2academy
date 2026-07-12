@@ -85,7 +85,8 @@ $allCourses = $isModulesView ? null : $courses;
   {{-- Tabs --}}
   <div class="admin-tabs">
     <a href="{{ route('admin.dashboard') }}" class="admin-tab"><x-cs-icon name="bar-chart" size="14" stroke="2" /> Dashboard</a>
-    <a href="{{ route('admin.assignments') }}" class="admin-tab"><x-cs-icon name="clipboard-list" size="14" stroke="2" /> Tugas User</a>
+    <a href="{{ route('admin.users') }}" class="admin-tab"><x-cs-icon name="users" size="14" stroke="2" /> User</a>
+    <a href="{{ route('admin.assignments') }}" class="admin-tab"><x-cs-icon name="zap" size="14" stroke="2" /> Sesi Coaching</a>
     <a href="{{ route('admin.courses') }}" class="admin-tab active"><x-cs-icon name="book-open" size="14" stroke="2" /> Kelola Course</a>
   </div>
 

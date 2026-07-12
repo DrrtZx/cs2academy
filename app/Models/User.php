@@ -10,7 +10,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ["name", "email", "password", "role", "has_paid", "active_coaching_package"];
+    protected $fillable = ["name", "email", "password", "role", "has_paid", "active_coaching_package", "discord_id", "avatar"];
 
     protected $hidden = ["password", "remember_token"];
 

@@ -222,6 +222,27 @@ nav {
     color: var(--text);
 }
 
+/* Green dot indikator sesi coaching aktif */
+.coaching-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--bg);
+    animation: coaching-pulse 2s infinite;
+}
+@keyframes coaching-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Dropdown mini user */
+.user-drop.open { display: block !important; }
+.user-drop a:hover, .user-drop button:hover { background: rgba(255,255,255,0.04); }
+
 /* ── Flash Alerts ── */
 .alert {
     display: flex;

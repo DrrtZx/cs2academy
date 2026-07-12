@@ -19,19 +19,11 @@ class AdminController extends Controller
     {
         $stats = [
             "total_users"            => User::where("role", "user")->count(),
-            "total_admins"           => User::where("role", "admin")->count(),
             "total_paid"             => User::where("has_paid", true)->count(),
-            "total_courses"          => Course::count(),
-            "total_quizzes"          => Quiz::count(),
-            "total_completions"      => CourseProgress::whereNotNull("completed_at")->count(),
-            "total_assignments"      => Assignment::count(),
-            "assignments_menunggu"   => Assignment::where("status", "menunggu")->count(),
-            "assignments_diproses"   => Assignment::where("status", "diproses")->count(),
-            "assignments_selesai"    => Assignment::where("status", "selesai")->count(),
             "total_pending_payments" => CoachingTransaction::pending()->count(),
+            "total_courses"          => Course::count(),
+            "total_transactions"     => CoachingTransaction::count(),
         ];
-
-        $recentAssignments = Assignment::with("user")->latest()->take(5)->get();
 
         $pendingTransactions = CoachingTransaction::with("user")
             ->pending()
@@ -45,8 +37,21 @@ class AdminController extends Controller
 
         return view(
             "admin.dashboard",
-            compact("stats", "recentAssignments", "pendingTransactions", "recentCoachingActivity"),
+            compact("stats", "pendingTransactions", "recentCoachingActivity"),
         );
+    }
+
+    /** Halaman daftar user */
+    public function users(Request $request)
+    {
+        $search = trim($request->get('search', ''));
+        $users = User::when($search, fn($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"))
+            ->orderBy('role')
+            ->orderBy('name')
+            ->paginate(15)
+            ->appends(['search' => $search]);
+
+        return view('admin.users', compact('users', 'search'));
     }
 
     // Aktifkan mode preview: admin melihat situs seperti tampilan role user biasa
@@ -85,12 +90,25 @@ class AdminController extends Controller
         $templateText = $templateMessages[$cleanName]
             ?? "Halo! Sesi coaching \"{$cleanName}\" Anda telah aktif. Silakan mulai percakapan dengan coach Anda di bawah ini.";
 
-        Assignment::create([
+        $assignment = Assignment::create([
             'user_id'    => $transaction->user_id,
             'from_admin' => true,
             'judul'      => 'Sesi ' . $cleanName,
             'tugas_teks' => $templateText,
             'status'     => 'diproses',
+        ]);
+
+        // Auto-kirim prechat dari Coach (beda per paket)
+        $prechatMessages = [
+            'Textual Review' => "Halo! Selamat datang di sesi Textual Review. 🎯\n\nSilakan tulis pertanyaan mendalam kamu soal gameplay — aim, movement, positioning, utility usage, atau game sense. Kirim aja semuanya, nanti aku review dan kasih feedback detail satu per satu.\n\nKalau ada video gameplay juga bisa kamu lampirkan link-nya. Let's get better! 💪",
+            'Panggil Pelatih' => "Halo! Sesi Panggil Pelatih sudah aktif. 🎧\n\nUntuk mulai, share dulu:\n1. ID Discord kamu (username#0000)\n2. 3 opsi jadwal luang (hari + jam)\n\nNanti kita tentuin jadwal voice call 1-on-1. Sampai ketemu di Discord! 👋",
+            'Demo Review' => "Halo! Sesi Demo Review sudah aktif. 🎬\n\nSilakan upload link download file demo match CS2 kamu (bisa dari Google Drive, Dropbox, atau platform lain). Pastikan link-nya bisa diakses ya.\n\nAku akan analisis gameplay kamu — dari aim, decision making, utility usage, sampai positioning — dan kasih feedback lengkap. Let's go! 🔍",
+        ];
+
+        $prechatText = $prechatMessages[$cleanName] ?? "Halo! Sesi coaching \"{$cleanName}\" kamu sudah aktif. Silakan mulai percakapan dengan coach. 🎯";
+        $assignment->messages()->create([
+            'sender_id' => auth()->id(),
+            'message'   => $prechatText,
         ]);
 
         return back()->with('success', "✅ Pembayaran dari {$transaction->user->name} untuk paket \"{$cleanName}\" telah disetujui. Pesan selamat datang telah dikirim otomatis.");
@@ -298,6 +316,9 @@ class AdminController extends Controller
             'status'       => 'selesai',
             'completed_at' => now(),
         ]);
+
+        // Clear paket aktif user supaya bisa beli lagi & badge di tabel user update
+        $assignment->user->update(['active_coaching_package' => null]);
 
         return response()->json(['success' => true]);
     }

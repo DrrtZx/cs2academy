@@ -59,6 +59,9 @@ Route::middleware("auth")->group(function () {
     Route::patch("/profile", [ProfileController::class, "update"])->name(
         "profile.update",
     );
+    Route::put("/profile/password", [ProfileController::class, "updatePassword"])->name(
+        "profile.password",
+    );
     Route::delete("/profile", [ProfileController::class, "destroy"])->name(
         "profile.destroy",
     );
@@ -66,6 +69,10 @@ Route::middleware("auth")->group(function () {
     // Admin (khusus role admin)
     Route::get("/admin", [AdminController::class, "dashboard"])
         ->name("admin.dashboard")
+        ->middleware("can:admin-only");
+
+    Route::get("/admin/users", [AdminController::class, "users"])
+        ->name("admin.users")
         ->middleware("can:admin-only");
 
     Route::post("/admin/preview/on", [
