@@ -223,7 +223,7 @@
     @if($archivedSessions->isNotEmpty())
       <div class="readonly-notice">
         <span style="font-size:1.1rem;">📖</span>
-        <span>Riwayat percakapan dengan coach — sudah <strong>read-only</strong> dan tidak bisa dibalas lagi.</span>
+        <span>Riwayat percakapan dengan coach — sudah <strong>hanya bisa dibaca</strong> dan tidak bisa dibalas lagi.</span>
       </div>
 
       <div class="chat-timeline">

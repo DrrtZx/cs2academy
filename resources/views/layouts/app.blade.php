@@ -23,10 +23,10 @@
                 $showUserNav = !$isAdminUser || $previewMode;
             @endphp
             <div class="nav-links">
-                <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+                <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
                 @if ($showUserNav)
                     <a href="{{ route('courses') }}"
-                        class="nav-link {{ request()->routeIs('courses') ? 'active' : '' }}">Courses</a>
+                        class="nav-link {{ request()->routeIs('courses') ? 'active' : '' }}">Kursus</a>
                     <a href="{{ route('coaching') }}"
                         class="nav-link {{ request()->routeIs('coaching') ? 'active' : '' }}">Coaching</a>
                 @endif

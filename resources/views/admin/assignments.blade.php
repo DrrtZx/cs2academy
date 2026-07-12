@@ -111,7 +111,7 @@
         </div>
         <div class="archive-drop" style="display:none;padding-top:12px;">
           <div class="chat-box">
-            <div class="chat-header-bar">💬 Riwayat Percakapan (read-only)</div>
+            <div class="chat-header-bar">💬 Riwayat Percakapan (hanya bisa dibaca)</div>
             <div class="chat-msgs" id="msgs-{{ $sesi->id }}">Memuat...</div>
           </div>
         </div>
