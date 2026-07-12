@@ -33,13 +33,11 @@ class AdminController extends Controller
 
         $recentAssignments = Assignment::with("user")->latest()->take(5)->get();
 
-        // Transaksi coaching pending — untuk tabel approval admin
         $pendingTransactions = CoachingTransaction::with("user")
             ->pending()
             ->latest()
             ->get();
 
-        // Feed aktivitas coaching terbaru (semua status) — untuk notifikasi dashboard
         $recentCoachingActivity = CoachingTransaction::with("user")
             ->latest()
             ->take(8)
@@ -72,25 +70,21 @@ class AdminController extends Controller
     {
         $transaction->update(['status' => 'approved']);
 
-        // Aktifkan akses coaching user dan simpan nama paket yang aktif
         $transaction->user->update([
             'has_paid'                => true,
             'active_coaching_package' => $transaction->package_name,
         ]);
 
-        // Tentukan pesan template berdasarkan paket yang dibeli
         $templateMessages = [
             'Textual Review' => 'Halo! Sesi Textual Review Anda telah aktif. Silakan tulis pertanyaan mendalam Anda mengenai gameplay di bawah ini.',
             'Panggil Pelatih' => 'Halo! Sesi Panggil Pelatih aktif. Silakan masukkan ID Discord Anda beserta 3 opsi jadwal luang untuk sesi voice call.',
             'Demo Review' => 'Halo! Sesi Demo Review aktif. Silakan tempelkan link download file demo match CS2 Anda yang ingin dianalisis.',
         ];
 
-        // Fallback jika nama paket tidak persis cocok (misal ada URL-encoding "Textual+Review")
         $cleanName = str_replace('+', ' ', $transaction->package_name);
         $templateText = $templateMessages[$cleanName]
             ?? "Halo! Sesi coaching \"{$cleanName}\" Anda telah aktif. Silakan mulai percakapan dengan coach Anda di bawah ini.";
 
-        // Buat record assignment otomatis sebagai pesan pembuka dari sistem
         Assignment::create([
             'user_id'    => $transaction->user_id,
             'from_admin' => true,
@@ -102,55 +96,35 @@ class AdminController extends Controller
         return back()->with('success', "✅ Pembayaran dari {$transaction->user->name} untuk paket \"{$cleanName}\" telah disetujui. Pesan selamat datang telah dikirim otomatis.");
     }
 
-
     /**
      * Tolak transaksi coaching.
      */
     public function rejectTransaction(CoachingTransaction $transaction)
     {
         $transaction->update(['status' => 'rejected']);
-
         return back()->with('success', "❌ Transaksi dari {$transaction->user->name} telah ditolak.");
     }
 
+    /** Halaman Sesi Coaching (dulunya assignments) */
     public function assignments()
     {
-        // Tab 1: Tugas yang dikirim user sendiri (bukan dari admin)
-        $assignments = Assignment::with('user')
-            ->where('from_admin', false)
-            ->latest()
-            ->get();
-
-        // Tab 2: Sesi coaching yang dibuat otomatis saat approval (from_admin=true)
-        // Dibagi: aktif (belum selesai) dan selesai
-        $coachingSessionsActive = Assignment::with('user')
+        $coachingSessionsActive = Assignment::with(['user', 'messages'])
             ->where('from_admin', true)
             ->where('status', '!=', 'selesai')
-            ->latest()
+            ->latest('updated_at')
             ->get();
 
-        $coachingSessionsFinished = Assignment::with('user')
+        $coachingSessionsFinished = Assignment::with(['user', 'messages'])
             ->where('from_admin', true)
             ->where('status', 'selesai')
-            ->latest()
+            ->latest('completed_at')
             ->get();
 
-        // Tab 3: Riwayat pesan/tugas yang dikirim admin secara manual ke user
-        $sentByAdmin = Assignment::with('user')
-            ->where('from_admin', true)
-            ->latest()
-            ->take(20)
-            ->get();
-
-        $incomingCount = $assignments->count();
         $coachingCount = $coachingSessionsActive->count();
 
         return view('admin.assignments', compact(
-            'assignments',
             'coachingSessionsActive',
             'coachingSessionsFinished',
-            'sentByAdmin',
-            'incomingCount',
             'coachingCount',
         ));
     }
@@ -168,7 +142,7 @@ class AdminController extends Controller
         return back()->with("success", "Balasan berhasil disimpan!");
     }
 
-    // API: live search user by nama/email untuk form "Kirim ke User"
+    /** API: search user untuk form "Kirim ke User" */
     public function searchUsers(Request $request)
     {
         $q = trim($request->get('q', ''));
@@ -181,14 +155,14 @@ class AdminController extends Controller
                 $query->where('name', 'like', "%{$q}%")
                       ->orWhere('email', 'like', "%{$q}%");
             })
-            ->orderByDesc('has_paid') // user yang sudah beli muncul duluan
+            ->orderByDesc('has_paid')
             ->take(10)
             ->get(['id', 'name', 'email', 'has_paid']);
 
         return response()->json($users);
     }
 
-    // Kirim assignment/pesan dari admin ke user yang dipilih
+    /** Kirim tugas/pesan dari admin ke user */
     public function sendToUser(Request $request)
     {
         $request->validate([
@@ -197,7 +171,6 @@ class AdminController extends Controller
             'tugas_teks' => 'required|string',
         ]);
 
-        // Pastikan target bukan admin
         $target = User::findOrFail($request->user_id);
         if ($target->isAdmin()) {
             return back()->withErrors(['user_id' => 'Tidak bisa kirim ke sesama admin.']);
@@ -214,6 +187,7 @@ class AdminController extends Controller
         return back()->with('success', 'Pesan berhasil dikirim ke ' . $target->name . '!');
     }
 
+    /** Hapus assignment */
     public function deleteAssignment(Assignment $assignment)
     {
         $assignment->delete();
@@ -221,39 +195,143 @@ class AdminController extends Controller
     }
 
     // ──────────────────────────────────────
+    // COACHING CHAT
+    // ──────────────────────────────────────
+
+    public function inboxSummary(Request $request)
+    {
+        $tab = $request->query('tab', 'aktif');
+
+        $query = Assignment::with(['user', 'messages'])
+            ->where('from_admin', true);
+
+        if ($tab === 'arsip') {
+            $query->where('status', 'selesai')->latest('completed_at');
+        } else {
+            $query->where('status', '!=', 'selesai')->latest('updated_at');
+        }
+
+        $sessions = $query->take(30)->get()->map(function ($s) {
+            return [
+                'id'           => $s->id,
+                'user_name'    => $s->user->name,
+                'user_initial' => mb_substr($s->user->name, 0, 1),
+                'judul'        => $s->judul,
+                'package'      => str_replace('Sesi ', '', $s->judul),
+                'status'       => $s->status,
+                'is_closed'    => $s->status === 'selesai',
+                'unread'       => $s->unreadCount(),
+                'last_message' => $s->lastMessage()?->message ?? $s->tugas_teks,
+                'last_is_user' => $s->lastMessage() ? $s->lastMessage()->sender_id === $s->user_id : false,
+                'last_time'    => ($s->lastMessage() ?? $s)->created_at->diffForHumans(),
+            ];
+        });
+
+        $aktifCount = Assignment::where('from_admin', true)->where('status', '!=', 'selesai')->count();
+        $arsipCount = Assignment::where('from_admin', true)->where('status', 'selesai')->count();
+
+        return response()->json([
+            'sessions' => $sessions,
+            'counts'   => ['aktif' => $aktifCount, 'arsip' => $arsipCount],
+        ]);
+    }
+
+    public function inboxMessages(Assignment $assignment)
+    {
+        $assignment->messages()
+            ->where('sender_id', '!=', auth()->id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        $msgs = $assignment->messages()->with('sender')->get()->map(function ($msg) use ($assignment) {
+            $isAdmin = $msg->sender_id === auth()->id();
+            return [
+                'id'       => $msg->id,
+                'sender'   => $isAdmin ? 'Kamu (Coach)' : $assignment->user->name,
+                'message'  => $msg->message,
+                'is_admin' => $isAdmin,
+                'time'     => $msg->created_at->format('H:i'),
+                'time_ago' => $msg->created_at->diffForHumans(),
+            ];
+        });
+
+        return response()->json([
+            'messages'  => $msgs,
+            'status'    => $assignment->status,
+            'is_closed' => $assignment->status === 'selesai',
+        ]);
+    }
+
+    public function replyToSession(Request $request, Assignment $assignment)
+    {
+        if ($assignment->status === 'selesai') {
+            return response()->json(['error' => 'Sesi ini sudah selesai.'], 403);
+        }
+
+        $request->validate(['message' => 'required|string']);
+
+        $assignment->messages()->create([
+            'sender_id' => auth()->id(),
+            'message'   => $request->message,
+        ]);
+
+        $assignment->update(['status' => 'diproses', 'updated_at' => now()]);
+
+        $msg = $assignment->messages()->latest('id')->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => [
+                'id'       => $msg->id,
+                'sender'   => 'Kamu (Coach)',
+                'message'  => $msg->message,
+                'is_admin' => true,
+                'time'     => $msg->created_at->format('H:i'),
+                'time_ago' => $msg->created_at->diffForHumans(),
+            ],
+        ]);
+    }
+
+    public function completeSession(Assignment $assignment)
+    {
+        $assignment->update([
+            'status'       => 'selesai',
+            'completed_at' => now(),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    // ──────────────────────────────────────
     // KELOLA COURSE & MODUL
     // ──────────────────────────────────────
 
-    /** Level 1: daftar semua course */
     public function courses()
     {
         $courses = Course::withCount(['modules', 'quizzes'])->orderBy('urutan')->get();
         return view('admin.courses.index', compact('courses'));
     }
 
-    /** Form tambah course */
     public function create()
     {
         $allCourses = Course::orderBy('urutan')->get();
         return view('admin.courses.form', [
-            'mode'        => 'create',
-            'course'      => null,
-            'allCourses'  => $allCourses,
+            'mode'       => 'create',
+            'course'     => null,
+            'allCourses' => $allCourses,
         ]);
     }
 
-    /** Form edit course */
     public function edit(Course $course)
     {
         $allCourses = Course::where('id', '!=', $course->id)->orderBy('urutan')->get();
         return view('admin.courses.form', [
-            'mode'        => 'edit',
-            'course'      => $course,
-            'allCourses'  => $allCourses,
+            'mode'       => 'edit',
+            'course'     => $course,
+            'allCourses' => $allCourses,
         ]);
     }
 
-    /** Simpan course baru */
     public function storeCourse(Request $request)
     {
         $validated = $request->validate([
@@ -268,12 +346,10 @@ class AdminController extends Controller
         ]);
 
         $validated['is_popular'] = $request->boolean('is_popular');
-
         Course::create($validated);
         return redirect()->route('admin.courses')->with('success', 'Kursus baru berhasil ditambahkan!');
     }
 
-    /** Update course */
     public function updateCourse(Request $request, Course $course)
     {
         $validated = $request->validate([
@@ -292,7 +368,6 @@ class AdminController extends Controller
         return redirect()->route('admin.courses')->with('success', 'Kursus berhasil diupdate!');
     }
 
-    /** Hapus course — cek progress dulu */
     public function deleteCourse(Course $course)
     {
         $hasProgress = ModuleProgress::whereIn(
@@ -307,14 +382,12 @@ class AdminController extends Controller
         return redirect()->route('admin.courses')->with('success', 'Kursus berhasil dihapus!');
     }
 
-    /** Level 2: daftar modul dalam 1 course */
     public function modules(Course $course)
     {
         $modules = $course->modules()->with('quizzes')->withCount('quizzes')->orderBy('urutan')->get();
         return view('admin.courses.index', compact('course', 'modules'));
     }
 
-    /** Form tambah modul baru */
     public function createModule(Course $course)
     {
         return view('admin.modules.form', [
@@ -324,7 +397,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /** Form edit modul existing */
     public function editModule(Module $module)
     {
         $module->load('quizzes');
@@ -335,7 +407,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /** Simpan modul + quiz sekaligus */
     public function storeModule(Request $request, Course $course)
     {
         $validated = $request->validate([
@@ -349,8 +420,8 @@ class AdminController extends Controller
             'quizzes.*.jawaban_benar' => 'required|integer|min:0|max:3',
             'quizzes.*.penjelasan'    => 'nullable|string',
         ], [
-            'youtube_url.url'   => 'Format link gak valid — URL harus lengkap (contoh: https://youtube.com/watch?v=xxxx).',
-            'youtube_url.regex' => 'Link harus dari YouTube (youtube.com atau youtu.be).',
+            'youtube_url.url'   => 'Format link gak valid.',
+            'youtube_url.regex' => 'Link harus dari YouTube.',
         ]);
 
         $maxUrutan = $course->modules()->max('urutan') ?? -1;
@@ -373,11 +444,9 @@ class AdminController extends Controller
             }
         }
 
-        return redirect()->route('admin.courses.modules', $course)
-            ->with('success', 'Modul baru berhasil ditambahkan!');
+        return redirect()->route('admin.courses.modules', $course)->with('success', 'Modul baru berhasil ditambahkan!');
     }
 
-    /** Update modul + sync quiz */
     public function updateModule(Request $request, Module $module)
     {
         $validated = $request->validate([
@@ -391,8 +460,8 @@ class AdminController extends Controller
             'quizzes.*.jawaban_benar' => 'required|integer|min:0|max:3',
             'quizzes.*.penjelasan'    => 'nullable|string',
         ], [
-            'youtube_url.url'   => 'Format link gak valid — URL harus lengkap (contoh: https://youtube.com/watch?v=xxxx).',
-            'youtube_url.regex' => 'Link harus dari YouTube (youtube.com atau youtu.be).',
+            'youtube_url.url'   => 'Format link gak valid.',
+            'youtube_url.regex' => 'Link harus dari YouTube.',
         ]);
 
         $module->update([
@@ -401,7 +470,6 @@ class AdminController extends Controller
             'youtube_url' => $validated['youtube_url'] ?? null,
         ]);
 
-        // Sync quiz: hapus yang gak ada di request, update/create yang ada
         $existingIds = $module->quizzes()->pluck('id')->all();
         $submittedIds = [];
 
@@ -436,11 +504,9 @@ class AdminController extends Controller
             Quiz::whereIn('id', $toDelete)->delete();
         }
 
-        return redirect()->route('admin.courses.modules', $module->course)
-            ->with('success', 'Modul berhasil diupdate!');
+        return redirect()->route('admin.courses.modules', $module->course)->with('success', 'Modul berhasil diupdate!');
     }
 
-    /** Hapus modul — cek progress dulu */
     public function deleteModule(Module $module)
     {
         if ($module->progress()->whereNotNull('completed_at')->exists()) {
@@ -450,11 +516,9 @@ class AdminController extends Controller
 
         $course = $module->course;
         $module->delete();
-        return redirect()->route('admin.courses.modules', $course)
-            ->with('success', 'Modul berhasil dihapus!');
+        return redirect()->route('admin.courses.modules', $course)->with('success', 'Modul berhasil dihapus!');
     }
 
-    /** Reorder modul naik/turun */
     public function reorderModule(Request $request, Module $module)
     {
         $direction = $request->input('direction', 'up');
@@ -473,8 +537,6 @@ class AdminController extends Controller
             $swap->update(['urutan' => $tmp]);
         }
 
-        return redirect()->route('admin.courses.modules', $module->course)
-            ->with('success', 'Urutan modul diupdate!');
+        return redirect()->route('admin.courses.modules', $module->course)->with('success', 'Urutan modul diupdate!');
     }
-
 }

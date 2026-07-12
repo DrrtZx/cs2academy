@@ -7,20 +7,16 @@ use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
-    /**
-     * Tampilkan halaman tugas user, dibagi menjadi sesi aktif dan arsip selesai.
-     */
+    /** Halaman tugas user: sesi aktif + arsip */
     public function index()
     {
         $userId = auth()->id();
 
-        // Sesi aktif: belum selesai (menunggu atau diproses)
         $activeSessions = Assignment::where('user_id', $userId)
             ->where('status', '!=', 'selesai')
             ->latest()
             ->get();
 
-        // Arsip: sesi yang sudah selesai (diurutkan ascending untuk timeline)
         $archivedSessions = Assignment::where('user_id', $userId)
             ->where('status', 'selesai')
             ->orderBy('created_at')
@@ -29,23 +25,65 @@ class AssignmentController extends Controller
         return view('assignments.index', compact('activeSessions', 'archivedSessions'));
     }
 
-    /**
-     * Simpan tugas baru dari user (hanya bisa jika has_paid).
-     */
-    public function store(Request $request)
+    /** Kirim balasan dari user */
+    public function reply(Request $request, Assignment $assignment)
     {
-        $request->validate([
-            'judul'      => 'required|string|max:255',
-            'tugas_teks' => 'required|string',
+        if ($assignment->user_id !== auth()->id()) abort(403);
+        if ($assignment->status === 'selesai') {
+            return response()->json(['error' => 'Sesi ini sudah selesai.'], 403);
+        }
+
+        $request->validate(['message' => 'required|string']);
+
+        $assignment->messages()->create([
+            'sender_id' => auth()->id(),
+            'message'   => $request->message,
         ]);
 
-        Assignment::create([
-            'user_id'    => auth()->id(),
-            'judul'      => $request->judul,
-            'tugas_teks' => $request->tugas_teks,
-            'status'     => 'menunggu',
-        ]);
+        $assignment->update(['status' => 'diproses', 'updated_at' => now()]);
 
-        return back()->with('success', 'Tugas berhasil dikirim! Admin akan segera mereview.');
+        $msg = $assignment->messages()->latest('id')->first();
+
+        return response()->json([
+            'success'  => true,
+            'message'  => [
+                'id'       => $msg->id,
+                'sender'   => 'Kamu',
+                'message'  => $msg->message,
+                'is_admin' => false,
+                'time'     => $msg->created_at->format('H:i'),
+                'time_ago' => $msg->created_at->diffForHumans(),
+            ],
+        ]);
+    }
+
+    /** JSON: semua pesan dalam 1 sesi + status sesi */
+    public function messages(Assignment $assignment)
+    {
+        if ($assignment->user_id !== auth()->id()) abort(403);
+
+        // Mark pesan dari admin sebagai read
+        $assignment->messages()
+            ->where('sender_id', '!=', auth()->id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        $msgs = $assignment->messages()->get()->map(function ($msg) use ($assignment) {
+            $isUser = $msg->sender_id === auth()->id();
+            return [
+                'id'       => $msg->id,
+                'sender'   => $isUser ? 'Kamu' : 'Coach / Admin',
+                'message'  => $msg->message,
+                'is_admin' => !$isUser,
+                'time'     => $msg->created_at->format('H:i'),
+                'time_ago' => $msg->created_at->diffForHumans(),
+            ];
+        });
+
+        return response()->json([
+            'messages'  => $msgs,
+            'status'    => $assignment->status,
+            'is_closed' => $assignment->status === 'selesai',
+        ]);
     }
 }

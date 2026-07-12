@@ -36,8 +36,14 @@ Route::middleware("auth")->group(function () {
     Route::get("/assignments", [AssignmentController::class, "index"])->name(
         "assignments.index",
     );
-    Route::post("/assignments", [AssignmentController::class, "store"])->name(
-        "assignments.store",
+
+    // Coaching Chat — User reply
+    Route::post("/assignments/{assignment}/reply", [AssignmentController::class, "reply"])->name(
+        "assignments.reply",
+    );
+
+    Route::get("/assignments/{assignment}/messages", [AssignmentController::class, "messages"])->name(
+        "assignments.messages",
     );
 
     // Progress modul (dipanggil via fetch saat user lulus quiz per modul)
@@ -92,6 +98,23 @@ Route::middleware("auth")->group(function () {
         "deleteAssignment",
     ])
         ->name("admin.assignments.delete")
+        ->middleware("can:admin-only");
+
+    // Coaching Chat — Admin
+    Route::get("/admin/coaching-inbox/summary", [AdminController::class, "inboxSummary"])
+        ->name("admin.coaching.summary")
+        ->middleware("can:admin-only");
+
+    Route::get("/admin/coaching-inbox/{assignment}/messages", [AdminController::class, "inboxMessages"])
+        ->name("admin.coaching.messages")
+        ->middleware("can:admin-only");
+
+    Route::post("/admin/coaching-inbox/{assignment}/reply", [AdminController::class, "replyToSession"])
+        ->name("admin.coaching.reply")
+        ->middleware("can:admin-only");
+
+    Route::post("/admin/coaching-inbox/{assignment}/complete", [AdminController::class, "completeSession"])
+        ->name("admin.coaching.complete")
         ->middleware("can:admin-only");
 
     // Kelola Course & Modul

@@ -72,14 +72,6 @@
 .status-diproses { background:rgba(79,195,247,0.2); color:var(--blue); }
 .status-selesai  { background:rgba(0,212,170,0.15); color:var(--green); }
 
-/* ── Form kirim tugas ── */
-.form-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
-.f-inp { width:100%; background:var(--bg3); border:1.5px solid var(--border); color:var(--text); padding:10px 13px; border-radius:10px; font-size:0.9rem; outline:none; margin-bottom:1rem; }
-.f-inp:focus { border-color: var(--purple); }
-textarea.f-inp { resize:vertical; min-height:100px; }
-.submit-btn { background:var(--grad-primary); color:#fff; border:none; padding:12px 24px; border-radius:10px; font-size:0.9rem; font-weight:700; cursor:pointer; width:100%; box-shadow:0 10px 24px -10px rgba(139,123,255,.65); transition:all .2s; }
-.submit-btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
-
 /* ── Chat Timeline ── */
 .chat-timeline { position: relative; padding-left: 2rem; }
 .chat-timeline::before {
@@ -147,13 +139,13 @@ textarea.f-inp { resize:vertical; min-height:100px; }
   {{-- Tab Navigation --}}
   <div class="sess-tabs" role="tablist">
     @if($activeSessions->count() > 0)
-      <button class="sess-tab active" id="tab-active" onclick="switchTab('active')" role="tab" aria-selected="true">
+      <button class="sess-tab active" id="tab-active" onclick="switchSessTab('active')" role="tab" aria-selected="true">
         🎮 Sesi Aktif
         <span class="tab-count">{{ $activeSessions->count() }}</span>
       </button>
     @endif
     <button class="sess-tab {{ $activeSessions->count() > 0 ? '' : 'active' }}"
-            id="tab-archive" onclick="switchTab('archive')" role="tab"
+            id="tab-archive" onclick="switchSessTab('archive')" role="tab"
             aria-selected="{{ $activeSessions->count() > 0 ? 'false' : 'true' }}">
       📦 Arsip Selesai
       <span class="tab-count">{{ $archivedSessions->count() }}</span>
@@ -166,55 +158,9 @@ textarea.f-inp { resize:vertical; min-height:100px; }
   @if($activeSessions->count() > 0)
   <div class="sess-panel active" id="panel-active" role="tabpanel">
 
-    {{-- Gate: cek akses coaching user --}}
-    @if(auth()->user()->has_paid)
-      {{-- Form kirim tugas baru --}}
-      <div class="form-card">
-        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">➕ Kirim Tugas / Pertanyaan Baru</h3>
-        <form method="POST" action="{{ route('assignments.store') }}">
-          @csrf
-          <div style="margin-bottom:0.5rem;font-size:0.75rem;color:var(--text2);font-weight:600;text-transform:uppercase;">Judul / Topik</div>
-          <input type="text" name="judul" class="f-inp" placeholder="Contoh: Pertanyaan tentang spray control AK-47" value="{{ old('judul') }}" required>
-          @error('judul') <p style="color:var(--red);font-size:0.8rem;margin-top:-0.8rem;margin-bottom:0.8rem;">{{ $message }}</p> @enderror
-
-          <div style="margin-bottom:0.5rem;font-size:0.75rem;color:var(--text2);font-weight:600;text-transform:uppercase;">Isi Pertanyaan / Link Demo</div>
-          <textarea name="tugas_teks" class="f-inp" placeholder="Tuliskan pertanyaanmu secara detail, atau paste link video/demo di sini..." required>{{ old('tugas_teks') }}</textarea>
-          @error('tugas_teks') <p style="color:var(--red);font-size:0.8rem;margin-top:-0.8rem;margin-bottom:0.8rem;">{{ $message }}</p> @enderror
-
-          <button type="submit" class="submit-btn">🚀 Kirim ke Coach</button>
-        </form>
-      </div>
-
-    @elseif(auth()->user()->hasPendingCoaching())
-      {{-- Transaksi pending: menunggu konfirmasi admin --}}
-      <div style="background:rgba(255,140,66,0.08);border:1px solid rgba(255,140,66,0.3);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;display:flex;gap:14px;align-items:flex-start;">
-        <div style="font-size:1.8rem;flex-shrink:0;">⏳</div>
-        <div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.4rem;">Pembayaran Sedang Diverifikasi</div>
-          <p style="color:var(--text2);font-size:0.85rem;line-height:1.7;margin-bottom:0.9rem;">
-            Pembayaran coaching kamu sedang diverifikasi oleh admin. Fitur kirim tugas aktif setelah dikonfirmasi.
-          </p>
-          <a href="{{ route('payment.pending') }}" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,140,66,0.15);color:var(--orange);padding:7px 14px;border-radius:8px;font-size:0.82rem;font-weight:700;">📋 Lihat Status Pembayaran</a>
-        </div>
-      </div>
-
-    @else
-      {{-- Belum beli sama sekali --}}
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;display:flex;gap:14px;align-items:flex-start;">
-        <div style="font-size:1.8rem;flex-shrink:0;">🔒</div>
-        <div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.4rem;">Akses Coaching Diperlukan</div>
-          <p style="color:var(--text2);font-size:0.85rem;line-height:1.7;margin-bottom:0.9rem;">
-            Untuk kirim tugas ke coach, kamu perlu membeli salah satu paket coaching terlebih dahulu.
-          </p>
-          <a href="{{ route('coaching') }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--grad-primary);color:#fff;padding:9px 18px;border-radius:10px;font-size:0.85rem;font-weight:700;box-shadow:0 8px 20px -8px rgba(139,123,255,.6);">🎮 Lihat Paket Coaching</a>
-        </div>
-      </div>
-    @endif
-
-    {{-- Daftar sesi aktif --}}
+    {{-- Daftar sesi aktif dengan chat UI --}}
     @forelse($activeSessions as $item)
-      <div class="assign-card {{ $item->from_admin ? 'from-admin-card' : '' }}">
+      <div class="assign-card {{ $item->from_admin ? 'from-admin-card' : '' }}" id="session-{{ $item->id }}" data-session-id="{{ $item->id }}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
           <div>
             <div style="font-weight:700;font-size:0.95rem;">{{ $item->judul }}</div>
@@ -225,34 +171,39 @@ textarea.f-inp { resize:vertical; min-height:100px; }
               @endif
             </div>
           </div>
-          @if(!$item->from_admin)
-            <span class="status-badge status-{{ $item->status }}">
-              {{ $item->status === 'menunggu' ? '⏳ Menunggu' : '🔄 Diproses' }}
-            </span>
-          @else
-            <span class="status-badge status-diproses">🔄 Berlangsung</span>
-          @endif
+          <span class="status-badge status-{{ $item->status }}" id="status-badge-{{ $item->id }}">
+            {{ $item->status === 'menunggu' ? '⏳ Menunggu' : ($item->status === 'diproses' ? '🔄 Berlangsung' : '✅ Selesai') }}
+          </span>
         </div>
-        <p style="color:var(--text2);font-size:0.85rem;line-height:1.7;">{{ $item->tugas_teks }}</p>
 
-        @if(!$item->from_admin)
-          @if($item->balasan_admin)
-            <div class="balasan-box">
-              <div style="font-size:0.72rem;font-weight:700;color:var(--green);margin-bottom:0.4rem;">💬 BALASAN COACH/ADMIN:</div>
-              <p style="font-size:0.875rem;line-height:1.7;color:var(--text);">{{ $item->balasan_admin }}</p>
-            </div>
-          @else
-            <div style="margin-top:0.75rem;font-size:0.78rem;color:var(--text3);font-style:italic;">⏳ Belum ada balasan dari coach. Harap ditunggu ya...</div>
-          @endif
-        @endif
+        {{-- Chat messages container --}}
+        <div id="chat-msgs-{{ $item->id }}" style="max-height:300px;overflow-y:auto;margin-bottom:10px;background:var(--bg);border-radius:10px;padding:12px;">
+          <div style="text-align:center;color:var(--text3);font-size:12px;">Memuat percakapan...</div>
+        </div>
+
+        {{-- Input area --}}
+        <div id="chat-input-{{ $item->id }}" style="display:flex;gap:8px;">
+          <input type="text" id="input-{{ $item->id }}" placeholder="Tulis balasan..."
+            style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+            padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit;"
+            onkeydown="if(event.key==='Enter')sendUserReply({{ $item->id }})">
+          <button onclick="sendUserReply({{ $item->id }})"
+            style="background:var(--grad-primary);border:none;border-radius:8px;padding:10px 14px;
+            color:#fff;font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;">Kirim</button>
+        </div>
+
+        {{-- Closed notice --}}
+        <div id="chat-closed-{{ $item->id }}" style="display:none;text-align:center;padding:12px;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);border-radius:10px;margin-top:8px;">
+          <div style="color:var(--green);font-weight:700;font-size:13px;margin-bottom:6px;">✅ Sesi ini sudah selesai</div>
+          <a href="{{ route('coaching') }}" style="display:inline-block;background:var(--grad-primary);color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">+ Pilih Paket Coaching Baru</a>
+        </div>
       </div>
     @empty
       @if(auth()->user()->has_paid)
-        {{-- Sudah bayar tapi belum ada sesi aktif (bisa semuanya sudah selesai) --}}
         <div style="text-align:center;padding:2.5rem;color:var(--text3);background:var(--bg2);border:1px dashed var(--border);border-radius:14px;">
           <div style="font-size:2.5rem;margin-bottom:0.75rem;">💬</div>
           <p style="font-weight:600;margin-bottom:0.4rem;">Tidak ada sesi aktif saat ini</p>
-          <p style="font-size:0.82rem;">Gunakan form di atas untuk memulai percakapan baru dengan coach.</p>
+          <p style="font-size:0.82rem;">Pilih paket coaching untuk memulai sesi dengan coach.</p>
         </div>
       @else
         <div style="text-align:center;padding:2.5rem;color:var(--text3);">
@@ -332,31 +283,80 @@ textarea.f-inp { resize:vertical; min-height:100px; }
 
 @push('scripts')
 <script>
-  function switchTab(tab) {
-    // Update tombol tab (skip jika tab tidak ada di DOM)
-    document.querySelectorAll('.sess-tab').forEach(function(btn) {
-      btn.classList.remove('active');
-      btn.setAttribute('aria-selected', 'false');
-    });
-    var tabBtn = document.getElementById('tab-' + tab);
-    if (tabBtn) {
-      tabBtn.classList.add('active');
-      tabBtn.setAttribute('aria-selected', 'true');
-    }
-
-    // Update panel
-    document.querySelectorAll('.sess-panel').forEach(function(p) {
-      p.classList.remove('active');
-    });
-    document.getElementById('panel-' + tab).classList.add('active');
-  }
-
-  // Jika ada flash success, scrollkan ke atas agar terlihat
-  document.addEventListener('DOMContentLoaded', function() {
-    var successAlert = document.querySelector('.alert-success');
-    if (successAlert) {
-      successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+function switchSessTab(tab) {
+  document.querySelectorAll('.sess-tab').forEach(function(btn) {
+    btn.classList.remove('active');
+    btn.setAttribute('aria-selected', 'false');
   });
+  var tabBtn = document.getElementById('tab-' + tab);
+  if (tabBtn) {
+    tabBtn.classList.add('active');
+    tabBtn.setAttribute('aria-selected', 'true');
+  }
+  document.querySelectorAll('.sess-panel').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  var panel = document.getElementById('panel-' + tab);
+  if (panel) panel.classList.add('active');
+}
+
+// ── User Chat ──
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function loadUserMessages(sessionId) {
+  fetch('/assignments/' + sessionId + '/messages')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var container = document.getElementById('chat-msgs-' + sessionId);
+      if (!container) return;
+      var msgs = data.messages || [];
+      container.innerHTML = msgs.map(function(m) {
+        var align = m.is_admin ? 'flex-start' : 'flex-end';
+        var bg = m.is_admin ? 'var(--bg3)' : 'var(--purple-btn)';
+        var color = m.is_admin ? 'var(--text)' : '#fff';
+        return '<div style="display:flex;justify-content:' + align + ';margin-bottom:8px;">' +
+          '<div style="max-width:85%;">' +
+          '<div style="font-size:10px;color:var(--text3);margin-bottom:2px;">' + escHtml(m.sender) + ' · ' + m.time + '</div>' +
+          '<div style="background:' + bg + ';color:' + color + ';padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;">' + escHtml(m.message) + '</div>' +
+          '</div></div>';
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+
+      // Handle closed state
+      var inputArea = document.getElementById('chat-input-' + sessionId);
+      var closedNotice = document.getElementById('chat-closed-' + sessionId);
+      var badge = document.getElementById('status-badge-' + sessionId);
+      if (data.is_closed) {
+        if (inputArea) inputArea.style.display = 'none';
+        if (closedNotice) closedNotice.style.display = 'block';
+        if (badge) { badge.className = 'status-badge status-selesai'; badge.textContent = '✅ Selesai'; }
+      }
+    });
+}
+
+function sendUserReply(sessionId) {
+  var input = document.getElementById('input-' + sessionId);
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  var token = document.querySelector('meta[name="csrf-token"]');
+  fetch('/assignments/' + sessionId + '/reply', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' },
+    body: JSON.stringify({ message: msg })
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) loadUserMessages(sessionId);
+    });
+}
+
+// Init chat untuk semua sesi aktif
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-session-id]').forEach(function(el) {
+    var id = el.dataset.sessionId;
+    loadUserMessages(id);
+    setInterval(function() { loadUserMessages(id); }, 4000);
+  });
+});
 </script>
 @endpush

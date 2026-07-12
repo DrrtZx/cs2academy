@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy Admin — Selesaikan Sesi</title>
+<style>
+  :root {
+    --bg: #100f1e; --bg2: #181832; --bg3: #20213f; --bg4: #2a2c52;
+    --purple: #8b7bff; --purple2: #b3a4ff; --purple-btn: #7c5cf5;
+    --cyan: #3fd8ff; --pink: #ff7ec4; --text: #f2f2fb; --text2: #a8a9d6; --text3: #75769f;
+    --border: #2c2e54; --green: #2be6ba; --orange: #ffab5c; --blue: #5ec8ff; --red: #ff7272;
+    --grad-primary: linear-gradient(135deg, #7c5cf5, #8b7bff);
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; height:100vh; overflow:hidden; }
+
+  .chat-panel{ display:flex; flex-direction:column; height:100vh; max-width:760px; margin:0 auto; border-left:1px solid var(--border); border-right:1px solid var(--border); }
+  .chat-header{ padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--bg2); }
+  .chat-header-left{ display:flex; align-items:center; gap:12px; }
+  .avatar{ width:42px; height:42px; border-radius:50%; background:var(--grad-primary); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; }
+  .chat-header-name{ font-size:15px; font-weight:700; }
+  .chat-header-sub{ font-size:11.5px; color:var(--text3); margin-top:2px; }
+  .status-badge{ font-size:11px; font-weight:700; padding:5px 12px; border-radius:999px; background:rgba(94,200,255,0.15); color:var(--blue); }
+  .status-badge.done{ background:rgba(43,230,186,0.15); color:var(--green); }
+
+  .chat-header-actions{ display:flex; align-items:center; gap:10px; }
+  .btn-end-session{
+    background:rgba(255,114,114,0.12); border:1px solid rgba(255,114,114,0.35); color:var(--red);
+    font-size:12.5px; font-weight:700; padding:9px 15px; border-radius:10px; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+  }
+  .btn-end-session:hover{ background:rgba(255,114,114,0.2); }
+
+  .chat-body{ flex:1; overflow-y:auto; padding:22px 24px; display:flex; flex-direction:column; gap:14px; background:var(--bg); }
+  .bubble-row{ display:flex; flex-direction:column; max-width:60%; }
+  .bubble-row.from-coach{ align-self:flex-start; }
+  .bubble-row.from-user{ align-self:flex-end; align-items:flex-end; }
+  .bubble-label{ font-size:10.5px; font-weight:800; letter-spacing:0.03em; margin-bottom:5px; padding-left:2px; }
+  .bubble-row.from-coach .bubble-label{ color:var(--green); }
+  .bubble-row.from-user .bubble-label{ color:var(--purple2); }
+  .bubble{ padding:12px 14px; border-radius:12px; font-size:13.5px; line-height:1.5; }
+  .bubble-row.from-coach .bubble{ background:rgba(43,230,186,0.08); border:1px solid rgba(43,230,186,0.25); border-top-left-radius:4px; }
+  .bubble-row.from-user .bubble{ background:var(--bg3); border:1px solid var(--border); border-top-right-radius:4px; }
+  .bubble-time{ font-size:10px; color:var(--text3); margin-top:5px; padding:0 3px; }
+
+  .chat-input-bar{ padding:16px 24px; border-top:1px solid var(--border); background:var(--bg2); display:flex; gap:10px; }
+  .chat-input{ flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:12px 16px; color:var(--text); font-size:13.5px; font-family:inherit; }
+  .btn-send{ background:var(--grad-primary); border:none; color:#fff; font-weight:700; font-size:13.5px; padding:12px 20px; border-radius:12px; cursor:pointer; flex-shrink:0; }
+
+  .locked-notice{
+    padding:16px 24px; background:rgba(43,230,186,0.06); border-top:1px solid var(--border);
+    display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text2);
+  }
+  .locked-notice .icon{ color:var(--green); font-size:16px; }
+
+  /* ===== MODAL KONFIRMASI ===== */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(5,7,15,0.75); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:50; padding:24px; }
+  .modal-overlay.show{ display:flex; }
+  .modal{ background:var(--bg2); border:1px solid var(--border); border-radius:18px; width:100%; max-width:420px; padding:26px 28px; text-align:center; }
+  .modal-icon{ width:52px; height:52px; border-radius:14px; background:rgba(255,114,114,0.12); color:var(--red); display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 16px; }
+  .modal-title{ font-size:16.5px; font-weight:800; margin-bottom:8px; }
+  .modal-desc{ font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:22px; }
+  .modal-desc b{ color:var(--text); }
+  .modal-actions{ display:flex; gap:10px; }
+  .btn{ flex:1; border:none; border-radius:10px; padding:12px; font-size:13.5px; font-weight:700; cursor:pointer; }
+  .btn-cancel{ background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+  .btn-confirm{ background:var(--red); color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="avatar">DU</div>
+      <div>
+        <div class="chat-header-name">Demo User</div>
+        <div class="chat-header-sub">Paket: Panggil Pelatih</div>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <div class="status-badge" id="status-badge">● Berlangsung</div>
+      <button class="btn-end-session" id="end-btn" onclick="openModal()">✓ Selesaikan Sesi</button>
+    </div>
+  </div>
+
+  <div class="chat-body" id="chat-body">
+    <div class="bubble-row from-coach">
+      <div class="bubble-label">COACH / ADMIN</div>
+      <div class="bubble">Halo! Sesi Panggil Pelatih aktif. Silakan masukkan ID Discord Anda beserta 3 opsi jadwal luang untuk sesi voice call.</div>
+      <div class="bubble-time">10:00</div>
+    </div>
+    <div class="bubble-row from-user">
+      <div class="bubble-label">DEMO USER</div>
+      <div class="bubble">ID discord saya: demo#1234, bisa Sabtu/Minggu sore</div>
+      <div class="bubble-time">10:03</div>
+    </div>
+    <div class="bubble-row from-coach">
+      <div class="bubble-label">COACH / ADMIN</div>
+      <div class="bubble">Oke sudah dijadwalkan Sabtu jam 4 sore ya! Sesi voice call sudah selesai, terima kasih sudah ikut coaching 🎉</div>
+      <div class="bubble-time">10:45</div>
+    </div>
+  </div>
+
+  <div class="chat-input-bar" id="input-bar">
+    <input class="chat-input" placeholder="Tulis balasan ke Demo User...">
+    <button class="btn-send" onclick="alert('kirim pesan')">Kirim 🚀</button>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <div class="modal-icon">⚠</div>
+    <div class="modal-title">Selesaikan sesi ini?</div>
+    <div class="modal-desc">
+      Sesi coaching <b>Demo User</b> akan ditandai <b>Selesai</b> dan dipindah ke Arsip. 
+      Chat akan menjadi <b>hanya bisa dibaca</b> dan sesi ini akan hilang dari daftar Inbox Aktif. 
+      User akan bisa membeli paket coaching baru setelah ini.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Batal</button>
+      <button class="btn btn-confirm" onclick="endSession()">Ya, Selesaikan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openModal(){ document.getElementById("modal-confirm").classList.add("show"); }
+function closeModal(){ document.getElementById("modal-confirm").classList.remove("show"); }
+
+function endSession(){
+  closeModal();
+  document.getElementById("status-badge").textContent = "✓ Selesai";
+  document.getElementById("status-badge").classList.add("done");
+  document.getElementById("end-btn").remove();
+  document.getElementById("input-bar").outerHTML = `
+    <div class="locked-notice">
+      <span class="icon">🔒</span>
+      <span>Sesi ini sudah selesai — chat hanya bisa dibaca dan tidak bisa dibalas lagi. Sesi ini otomatis pindah ke Arsip.</span>
+    </div>`;
+}
+</script>
+</body>
+</html>

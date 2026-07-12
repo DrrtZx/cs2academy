@@ -263,6 +263,13 @@
             });
         @endif
     </script>
+
+    {{-- Admin floating chat widget --}}
+    @auth
+        @if(auth()->user()->isAdmin())
+            <x-admin-chat-widget />
+        @endif
+    @endauth
 </body>
 
 </html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy — Chat Sesi Coaching (User)</title>
+<style>
+  :root {
+    --bg: #100f1e; --bg2: #181832; --bg3: #20213f; --bg4: #2a2c52;
+    --purple: #8b7bff; --purple2: #b3a4ff; --purple-btn: #7c5cf5;
+    --cyan: #3fd8ff; --pink: #ff7ec4; --text: #f2f2fb; --text2: #a8a9d6; --text3: #75769f;
+    --border: #2c2e54; --green: #2be6ba; --orange: #ffab5c; --blue: #5ec8ff; --red: #ff7272;
+    --grad-primary: linear-gradient(135deg, #7c5cf5, #8b7bff);
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; padding:36px 24px; }
+  .wrap{ max-width:760px; margin:0 auto; }
+
+  .page-title{ font-size:22px; font-weight:800; margin:0 0 6px; display:flex; align-items:center; gap:8px; }
+  .page-sub{ font-size:13.5px; color:var(--text2); margin:0 0 22px; }
+
+  .tabs{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px; }
+  .tab{ padding:13px; border-radius:12px; text-align:center; font-size:13.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .tab.active{ background:var(--grad-primary); color:#fff; }
+  .tab:not(.active){ background:var(--bg2); border:1px solid var(--border); color:var(--text2); }
+  .tab .count{ background:rgba(255,255,255,0.2); padding:1px 8px; border-radius:999px; font-size:11px; }
+
+  .session-card{ background:var(--bg2); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+  .session-header{ padding:18px 22px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .session-title{ font-size:15.5px; font-weight:800; }
+  .session-sub{ font-size:12px; color:var(--text3); margin-top:4px; display:flex; align-items:center; gap:8px; }
+  .package-chip{ font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:999px; background:rgba(139,123,255,0.15); color:var(--purple2); }
+  .status-badge{ font-size:11px; font-weight:700; padding:5px 12px; border-radius:999px; background:rgba(94,200,255,0.15); color:var(--blue); }
+  .status-badge.done{ background:rgba(43,230,186,0.15); color:var(--green); }
+
+  .chat-body{ padding:22px; display:flex; flex-direction:column; gap:14px; max-height:420px; overflow-y:auto; }
+  .bubble-row{ display:flex; flex-direction:column; max-width:75%; }
+  .bubble-row.from-coach{ align-self:flex-start; }
+  .bubble-row.from-user{ align-self:flex-end; align-items:flex-end; }
+  .bubble-label{ font-size:10.5px; font-weight:800; letter-spacing:0.03em; margin-bottom:5px; padding-left:2px; }
+  .bubble-row.from-coach .bubble-label{ color:var(--green); }
+  .bubble-row.from-user .bubble-label{ color:var(--purple2); }
+  .bubble{ padding:12px 14px; border-radius:12px; font-size:13.5px; line-height:1.5; }
+  .bubble-row.from-coach .bubble{ background:rgba(43,230,186,0.08); border:1px solid rgba(43,230,186,0.25); border-top-left-radius:4px; }
+  .bubble-row.from-user .bubble{ background:var(--bg3); border:1px solid var(--border); border-top-right-radius:4px; }
+  .bubble-time{ font-size:10px; color:var(--text3); margin-top:5px; padding:0 3px; }
+
+  .chat-input-bar{ padding:16px 22px; border-top:1px solid var(--border); display:flex; gap:10px; }
+  .chat-input{ flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:12px 16px; color:var(--text); font-size:13.5px; font-family:inherit; }
+  .chat-input::placeholder{ color:var(--text3); }
+  .btn-send{ background:var(--grad-primary); border:none; color:#fff; font-weight:700; font-size:13.5px; padding:12px 20px; border-radius:12px; cursor:pointer; flex-shrink:0; }
+
+  /* ===== STATE: SESI SELESAI ===== */
+  .completed-banner{
+    margin:16px 22px 0; padding:14px 16px; border-radius:12px;
+    background:rgba(43,230,186,0.08); border:1px solid rgba(43,230,186,0.25);
+    display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text2);
+  }
+  .completed-banner .icon{ color:var(--green); font-size:16px; flex-shrink:0; }
+
+  .cta-new-session{
+    margin:16px 22px 22px; padding:18px; border-radius:14px;
+    background:var(--bg3); border:1px dashed var(--border);
+    text-align:center;
+  }
+  .cta-title{ font-size:13.5px; font-weight:700; margin-bottom:4px; }
+  .cta-desc{ font-size:12px; color:var(--text3); margin-bottom:14px; }
+  .btn-cta{ background:var(--grad-primary); border:none; color:#fff; font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:10px; cursor:pointer; }
+
+  .toggle-demo{ margin-top:20px; text-align:center; }
+  .toggle-demo button{ background:var(--bg3); border:1px solid var(--border); color:var(--text2); font-size:12px; padding:8px 14px; border-radius:8px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-title">📄 Tugas & Sesi Coaching Saya</div>
+  <div class="page-sub">Pantau sesi aktif, kirim pertanyaan, dan baca arsip feedback dari coach kamu.</div>
+
+  <div class="tabs">
+    <div class="tab active">💬 Sesi Aktif <span class="count">1</span></div>
+    <div class="tab">📦 Arsip Selesai <span class="count">0</span></div>
+  </div>
+
+  <div class="session-card">
+    <div class="session-header">
+      <div>
+        <div class="session-title">Sesi Panggil Pelatih</div>
+        <div class="session-sub">Sesi dimulai 4 menit lalu <span class="package-chip">🎙️ Panggil Pelatih</span></div>
+      </div>
+      <div class="status-badge" id="status-badge">● Berlangsung</div>
+    </div>
+
+    <div class="chat-body">
+      <div class="bubble-row from-coach">
+        <div class="bubble-label">COACH / ADMIN</div>
+        <div class="bubble">Halo! Sesi Panggil Pelatih aktif. Silakan masukkan ID Discord Anda beserta 3 opsi jadwal luang untuk sesi voice call.</div>
+        <div class="bubble-time">10:00</div>
+      </div>
+      <div class="bubble-row from-user">
+        <div class="bubble-label">KAMU</div>
+        <div class="bubble">ID discord saya: demo#1234, bisa Sabtu/Minggu sore</div>
+        <div class="bubble-time">10:03</div>
+      </div>
+      <div class="bubble-row from-coach">
+        <div class="bubble-label">COACH / ADMIN</div>
+        <div class="bubble">Oke sudah dijadwalkan Sabtu jam 4 sore ya! Sampai jumpa di voice call 🎉</div>
+        <div class="bubble-time">10:10</div>
+      </div>
+    </div>
+
+    <div id="dynamic-area">
+      <div class="chat-input-bar" id="input-bar">
+        <input class="chat-input" placeholder="Tulis pesan atau kirim link baru ke coach...">
+        <button class="btn-send" onclick="alert('kirim pesan')">Kirim 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toggle-demo">
+    <button onclick="simulateSessionEnd()">▶ Simulasikan: Admin baru saja menyelesaikan sesi ini</button>
+  </div>
+
+</div>
+
+<script>
+function simulateSessionEnd(){
+  document.getElementById("status-badge").textContent = "✓ Selesai";
+  document.getElementById("status-badge").classList.add("done");
+
+  document.getElementById("dynamic-area").innerHTML = `
+    <div class="completed-banner">
+      <span class="icon">🔒</span>
+      <span>Coach sudah menandai sesi ini <b>selesai</b>. Chat sekarang hanya bisa dibaca dan sudah dipindah ke tab "Arsip Selesai".</span>
+    </div>
+    <div class="cta-new-session">
+      <div class="cta-title">Mau lanjut naikin skill lagi? 🎯</div>
+      <div class="cta-desc">Pilih paket coaching baru buat sesi berikutnya.</div>
+      <button class="btn-cta" onclick="alert('redirect ke /coaching')">+ Pilih Paket Coaching Baru</button>
+    </div>
+  `;
+
+  event.target.disabled = true;
+  event.target.textContent = "✓ Simulasi selesai — coba scroll ke atas";
+}
+</script>
+</body>
+</html>
