@@ -6,6 +6,8 @@ use App\Models\Assignment;
 use App\Models\CoachingTransaction;
 use App\Models\Course;
 use App\Models\CourseProgress;
+use App\Models\Module;
+use App\Models\ModuleProgress;
 use App\Models\Quiz;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -218,80 +220,261 @@ class AdminController extends Controller
         return back()->with("success", "Tugas berhasil dihapus!");
     }
 
-    public function quiz()
+    // ──────────────────────────────────────
+    // KELOLA COURSE & MODUL
+    // ──────────────────────────────────────
+
+    /** Level 1: daftar semua course */
+    public function courses()
     {
-        $courses = Course::with("quizzes")->orderBy("urutan")->get();
-        return view("admin.quiz", compact("courses"));
+        $courses = Course::withCount(['modules', 'quizzes'])->orderBy('urutan')->get();
+        return view('admin.courses.index', compact('courses'));
     }
 
-    public function storeQuiz(Request $request, Course $course)
+    /** Form tambah course */
+    public function create()
     {
-        $validated = $request->validate(
-            [
-                "pertanyaan"    => "required|string",
-                "opsi"          => "required|array|min:4",
-                "opsi.*"        => "required|string",
-                "jawaban_benar" => "required|integer|min:0|max:3",
-                "penjelasan"    => "nullable|string",
-                "youtube_url"   => [
-                    "nullable",
-                    "url",
-                    'regex:/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/',
-                ],
-            ],
-            [
-                "youtube_url.url"   => "Format link tidak valid. Harus berupa URL lengkap (contoh: https://youtube.com/watch?v=xxxx).",
-                "youtube_url.regex" => "Link harus berasal dari YouTube (youtube.com atau youtu.be).",
-            ],
-        );
+        $allCourses = Course::orderBy('urutan')->get();
+        return view('admin.courses.form', [
+            'mode'        => 'create',
+            'course'      => null,
+            'allCourses'  => $allCourses,
+        ]);
+    }
 
-        Quiz::create([
-            "course_id"     => $course->id,
-            "pertanyaan"    => $validated["pertanyaan"],
-            "opsi"          => $validated["opsi"],
-            "jawaban_benar" => $validated["jawaban_benar"],
-            "penjelasan"    => $validated["penjelasan"] ?? null,
-            "youtube_url"   => $validated["youtube_url"] ?? null,
+    /** Form edit course */
+    public function edit(Course $course)
+    {
+        $allCourses = Course::where('id', '!=', $course->id)->orderBy('urutan')->get();
+        return view('admin.courses.form', [
+            'mode'        => 'edit',
+            'course'      => $course,
+            'allCourses'  => $allCourses,
+        ]);
+    }
+
+    /** Simpan course baru */
+    public function storeCourse(Request $request)
+    {
+        $validated = $request->validate([
+            'icon'       => 'required|string|max:10',
+            'title'      => 'required|string|max:255',
+            'body'       => 'required|string',
+            'level'      => 'required|string|max:50',
+            'durasi'     => 'required|string|max:50',
+            'type'       => 'required|string|max:100',
+            'urutan'     => 'required|integer|min:0',
+            'is_popular' => 'boolean',
         ]);
 
-        return back()->with("success", "Soal baru berhasil ditambahkan!");
+        $validated['is_popular'] = $request->boolean('is_popular');
+
+        Course::create($validated);
+        return redirect()->route('admin.courses')->with('success', 'Kursus baru berhasil ditambahkan!');
     }
 
-    public function updateQuiz(Request $request, Quiz $quiz)
+    /** Update course */
+    public function updateCourse(Request $request, Course $course)
     {
-        $validated = $request->validate(
-            [
-                "pertanyaan"    => "required|string",
-                "opsi"          => "required|array|min:4",
-                "opsi.*"        => "required|string",
-                "jawaban_benar" => "required|integer|min:0|max:3",
-                "penjelasan"    => "nullable|string",
-                "youtube_url"   => [
-                    "nullable",
-                    "url",
-                    'regex:/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/',
-                ],
-            ],
-            [
-                "youtube_url.url"   => "Format link tidak valid. Harus berupa URL lengkap (contoh: https://youtube.com/watch?v=xxxx).",
-                "youtube_url.regex" => "Link harus berasal dari YouTube (youtube.com atau youtu.be).",
-            ],
-        );
-
-        $quiz->update([
-            "pertanyaan"    => $validated["pertanyaan"],
-            "opsi"          => $validated["opsi"],
-            "jawaban_benar" => $validated["jawaban_benar"],
-            "penjelasan"    => $validated["penjelasan"] ?? null,
-            "youtube_url"   => $validated["youtube_url"] ?? null,
+        $validated = $request->validate([
+            'icon'       => 'required|string|max:10',
+            'title'      => 'required|string|max:255',
+            'body'       => 'required|string',
+            'level'      => 'required|string|max:50',
+            'durasi'     => 'required|string|max:50',
+            'type'       => 'required|string|max:100',
+            'urutan'     => 'required|integer|min:0',
+            'is_popular' => 'boolean',
         ]);
 
-        return back()->with("success", "Soal berhasil diupdate!");
+        $validated['is_popular'] = $request->boolean('is_popular');
+        $course->update($validated);
+        return redirect()->route('admin.courses')->with('success', 'Kursus berhasil diupdate!');
     }
 
-    public function deleteQuiz(Quiz $quiz)
+    /** Hapus course — cek progress dulu */
+    public function deleteCourse(Course $course)
     {
-        $quiz->delete();
-        return back()->with("success", "Soal berhasil dihapus!");
+        $hasProgress = ModuleProgress::whereIn(
+            'module_id', $course->modules()->pluck('id')
+        )->exists();
+
+        if ($hasProgress) {
+            return redirect()->route('admin.courses')->with('error', 'Gak bisa hapus kursus ini — udah ada user yang punya progress di dalamnya.');
+        }
+
+        $course->delete();
+        return redirect()->route('admin.courses')->with('success', 'Kursus berhasil dihapus!');
     }
+
+    /** Level 2: daftar modul dalam 1 course */
+    public function modules(Course $course)
+    {
+        $modules = $course->modules()->with('quizzes')->withCount('quizzes')->orderBy('urutan')->get();
+        return view('admin.courses.index', compact('course', 'modules'));
+    }
+
+    /** Form tambah modul baru */
+    public function createModule(Course $course)
+    {
+        return view('admin.modules.form', [
+            'mode'   => 'create',
+            'course' => $course,
+            'module' => null,
+        ]);
+    }
+
+    /** Form edit modul existing */
+    public function editModule(Module $module)
+    {
+        $module->load('quizzes');
+        return view('admin.modules.form', [
+            'mode'   => 'edit',
+            'course' => $module->course,
+            'module' => $module,
+        ]);
+    }
+
+    /** Simpan modul + quiz sekaligus */
+    public function storeModule(Request $request, Course $course)
+    {
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'body'        => 'nullable|string',
+            'youtube_url' => ['nullable', 'url', 'regex:/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/'],
+            'quizzes'     => 'nullable|array',
+            'quizzes.*.pertanyaan'    => 'required|string',
+            'quizzes.*.opsi'          => 'required|array|min:4',
+            'quizzes.*.opsi.*'        => 'required|string',
+            'quizzes.*.jawaban_benar' => 'required|integer|min:0|max:3',
+            'quizzes.*.penjelasan'    => 'nullable|string',
+        ], [
+            'youtube_url.url'   => 'Format link gak valid — URL harus lengkap (contoh: https://youtube.com/watch?v=xxxx).',
+            'youtube_url.regex' => 'Link harus dari YouTube (youtube.com atau youtu.be).',
+        ]);
+
+        $maxUrutan = $course->modules()->max('urutan') ?? -1;
+        $module = $course->modules()->create([
+            'title'       => $validated['title'],
+            'body'        => $validated['body'] ?? null,
+            'youtube_url' => $validated['youtube_url'] ?? null,
+            'urutan'      => $maxUrutan + 1,
+        ]);
+
+        if (!empty($validated['quizzes'])) {
+            foreach ($validated['quizzes'] as $q) {
+                $module->quizzes()->create([
+                    'course_id'     => $course->id,
+                    'pertanyaan'    => $q['pertanyaan'],
+                    'opsi'          => $q['opsi'],
+                    'jawaban_benar' => $q['jawaban_benar'],
+                    'penjelasan'    => $q['penjelasan'] ?? null,
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.courses.modules', $course)
+            ->with('success', 'Modul baru berhasil ditambahkan!');
+    }
+
+    /** Update modul + sync quiz */
+    public function updateModule(Request $request, Module $module)
+    {
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'body'        => 'nullable|string',
+            'youtube_url' => ['nullable', 'url', 'regex:/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/'],
+            'quizzes'     => 'nullable|array',
+            'quizzes.*.pertanyaan'    => 'required|string',
+            'quizzes.*.opsi'          => 'required|array|min:4',
+            'quizzes.*.opsi.*'        => 'required|string',
+            'quizzes.*.jawaban_benar' => 'required|integer|min:0|max:3',
+            'quizzes.*.penjelasan'    => 'nullable|string',
+        ], [
+            'youtube_url.url'   => 'Format link gak valid — URL harus lengkap (contoh: https://youtube.com/watch?v=xxxx).',
+            'youtube_url.regex' => 'Link harus dari YouTube (youtube.com atau youtu.be).',
+        ]);
+
+        $module->update([
+            'title'       => $validated['title'],
+            'body'        => $validated['body'] ?? null,
+            'youtube_url' => $validated['youtube_url'] ?? null,
+        ]);
+
+        // Sync quiz: hapus yang gak ada di request, update/create yang ada
+        $existingIds = $module->quizzes()->pluck('id')->all();
+        $submittedIds = [];
+
+        if (!empty($validated['quizzes'])) {
+            foreach ($validated['quizzes'] as $q) {
+                if (!empty($q['id'])) {
+                    $quiz = Quiz::find($q['id']);
+                    if ($quiz && $quiz->module_id === $module->id) {
+                        $quiz->update([
+                            'pertanyaan'    => $q['pertanyaan'],
+                            'opsi'          => $q['opsi'],
+                            'jawaban_benar' => $q['jawaban_benar'],
+                            'penjelasan'    => $q['penjelasan'] ?? null,
+                        ]);
+                        $submittedIds[] = $quiz->id;
+                    }
+                } else {
+                    $newQuiz = $module->quizzes()->create([
+                        'course_id'     => $module->course_id,
+                        'pertanyaan'    => $q['pertanyaan'],
+                        'opsi'          => $q['opsi'],
+                        'jawaban_benar' => $q['jawaban_benar'],
+                        'penjelasan'    => $q['penjelasan'] ?? null,
+                    ]);
+                    $submittedIds[] = $newQuiz->id;
+                }
+            }
+        }
+
+        $toDelete = array_diff($existingIds, $submittedIds);
+        if (!empty($toDelete)) {
+            Quiz::whereIn('id', $toDelete)->delete();
+        }
+
+        return redirect()->route('admin.courses.modules', $module->course)
+            ->with('success', 'Modul berhasil diupdate!');
+    }
+
+    /** Hapus modul — cek progress dulu */
+    public function deleteModule(Module $module)
+    {
+        if ($module->progress()->whereNotNull('completed_at')->exists()) {
+            return redirect()->route('admin.courses.modules', $module->course)
+                ->with('error', 'Gak bisa hapus modul ini — udah ada user yang nyelesain.');
+        }
+
+        $course = $module->course;
+        $module->delete();
+        return redirect()->route('admin.courses.modules', $course)
+            ->with('success', 'Modul berhasil dihapus!');
+    }
+
+    /** Reorder modul naik/turun */
+    public function reorderModule(Request $request, Module $module)
+    {
+        $direction = $request->input('direction', 'up');
+        $all = $module->course->modules()->orderBy('urutan')->get();
+        $idx = $all->search(fn($m) => $m->id === $module->id);
+
+        if ($direction === 'up' && $idx > 0) {
+            $swap = $all[$idx - 1];
+            $tmp = $module->urutan;
+            $module->update(['urutan' => $swap->urutan]);
+            $swap->update(['urutan' => $tmp]);
+        } elseif ($direction === 'down' && $idx < $all->count() - 1) {
+            $swap = $all[$idx + 1];
+            $tmp = $module->urutan;
+            $module->update(['urutan' => $swap->urutan]);
+            $swap->update(['urutan' => $tmp]);
+        }
+
+        return redirect()->route('admin.courses.modules', $module->course)
+            ->with('success', 'Urutan modul diupdate!');
+    }
+
 }

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy — Konsep Modul LMS</title>
+<style>
+  :root{
+    --bg: #0a0e1a;
+    --panel: #12172a;
+    --panel-2: #171d33;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(139,92,246,0.4);
+    --text: #e8eaf3;
+    --text-dim: #8891ad;
+    --text-dimmer: #5c6584;
+    --purple: #8b5cf6;
+    --blue: #38bdf8;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --grad: linear-gradient(135deg, #8b5cf6 0%, #38bdf8 100%);
+  }
+  * { box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.15), transparent);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; }
+
+  .breadcrumb{
+    font-size: 13px;
+    color: var(--text-dimmer);
+    margin-bottom: 18px;
+  }
+  .breadcrumb b{ color: var(--text-dim); font-weight: 500; }
+
+  .layout{
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .sidebar-title{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .module-item{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    position: relative;
+  }
+  .module-item:hover{ background: rgba(255,255,255,0.03); }
+  .module-item.active{
+    background: linear-gradient(135deg, rgba(139,92,246,0.16), rgba(56,189,248,0.10));
+    border-color: var(--border-strong);
+  }
+  .module-num{
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .module-item.active .module-num{
+    background: var(--grad);
+    color: #fff;
+  }
+  .module-item.done .module-num{
+    background: rgba(52,211,153,0.15);
+    color: var(--green);
+  }
+  .module-item.locked .module-num{
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dimmer);
+  }
+  .module-body{ flex: 1; min-width: 0; }
+  .module-name{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .module-item.locked .module-name{ color: var(--text-dimmer); }
+  .module-sub{
+    font-size: 11.5px;
+    color: var(--text-dimmer);
+    margin-top: 2px;
+  }
+  .module-check{
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    color: var(--green);
+  }
+  .module-lock{
+    width: 15px; height: 15px;
+    flex-shrink: 0;
+    color: var(--text-dimmer);
+  }
+
+  .progress-block{
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .progress-label{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .progress-bar{
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-fill{
+    height: 100%;
+    width: 25%;
+    background: var(--grad);
+    border-radius: 999px;
+  }
+  .progress-text{ font-size: 12.5px; color: var(--text-dim); }
+
+  /* ===== MAIN PANEL ===== */
+  .main{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    min-height: 520px;
+  }
+  .main-header{ display:flex; align-items:flex-start; gap:14px; margin-bottom: 18px; }
+  .main-icon{
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(56,189,248,0.18));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .main-eyebrow{
+    font-size: 11.5px;
+    color: var(--purple);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .main-title{ font-size: 22px; font-weight: 700; color: var(--text); margin: 0; }
+  .main-desc{
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--text-dim);
+    margin: 16px 0 28px;
+  }
+
+  /* Outline */
+  .outline-box{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .outline-title{
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .outline-list{ list-style: none; margin: 0; padding: 0; }
+  .outline-list li{
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 0;
+    font-size: 14px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .outline-list li:last-child{ border-bottom: none; }
+  .outline-dot{
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  /* Quiz / Pilihan */
+  .quiz-box{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .quiz-top{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .quiz-badge{
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(251,191,36,0.15);
+    color: var(--amber);
+  }
+  .quiz-title{ font-size: 12.5px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+  .quiz-dots{ display:flex; gap:6px; margin: 14px 0 16px; }
+  .quiz-dots span{ width:20px; height:4px; border-radius:999px; background: rgba(255,255,255,0.08); }
+  .quiz-dots span.on{ background: var(--grad); }
+  .quiz-question{ font-size: 15.5px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+  .quiz-options{ display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option{
+    padding: 13px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .quiz-option:hover{ border-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.06); }
+
+  .empty-state{
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dimmer);
+  }
+  .empty-emoji{ font-size: 36px; margin-bottom: 14px; }
+  .empty-title{ font-size: 16px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; }
+  .empty-sub{ font-size: 13.5px; }
+
+  .note{
+    max-width: 1100px; margin: 20px auto 0; font-size: 12.5px; color: var(--text-dimmer);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="breadcrumb">CS2 Academy › <b id="crumb-course">Aim & Movement</b> <span id="crumb-module"></span></div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR: daftar modul -->
+    <div class="sidebar">
+      <div class="sidebar-title">Aim & Movement — Modul</div>
+      <div id="module-list"></div>
+
+      <div class="progress-block">
+        <div class="progress-label">Progress Kamu</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-text" id="progress-text">1 dari 4 modul selesai</div>
+      </div>
+    </div>
+
+    <!-- MAIN: outline + quiz -->
+    <div class="main" id="main-panel"></div>
+
+  </div>
+
+  <div class="note">Prototype konsep — klik modul di sidebar kiri untuk lihat outline &amp; pilihan quiz-nya.</div>
+</div>
+
+<script>
+const modules = [
+  {
+    id: 1,
+    name: "Crosshair Placement",
+    sub: "3 poin materi",
+    status: "done", // done | active | locked
+    outline: [
+      "Kenapa posisi crosshair menentukan reaction time kamu",
+      "Cara jaga crosshair setinggi kepala musuh di setiap sudut",
+      "Latihan pre-aim di angle-angle umum map Mirage & Inferno"
+    ],
+    question: "Apa yang dimaksud crosshair placement yang baik?",
+    options: ["Arahkan ke tanah selalu", "Jaga setinggi kepala musuh", "Gerakkan secepat mungkin", "Selalu spray penuh"]
+  },
+  {
+    id: 2,
+    name: "Counter-Strafing",
+    sub: "2 poin materi",
+    status: "active",
+    outline: [
+      "Kenapa tembak sambil jalan bikin akurasi kamu hancur",
+      "Teknik tap arah berlawanan buat berhenti instan sebelum tembak"
+    ],
+    question: "Fungsi utama counter-strafing adalah?",
+    options: ["Bikin karakter lari lebih cepat", "Menghentikan pergerakan secara instan sebelum tembak", "Mengisi ulang amunisi otomatis", "Menyamarkan posisi di map"]
+  },
+  {
+    id: 3,
+    name: "Spray Control",
+    sub: "3 poin materi",
+    status: "locked",
+    outline: [
+      "Pola recoil dasar AK-47 dan cara membacanya",
+      "Kompensasi mouse untuk spray pattern M4A4",
+      "Kapan harus spray vs kapan harus tap/burst"
+    ],
+    question: "Spray control paling efektif dipakai pada jarak?",
+    options: ["Sangat jauh (long range)", "Dekat-menengah (close-mid range)", "Hanya saat reload", "Tidak berpengaruh pada jarak"]
+  },
+  {
+    id: 4,
+    name: "Kuis Akhir Modul",
+    sub: "Rangkuman semua materi",
+    status: "locked",
+    outline: [
+      "Kuis ini menggabungkan seluruh materi Crosshair, Counter-Strafing, dan Spray Control",
+      "Selesaikan untuk membuka kursus berikutnya: Map Control"
+    ],
+    question: "Kombinasi teknik mana yang paling menentukan duel jarak dekat?",
+    options: ["Crosshair placement + counter-strafing", "Spray penuh tanpa henti", "Selalu jongkok", "Menghindari duel sama sekali"]
+  }
+];
+
+let activeId = modules.find(m => m.status === "active")?.id ?? modules[0].id;
+
+function iconFor(status){
+  if(status === "done") return `<svg class="module-check" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0l-3.5-3.5a1 1 0 111.4-1.4l2.8 2.8 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>`;
+  if(status === "locked") return `<svg class="module-lock" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4 4 0 00-4 4v2H5a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V8a1 1 0 00-1-1h-1V5a4 4 0 00-4-4zm2 6V5a2 2 0 10-4 0v2h4z" clip-rule="evenodd"/></svg>`;
+  return "";
+}
+
+function renderSidebar(){
+  const list = document.getElementById("module-list");
+  list.innerHTML = modules.map(m => `
+    <div class="module-item ${m.status} ${m.id === activeId ? 'active' : ''}" onclick="selectModule(${m.id})">
+      <div class="module-num">${m.status === 'done' ? '' : m.id}${m.status === 'done' ? iconFor('done') : ''}</div>
+      <div class="module-body">
+        <div class="module-name">${m.name}</div>
+        <div class="module-sub">${m.sub}</div>
+      </div>
+      ${m.status === 'locked' ? iconFor('locked') : ''}
+    </div>
+  `).join("");
+
+  const doneCount = modules.filter(m => m.status === 'done').length;
+  document.getElementById("progress-fill").style.width = (doneCount / modules.length * 100) + "%";
+  document.getElementById("progress-text").textContent = `${doneCount} dari ${modules.length} modul selesai`;
+}
+
+function renderMain(){
+  const m = modules.find(x => x.id === activeId);
+  const panel = document.getElementById("main-panel");
+  document.getElementById("crumb-module").textContent = "› " + m.name;
+
+  if(m.status === 'locked'){
+    panel.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-emoji">🔒</div>
+        <div class="empty-title">Modul ini masih terkunci</div>
+        <div class="empty-sub">Selesaikan modul sebelumnya dulu untuk membuka "${m.name}".</div>
+      </div>`;
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="main-header">
+      <div class="main-icon">🎯</div>
+      <div>
+        <div class="main-eyebrow">Modul ${m.id} dari ${modules.length}</div>
+        <h2 class="main-title">${m.name}</h2>
+      </div>
+    </div>
+
+    <div class="outline-box">
+      <div class="outline-title">📋 Apa yang akan kamu pelajari</div>
+      <ul class="outline-list">
+        ${m.outline.map(o => `<li><span class="outline-dot"></span>${o}</li>`).join("")}
+      </ul>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-top">
+        <span class="quiz-badge">Quiz</span>
+        <span class="quiz-title">Pilihan — Uji Pemahaman</span>
+      </div>
+      <div class="quiz-dots">
+        ${m.options.map((_, i) => `<span class="${i === 0 ? 'on' : ''}"></span>`).join("")}
+      </div>
+      <div class="quiz-question">${m.question}</div>
+      <div class="quiz-options">
+        ${m.options.map((opt, i) => `<div class="quiz-option">${String.fromCharCode(65+i)}. ${opt}</div>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function selectModule(id){
+  const m = modules.find(x => x.id === id);
+  if(m.status === 'locked'){
+    activeId = id;
+    renderSidebar();
+    renderMain();
+    return;
+  }
+  activeId = id;
+  renderSidebar();
+  renderMain();
+}
+
+renderSidebar();
+renderMain();
+</script>
+</body>
+</html>

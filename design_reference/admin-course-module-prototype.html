@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy Admin — Kelola Kursus</title>
+<style>
+  :root{
+    --bg: #0a0e1a; --panel: #12172a; --panel-2: #171d33;
+    --border: rgba(255,255,255,0.08); --border-strong: rgba(139,92,246,0.4);
+    --text: #e8eaf3; --text-dim: #8891ad; --text-dimmer: #5c6584;
+    --purple: #8b5cf6; --blue: #38bdf8; --green: #34d399; --red: #f87171; --amber: #fbbf24;
+    --grad: linear-gradient(135deg, #8b5cf6 0%, #38bdf8 100%);
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.15), transparent); color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif; min-height:100vh; padding:32px 24px; }
+  .wrap{ max-width:1000px; margin:0 auto; }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .crumb{ font-size:13px; color:var(--text-dimmer); }
+  .crumb b{ color:var(--text-dim); font-weight:500; }
+  .crumb a{ color:var(--blue); text-decoration:none; cursor:pointer; }
+  .page-title{ font-size:22px; font-weight:800; margin:6px 0 4px; }
+  .page-sub{ font-size:13.5px; color:var(--text-dim); margin:0; }
+
+  .btn{ border:none; border-radius:10px; padding:11px 18px; font-size:13.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+  .btn-primary{ background:var(--grad); color:#fff; }
+  .btn-ghost{ background:rgba(255,255,255,0.05); color:var(--text); border:1px solid var(--border); }
+  .btn-sm{ padding:7px 12px; font-size:12.5px; border-radius:8px; }
+  .btn-icon{ background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-dim); width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+  .btn-icon:hover{ color:var(--text); border-color:var(--border-strong); }
+  .btn-icon.danger:hover{ color:var(--red); border-color:rgba(248,113,113,0.4); }
+
+  .card-list{ display:flex; flex-direction:column; gap:10px; }
+  .row-card{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; }
+  .row-icon{ width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, rgba(139,92,246,0.22), rgba(56,189,248,0.16)); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .row-body{ flex:1; min-width:0; }
+  .row-title{ font-size:14.5px; font-weight:700; }
+  .row-sub{ font-size:12px; color:var(--text-dimmer); margin-top:2px; }
+  .row-actions{ display:flex; gap:6px; flex-shrink:0; }
+  .badge{ font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:rgba(139,92,246,0.16); color:#c4b5fd; margin-left:8px; }
+
+  .reorder{ display:flex; flex-direction:column; gap:2px; }
+  .reorder button{ background:none; border:none; color:var(--text-dimmer); cursor:pointer; font-size:11px; padding:2px; }
+  .reorder button:hover{ color:var(--text); }
+
+  /* Modal */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(5,7,15,0.7); backdrop-filter: blur(3px); display:none; align-items:center; justify-content:center; z-index:50; padding:24px; }
+  .modal-overlay.show{ display:flex; }
+  .modal{ background:var(--panel); border:1px solid var(--border); border-radius:18px; width:100%; max-width:640px; max-height:88vh; overflow-y:auto; padding:26px 28px; }
+  .modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .modal-title{ font-size:17px; font-weight:800; margin:0; }
+  .modal-close{ background:none; border:none; color:var(--text-dimmer); font-size:18px; cursor:pointer; }
+
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+  .field input[type=text], .field input[type=url], .field textarea, .field select{
+    width:100%; background:var(--panel-2); border:1px solid var(--border); border-radius:10px;
+    padding:11px 13px; color:var(--text); font-size:14px; font-family:inherit;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--border-strong); }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .field-hint{ font-size:11.5px; color:var(--text-dimmer); margin-top:6px; }
+  .field-youtube{ position:relative; }
+  .field-youtube input{ padding-left:38px; }
+  .field-youtube .yt-icon{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#ff4d4d; font-size:15px; }
+
+  .yt-preview{ margin-top:10px; border-radius:10px; overflow:hidden; aspect-ratio:16/9; background:#000; border:1px solid var(--border); display:none; }
+  .yt-preview.show{ display:block; }
+  .yt-preview iframe{ width:100%; height:100%; border:0; }
+
+  .dynamic-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+  .dynamic-row{ display:flex; gap:8px; align-items:center; }
+  .dynamic-row input{ flex:1; }
+  .add-row-btn{ background:none; border:1px dashed var(--border); color:var(--text-dim); border-radius:10px; padding:10px; font-size:13px; cursor:pointer; width:100%; text-align:center; }
+  .add-row-btn:hover{ border-color:var(--border-strong); color:var(--text); }
+
+  .quiz-card{ background:var(--panel-2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; }
+  .quiz-card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .quiz-card-head span{ font-size:12.5px; font-weight:700; color:var(--purple); }
+  .quiz-opt-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .quiz-opt-row input[type=radio]{ accent-color: var(--green); flex-shrink:0; }
+  .quiz-opt-row input[type=text]{ flex:1; }
+  .quiz-opt-hint{ font-size:11px; color:var(--text-dimmer); margin-top:4px; }
+
+  .modal-footer{ display:flex; justify-content:flex-end; gap:10px; margin-top:22px; padding-top:18px; border-top:1px solid var(--border); }
+
+  .view{ display:none; }
+  .view.show{ display:block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= VIEW 1: LIST COURSE ================= -->
+  <div class="view show" id="view-courses">
+    <div class="topbar">
+      <div>
+        <div class="crumb">Admin › <b>Kelola Kursus</b></div>
+        <div class="page-title">Kelola Kursus</div>
+        <div class="page-sub">Atur kursus, modul, dan quiz yang tampil di halaman Courses.</div>
+      </div>
+      <button class="btn btn-primary" onclick="openCourseModal()">+ Tambah Kursus</button>
+    </div>
+
+    <div class="card-list" id="course-list"></div>
+  </div>
+
+  <!-- ================= VIEW 2: LIST MODULE (dalam 1 course) ================= -->
+  <div class="view" id="view-modules">
+    <div class="topbar">
+      <div>
+        <div class="crumb"><a onclick="goToCourses()">Kelola Kursus</a> › <b id="module-course-name">Aim & Movement</b></div>
+        <div class="page-title">Modul dalam Kursus Ini</div>
+        <div class="page-sub">Urutan modul menentukan urutan unlock berjenjang untuk user.</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModuleModal()">+ Tambah Modul</button>
+    </div>
+
+    <div class="card-list" id="module-list-admin"></div>
+  </div>
+
+</div>
+
+<!-- ===== MODAL: Tambah/Edit Course ===== -->
+<div class="modal-overlay" id="modal-course">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 class="modal-title">Tambah Kursus Baru</h3>
+      <button class="modal-close" onclick="closeModal('modal-course')">✕</button>
+    </div>
+    <div class="field">
+      <label>Nama Kursus</label>
+      <input type="text" id="c-title" placeholder="Contoh: Aim & Movement">
+    </div>
+    <div class="field">
+      <label>Deskripsi Singkat</label>
+      <textarea id="c-desc" placeholder="Fondasi utama CS2 — crosshair placement, counter-strafing, dan spray control."></textarea>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+      <div class="field">
+        <label>Level</label>
+        <select id="c-level"><option>Pemula</option><option>Menengah</option><option>Lanjutan</option></select>
+      </div>
+      <div class="field">
+        <label>Icon (emoji)</label>
+        <input type="text" id="c-icon" placeholder="🎯" maxlength="2">
+      </div>
+    </div>
+    <div class="field">
+      <label>Kursus Prasyarat (opsional)</label>
+      <select><option>— Tidak ada, bisa langsung diakses —</option><option>Aim & Movement</option><option>Map Control</option></select>
+      <div class="field-hint">Kursus ini akan terkunci sampai kursus prasyarat diselesaikan.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-course')">Batal</button>
+      <button class="btn btn-primary" onclick="saveCourse()">Simpan Kursus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Tambah/Edit Module ===== -->
+<div class="modal-overlay" id="modal-module">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 class="modal-title">Tambah Modul Baru</h3>
+      <button class="modal-close" onclick="closeModal('modal-module')">✕</button>
+    </div>
+
+    <div class="field">
+      <label>Nama Modul</label>
+      <input type="text" id="m-title" placeholder="Contoh: Counter-Strafing">
+    </div>
+
+    <div class="field field-youtube">
+      <label>Link Video YouTube (opsional)</label>
+      <div style="position:relative;">
+        <span class="yt-icon">▶</span>
+        <input type="url" id="yt-input" placeholder="https://www.youtube.com/watch?v=..." oninput="previewYoutube(this.value)">
+      </div>
+      <div class="field-hint">Kosongkan kalau modul ini tidak ada video, cukup materi teks.</div>
+      <div class="yt-preview" id="yt-preview"><iframe id="yt-frame" src="" title="preview"></iframe></div>
+    </div>
+
+    <div class="field">
+      <label>Poin Materi / Outline</label>
+      <div class="dynamic-list" id="outline-list">
+        <div class="dynamic-row">
+          <input type="text" value="Kenapa tembak sambil jalan bikin akurasi kamu hancur">
+          <button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>
+        </div>
+        <div class="dynamic-row">
+          <input type="text" value="Teknik tap arah berlawanan buat berhenti instan sebelum tembak">
+          <button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>
+        </div>
+      </div>
+      <button class="add-row-btn" onclick="addOutlineRow()">+ Tambah Poin Materi</button>
+    </div>
+
+    <div class="field">
+      <label>Soal Quiz</label>
+      <div id="quiz-list"></div>
+      <button class="add-row-btn" onclick="addQuizCard()">+ Tambah Soal Quiz</button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-module')">Batal</button>
+      <button class="btn btn-primary" onclick="saveModule()">Simpan Modul</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const courses = [
+  { icon:"🎯", title:"Aim & Movement", level:"Pemula", modul:4, status:"Aktif" },
+  { icon:"🗺️", title:"Map Control", level:"Menengah", modul:5, status:"Aktif" },
+  { icon:"💰", title:"Economy System", level:"Menengah", modul:3, status:"Aktif" },
+  { icon:"🧪", title:"Utility Usage", level:"Menengah", modul:5, status:"Aktif" },
+  { icon:"🧠", title:"Game Sense", level:"Lanjutan", modul:4, status:"Aktif" },
+];
+
+const modules = [
+  { num:1, name:"Crosshair Placement", soal:1, video:true },
+  { num:2, name:"Counter-Strafing", soal:3, video:true },
+  { num:3, name:"Spray Control", soal:3, video:false },
+  { num:4, name:"Kuis Akhir: Aim & Movement", soal:5, video:false },
+];
+
+function renderCourses(){
+  document.getElementById("course-list").innerHTML = courses.map((c,i) => `
+    <div class="row-card">
+      <div class="row-icon">${c.icon}</div>
+      <div class="row-body">
+        <div class="row-title">${c.title}<span class="badge">${c.level}</span></div>
+        <div class="row-sub">${c.modul} modul · Status: ${c.status}</div>
+      </div>
+      <div class="row-actions">
+        <button class="btn btn-ghost btn-sm" onclick="goToModules('${c.title}')">Kelola Modul</button>
+        <button class="btn-icon" onclick="openCourseModal(${i})">✎</button>
+        <button class="btn-icon danger" onclick="if(confirm('Hapus kursus ini?')){ courses.splice(${i}, 1); renderCourses(); }">🗑</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderModules(){
+  document.getElementById("module-list-admin").innerHTML = modules.map((m,i) => `
+    <div class="row-card">
+      <div class="reorder">
+        <button onclick="moveModule(${i},-1)">▲</button>
+        <button onclick="moveModule(${i},1)">▼</button>
+      </div>
+      <div class="row-icon">${m.num}</div>
+      <div class="row-body">
+        <div class="row-title">${m.name}</div>
+        <div class="row-sub">${m.soal} soal quiz ${m.video ? '· 🎥 Ada video' : '· Tanpa video'}</div>
+      </div>
+      <div class="row-actions">
+        <button class="btn-icon" onclick="openModuleModal(${i})">✎</button>
+        <button class="btn-icon danger" onclick="if(confirm('Hapus modul ini?')){ modules.splice(${i}, 1); renderModules(); }">🗑</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function moveModule(i, dir){
+  const j = i + dir;
+  if(j < 0 || j >= modules.length) return;
+  [modules[i], modules[j]] = [modules[j], modules[i]];
+  modules.forEach((m, idx) => m.num = idx + 1);
+  renderModules();
+}
+
+function goToModules(name){
+  document.getElementById("module-course-name").textContent = name;
+  document.getElementById("view-courses").classList.remove("show");
+  document.getElementById("view-modules").classList.add("show");
+}
+function goToCourses(){
+  document.getElementById("view-modules").classList.remove("show");
+  document.getElementById("view-courses").classList.add("show");
+}
+
+let editingCourseIdx = null;
+function openCourseModal(idx = null){ 
+  editingCourseIdx = idx;
+  if(idx !== null) {
+    const c = courses[idx];
+    document.getElementById("c-title").value = c.title;
+    document.getElementById("c-level").value = c.level;
+    document.getElementById("c-icon").value = c.icon;
+  } else {
+    document.getElementById("c-title").value = "";
+    document.getElementById("c-level").value = "Pemula";
+    document.getElementById("c-icon").value = "";
+  }
+  document.getElementById("modal-course").classList.add("show"); 
+}
+
+function saveCourse() {
+  const title = document.getElementById("c-title").value;
+  const level = document.getElementById("c-level").value;
+  const icon = document.getElementById("c-icon").value || "📚";
+  if(!title) return alert("Nama kursus harus diisi");
+
+  if(editingCourseIdx !== null) {
+    courses[editingCourseIdx].title = title;
+    courses[editingCourseIdx].level = level;
+    courses[editingCourseIdx].icon = icon;
+  } else {
+    courses.push({ icon, title, level, modul:0, status:"Aktif" });
+  }
+  renderCourses();
+  closeModal('modal-course');
+}
+
+let editingModuleIdx = null;
+function openModuleModal(idx = null){ 
+  editingModuleIdx = idx;
+  if(idx !== null) {
+    const m = modules[idx];
+    document.getElementById("m-title").value = m.name;
+    document.getElementById("yt-input").value = ""; 
+    previewYoutube("");
+  } else {
+    document.getElementById("m-title").value = "";
+    document.getElementById("yt-input").value = "";
+    previewYoutube("");
+  }
+  document.getElementById("modal-module").classList.add("show"); 
+}
+
+function saveModule() {
+  const title = document.getElementById("m-title").value;
+  const yt = document.getElementById("yt-input").value;
+  if(!title) return alert("Nama modul harus diisi");
+
+  if(editingModuleIdx !== null) {
+    modules[editingModuleIdx].name = title;
+    modules[editingModuleIdx].video = !!yt;
+  } else {
+    modules.push({ num: modules.length + 1, name: title, soal: quizCount, video: !!yt });
+  }
+  renderModules();
+  closeModal('modal-module');
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove("show"); }
+
+function addOutlineRow(){
+  const wrap = document.getElementById("outline-list");
+  const row = document.createElement("div");
+  row.className = "dynamic-row";
+  row.innerHTML = `<input type="text" placeholder="Poin materi baru..."><button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>`;
+  wrap.appendChild(row);
+}
+
+function extractYoutubeId(url){
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function previewYoutube(url){
+  const id = extractYoutubeId(url);
+  const box = document.getElementById("yt-preview");
+  const frame = document.getElementById("yt-frame");
+  if(id){
+    frame.src = "https://www.youtube.com/embed/" + id;
+    box.classList.add("show");
+  } else {
+    box.classList.remove("show");
+    frame.src = "";
+  }
+}
+
+let quizCount = 0;
+function addQuizCard(){
+  quizCount++;
+  const wrap = document.getElementById("quiz-list");
+  const card = document.createElement("div");
+  card.className = "quiz-card";
+  const name = "correct_" + quizCount;
+  card.innerHTML = `
+    <div class="quiz-card-head">
+      <span>Soal #${quizCount}</span>
+      <button class="btn-icon danger" onclick="this.closest('.quiz-card').remove()">✕</button>
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <input type="text" placeholder="Tulis pertanyaan di sini...">
+    </div>
+    ${["A","B","C","D"].map((l,idx) => `
+      <div class="quiz-opt-row">
+        <input type="radio" name="${name}" ${idx===0?'checked':''}>
+        <input type="text" placeholder="Pilihan ${l}">
+      </div>
+    `).join("")}
+    <div class="quiz-opt-hint">Pilih radio button di jawaban yang benar</div>
+  `;
+  wrap.appendChild(card);
+}
+
+renderCourses();
+renderModules();
+addQuizCard();
+addQuizCard();
+</script>
+</body>
+</html>

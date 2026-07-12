@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy Admin — Tambah/Edit Modul</title>
+<style>
+  :root {
+    --bg: #100f1e;
+    --bg2: #181832;
+    --bg3: #20213f;
+    --bg4: #2a2c52;
+    --purple: #8b7bff;
+    --purple2: #b3a4ff;
+    --purple-btn: #7c5cf5;
+    --cyan: #3fd8ff;
+    --pink: #ff7ec4;
+    --text: #f2f2fb;
+    --text2: #a8a9d6;
+    --text3: #75769f;
+    --border: #2c2e54;
+    --green: #2be6ba;
+    --orange: #ffab5c;
+    --blue: #5ec8ff;
+    --red: #ff7272;
+    --grad-primary: linear-gradient(135deg, #7c5cf5, #8b7bff);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100vh; padding:32px 24px;
+  }
+  .wrap{ max-width:840px; margin:0 auto 60px; }
+
+  .crumb{ font-size:13px; color:var(--text3); margin-bottom:6px; }
+  .crumb b{ color:var(--text2); font-weight:500; }
+  .crumb a{ color:var(--cyan); text-decoration:none; cursor:pointer; }
+  .page-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; flex-wrap:wrap; gap:14px; }
+  .page-title{ font-size:23px; font-weight:800; margin:4px 0 0; }
+  .page-sub{ font-size:13.5px; color:var(--text2); margin-top:4px; }
+
+  .btn{ border:none; border-radius:10px; padding:11px 18px; font-size:13.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+  .btn-primary{ background:var(--grad-primary); color:#fff; }
+  .btn-ghost{ background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+  .btn-sm{ padding:8px 14px; font-size:12.5px; border-radius:8px; }
+  .btn-icon{ background:var(--bg3); border:1px solid var(--border); color:var(--text2); width:32px; height:32px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
+  .btn-icon:hover{ color:var(--text); border-color:var(--purple); }
+  .btn-icon.danger:hover{ color:var(--red); border-color:var(--red); }
+
+  .section{ background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:24px 26px; margin-bottom:20px; }
+  .section-title{ font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+
+  .field{ margin-bottom:18px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+  .field input[type=text], .field input[type=url], .field textarea, .field select{
+    width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px; color:var(--text); font-size:14px; font-family:inherit;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--purple); }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .field-hint{ font-size:11.5px; color:var(--text3); margin-top:6px; }
+
+  .field-youtube{ position:relative; }
+  .field-youtube .input-icon-wrap{ position:relative; }
+  .field-youtube input{ padding-left:38px; }
+  .field-youtube .yt-icon{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--red); font-size:15px; }
+  .yt-preview{ margin-top:12px; border-radius:10px; overflow:hidden; aspect-ratio:16/9; background:#000; border:1px solid var(--border); display:none; max-width:360px; }
+  .yt-preview.show{ display:block; }
+  .yt-preview iframe{ width:100%; height:100%; border:0; }
+
+  .dynamic-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+  .dynamic-row{ display:flex; gap:8px; align-items:center; }
+  .dynamic-row input{ flex:1; }
+  .add-row-btn{ background:none; border:1px dashed var(--border); color:var(--text2); border-radius:10px; padding:11px; font-size:13px; cursor:pointer; width:100%; text-align:center; }
+  .add-row-btn:hover{ border-color:var(--purple); color:var(--text); }
+
+  /* ===== Quiz Accordion (gaya sama seperti Kelola Kuis) ===== */
+  .quiz-header-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .quiz-count-badge{ font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px; background:rgba(139,123,255,0.15); color:var(--purple2); }
+
+  .quiz-accordion{ display:flex; flex-direction:column; gap:10px; }
+  .quiz-item{ background:var(--bg3); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .quiz-item-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; }
+  .quiz-item-head:hover{ background:rgba(255,255,255,0.02); }
+  .quiz-item-head-left{ display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+  .quiz-num{ width:26px; height:26px; border-radius:8px; background:var(--bg4); color:var(--text2); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .quiz-preview-text{ font-size:13.5px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .quiz-chevron{ color:var(--text3); font-size:12px; transition: transform 0.2s ease; flex-shrink:0; }
+  .quiz-item.open .quiz-chevron{ transform: rotate(180deg); }
+  .quiz-item-head-actions{ display:flex; gap:6px; flex-shrink:0; }
+
+  .quiz-item-body{ display:none; padding:0 16px 18px; border-top:1px solid var(--border); }
+  .quiz-item.open .quiz-item-body{ display:block; padding-top:16px; }
+
+  .quiz-opt-row{ display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+  .quiz-opt-row input[type=radio]{ accent-color: var(--green); flex-shrink:0; width:16px; height:16px; }
+  .quiz-opt-row input[type=text]{ flex:1; }
+  .quiz-opt-letter{ font-size:12px; font-weight:700; color:var(--text3); width:16px; flex-shrink:0; }
+  .quiz-opt-hint{ font-size:11px; color:var(--text3); margin:4px 0 14px; display:flex; align-items:center; gap:5px; }
+
+  .empty-quiz{ text-align:center; padding:30px 10px; color:var(--text3); font-size:13.5px; }
+
+  .sticky-footer{
+    position:sticky; bottom:16px; margin-top:24px;
+    background:var(--bg2); border:1px solid var(--border); border-radius:14px;
+    padding:16px 20px; display:flex; justify-content:flex-end; gap:10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a onclick="alert('kembali ke list course')">Kelola Kursus</a> › <a onclick="alert('kembali ke list modul')">Aim & Movement</a> › <b id="crumb-current">Edit Modul: Counter-Strafing</b></div>
+
+  <div class="page-head">
+    <div>
+      <div class="page-title" id="page-title">Edit Modul: Counter-Strafing</div>
+      <div class="page-sub">Modul 2 dari 4 di kursus "Aim & Movement"</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="alert('batal, kembali ke list modul')">← Kembali ke List Modul</button>
+  </div>
+
+  <!-- ===== INFO DASAR MODUL ===== -->
+  <div class="section">
+    <div class="section-title">📝 Info Dasar Modul</div>
+
+    <div class="field">
+      <label>Nama Modul</label>
+      <input type="text" id="module-title" value="Counter-Strafing" placeholder="Contoh: Counter-Strafing">
+    </div>
+
+    <div class="field field-youtube">
+      <label>Link Video YouTube (opsional)</label>
+      <div class="input-icon-wrap">
+        <span class="yt-icon">▶</span>
+        <input type="url" id="yt-input" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ" placeholder="https://www.youtube.com/watch?v=..." oninput="previewYoutube(this.value)">
+      </div>
+      <div class="field-hint">Kosongkan kalau modul ini tidak ada video, cukup materi teks + quiz.</div>
+      <div class="yt-preview" id="yt-preview"><iframe id="yt-frame" src="" title="preview"></iframe></div>
+    </div>
+
+    <div class="field">
+      <label>Outline / Poin Materi</label>
+      <div class="dynamic-list" id="outline-list">
+        <div class="dynamic-row">
+          <input type="text" value="Kenapa tembak sambil jalan bikin akurasi kamu hancur">
+          <button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>
+        </div>
+        <div class="dynamic-row">
+          <input type="text" value="Teknik tap arah berlawanan buat berhenti instan sebelum tembak">
+          <button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>
+        </div>
+      </div>
+      <button class="add-row-btn" onclick="addOutlineRow()">+ Tambah Poin Materi</button>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ ACCORDION ===== -->
+  <div class="section">
+    <div class="quiz-header-row">
+      <div class="section-title" style="margin-bottom:0;">🎯 Soal Quiz Modul Ini <span class="quiz-count-badge" id="quiz-count">3 soal</span></div>
+    </div>
+
+    <div class="quiz-accordion" id="quiz-accordion"></div>
+
+    <button class="add-row-btn" style="margin-top:12px;" onclick="addQuizItem()">+ Tambah Soal Quiz</button>
+  </div>
+
+  <div class="sticky-footer">
+    <button class="btn btn-ghost" onclick="alert('batal')">Batal</button>
+    <button class="btn btn-primary" onclick="alert('modul + quiz tersimpan')">💾 Simpan Modul</button>
+  </div>
+
+</div>
+
+<script>
+function addOutlineRow(){
+  const wrap = document.getElementById("outline-list");
+  const row = document.createElement("div");
+  row.className = "dynamic-row";
+  row.innerHTML = `<input type="text" placeholder="Poin materi baru..."><button class="btn-icon danger" onclick="this.parentElement.remove()">✕</button>`;
+  wrap.appendChild(row);
+}
+
+function extractYoutubeId(url){
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function previewYoutube(url){
+  const id = extractYoutubeId(url);
+  const box = document.getElementById("yt-preview");
+  const frame = document.getElementById("yt-frame");
+  if(id){
+    frame.src = "https://www.youtube.com/embed/" + id;
+    box.classList.add("show");
+  } else {
+    box.classList.remove("show");
+    frame.src = "";
+  }
+}
+
+// data awal quiz (contoh isi existing saat mode Edit)
+const initialQuiz = [
+  {
+    q: "Fungsi utama counter-strafing adalah?",
+    options: ["Bikin karakter lari lebih cepat", "Menghentikan pergerakan secara instan sebelum tembak", "Mengisi ulang amunisi otomatis", "Menyamarkan posisi di map"],
+    correct: 1,
+    explain: "Counter-strafing menghentikan momentum gerak kamu secara instan sebelum menembak, supaya akurasi tembakan pertama maksimal."
+  },
+  {
+    q: "Berapa lama biasanya delay 'accuracy recovery' setelah berhenti bergerak di CS2?",
+    options: ["Hampir instan (beberapa frame)", "3 detik penuh", "Tidak ada delay sama sekali", "Hanya berlaku saat scoped"],
+    correct: 0,
+    explain: "Recovery akurasi terjadi sangat cepat (dalam hitungan frame), makanya counter-strafing terasa 'instan' kalau timing-nya pas."
+  },
+  {
+    q: "Tombol apa yang ditekan sesaat untuk counter-strafe saat lari ke kanan (D)?",
+    options: ["Spasi (jump)", "Tombol kiri (A) sesaat", "Ctrl (crouch)", "Shift (walk)"],
+    correct: 1,
+    explain: "Tap arah berlawanan (A) sesaat menghentikan momentum ke kanan lebih cepat dibanding cuma lepas tombol D."
+  }
+];
+
+let quizCounter = 0;
+
+function renderQuizItem(data){
+  quizCounter++;
+  const id = quizCounter;
+  const name = "correct_" + id;
+  const item = document.createElement("div");
+  item.className = "quiz-item";
+  item.id = "quiz-item-" + id;
+
+  item.innerHTML = `
+    <div class="quiz-item-head" onclick="toggleQuiz(${id})">
+      <div class="quiz-item-head-left">
+        <div class="quiz-num">${id}</div>
+        <div class="quiz-preview-text" id="preview-${id}">${data.q || "Pertanyaan baru..."}</div>
+      </div>
+      <div class="quiz-item-head-actions">
+        <button class="btn-icon danger" onclick="event.stopPropagation(); removeQuizItem(${id})">✕</button>
+        <span class="quiz-chevron">▾</span>
+      </div>
+    </div>
+    <div class="quiz-item-body">
+      <div class="field">
+        <label>Pertanyaan</label>
+        <textarea oninput="updatePreview(${id}, this.value)">${data.q || ""}</textarea>
+      </div>
+      ${["A","B","C","D"].map((l, idx) => `
+        <div class="quiz-opt-row">
+          <span class="quiz-opt-letter">${l}</span>
+          <input type="radio" name="${name}" ${idx === data.correct ? 'checked' : ''}>
+          <input type="text" value="${data.options ? data.options[idx] || '' : ''}" placeholder="Pilihan ${l}">
+        </div>
+      `).join("")}
+      <div class="quiz-opt-hint">✅ Pilih radio button di jawaban yang benar</div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Penjelasan (opsional)</label>
+        <textarea placeholder="Jelaskan kenapa jawaban itu benar...">${data.explain || ""}</textarea>
+      </div>
+    </div>
+  `;
+  return item;
+}
+
+function addQuizItem(open = true){
+  const wrap = document.getElementById("quiz-accordion");
+  const el = renderQuizItem({ q: "", options: ["", "", "", ""], correct: 0, explain: "" });
+  wrap.appendChild(el);
+  updateQuizCount();
+  if(open) toggleQuiz(quizCounter);
+}
+
+function removeQuizItem(id){
+  const el = document.getElementById("quiz-item-" + id);
+  if(el) el.remove();
+  updateQuizCount();
+}
+
+function toggleQuiz(id){
+  const el = document.getElementById("quiz-item-" + id);
+  el.classList.toggle("open");
+}
+
+function updatePreview(id, val){
+  document.getElementById("preview-" + id).textContent = val || "Pertanyaan baru...";
+}
+
+function updateQuizCount(){
+  const count = document.querySelectorAll(".quiz-item").length;
+  document.getElementById("quiz-count").textContent = count + " soal";
+}
+
+initialQuiz.forEach(q => {
+  const wrap = document.getElementById("quiz-accordion");
+  wrap.appendChild(renderQuizItem(q));
+});
+updateQuizCount();
+</script>
+</body>
+</html>

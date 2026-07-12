@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy Admin — Tambah/Edit Kursus</title>
+<style>
+  :root {
+    --bg: #100f1e;
+    --bg2: #181832;
+    --bg3: #20213f;
+    --bg4: #2a2c52;
+    --purple: #8b7bff;
+    --purple2: #b3a4ff;
+    --purple-btn: #7c5cf5;
+    --cyan: #3fd8ff;
+    --pink: #ff7ec4;
+    --text: #f2f2fb;
+    --text2: #a8a9d6;
+    --text3: #75769f;
+    --border: #2c2e54;
+    --green: #2be6ba;
+    --orange: #ffab5c;
+    --blue: #5ec8ff;
+    --red: #ff7272;
+    --grad-primary: linear-gradient(135deg, #7c5cf5, #8b7bff);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    min-height:100vh; padding:32px 24px;
+  }
+  .wrap{ max-width:680px; margin:0 auto 60px; }
+
+  .crumb{ font-size:13px; color:var(--text3); margin-bottom:6px; }
+  .crumb b{ color:var(--text2); font-weight:500; }
+  .crumb a{ color:var(--cyan); text-decoration:none; cursor:pointer; }
+  .page-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:26px; flex-wrap:wrap; gap:14px; }
+  .page-title{ font-size:23px; font-weight:800; margin:4px 0 0; }
+  .page-sub{ font-size:13.5px; color:var(--text2); margin-top:4px; }
+
+  .btn{ border:none; border-radius:10px; padding:11px 18px; font-size:13.5px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+  .btn-primary{ background:var(--grad-primary); color:#fff; }
+  .btn-ghost{ background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+  .btn-sm{ padding:8px 14px; font-size:12.5px; border-radius:8px; }
+
+  .section{ background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:24px 26px; margin-bottom:20px; }
+  .section-title{ font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+
+  .field{ margin-bottom:18px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px; }
+  .field input[type=text], .field textarea, .field select{
+    width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px; color:var(--text); font-size:14px; font-family:inherit;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--purple); }
+  .field textarea{ resize:vertical; min-height:70px; }
+  .field-hint{ font-size:11.5px; color:var(--text3); margin-top:6px; }
+
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .field-row-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+
+  .icon-picker{ display:flex; align-items:center; gap:12px; }
+  .icon-preview{
+    width:52px; height:52px; border-radius:12px; flex-shrink:0;
+    background: linear-gradient(135deg, rgba(139,123,255,0.22), rgba(63,216,255,0.16));
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .icon-picker input{ flex:1; }
+
+  .checkbox-row{ display:flex; align-items:center; gap:10px; }
+  .checkbox-row input[type=checkbox]{ width:18px; height:18px; accent-color:var(--purple); }
+  .checkbox-row label{ margin:0; text-transform:none; font-size:14px; color:var(--text); font-weight:500; letter-spacing:0; }
+
+  .preview-card{
+    background:var(--bg3); border:1px solid var(--border); border-radius:14px; padding:18px 20px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .preview-card .icon-preview{ width:44px; height:44px; font-size:20px; }
+  .preview-card-body{ flex:1; min-width:0; }
+  .preview-card-title{ font-size:15px; font-weight:700; margin-bottom:4px; }
+  .preview-card-meta{ font-size:12px; color:var(--text3); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .mini-badge{ font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; background:rgba(139,123,255,0.15); color:var(--purple2); }
+  .mini-badge.popular{ background:rgba(255,171,92,0.15); color:var(--orange); }
+
+  .sticky-footer{
+    position:sticky; bottom:16px; margin-top:24px;
+    background:var(--bg2); border:1px solid var(--border); border-radius:14px;
+    padding:16px 20px; display:flex; justify-content:flex-end; gap:10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="crumb"><a onclick="alert('kembali ke Kelola Kursus')">Kelola Kursus</a> › <b id="crumb-current">Tambah Kursus Baru</b></div>
+
+  <div class="page-head">
+    <div>
+      <div class="page-title" id="page-title">Tambah Kursus Baru</div>
+      <div class="page-sub">Kursus akan muncul di halaman Katalog Kursus (/courses) setelah disimpan.</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="alert('batal, kembali ke Kelola Kursus')">← Kembali ke Kelola Kursus</button>
+  </div>
+
+  <!-- ===== INFO DASAR KURSUS ===== -->
+  <div class="section">
+    <div class="section-title">📚 Info Dasar Kursus</div>
+
+    <div class="field">
+      <label>Icon &amp; Nama Kursus</label>
+      <div class="icon-picker">
+        <div class="icon-preview" id="icon-preview">🎯</div>
+        <input type="text" id="icon-input" value="🎯" maxlength="2" style="max-width:70px; text-align:center;" oninput="syncPreview()" placeholder="🎯">
+        <input type="text" id="title-input" value="" placeholder="Contoh: Aim & Movement" style="flex:1;" oninput="syncPreview()">
+      </div>
+      <div class="field-hint">Icon berupa emoji tunggal, tampil di card katalog kursus.</div>
+    </div>
+
+    <div class="field">
+      <label>Deskripsi Singkat</label>
+      <textarea id="desc-input" placeholder="Fondasi utama CS2 — crosshair placement, counter-strafing, dan spray control." oninput="syncPreview()"></textarea>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Level</label>
+        <select id="level-input" onchange="syncPreview()">
+          <option>Pemula</option>
+          <option>Menengah</option>
+          <option>Lanjutan</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Durasi Estimasi</label>
+        <input type="text" id="durasi-input" placeholder="Contoh: 45 menit / 1 jam">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Tipe Kursus</label>
+        <select id="type-input" onchange="syncPreview()">
+          <option>Kursus Wajib</option>
+          <option>Kursus Lanjutan</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Urutan Tampil</label>
+        <input type="text" id="urutan-input" placeholder="Contoh: 1 (paling awal)">
+        <div class="field-hint">Menentukan posisi & urutan unlock di katalog.</div>
+      </div>
+    </div>
+
+    <div class="field checkbox-row">
+      <input type="checkbox" id="popular-input" onchange="syncPreview()">
+      <label for="popular-input">Tandai sebagai "🔥 Populer" (badge tampil di card katalog)</label>
+    </div>
+  </div>
+
+  <!-- ===== PRASYARAT ===== -->
+  <div class="section">
+    <div class="section-title">🔒 Prasyarat Akses</div>
+    <div class="field" style="margin-bottom:0;">
+      <label>Kursus Prasyarat (opsional)</label>
+      <select id="prereq-input">
+        <option value="">— Tidak ada, bisa langsung diakses —</option>
+        <option>Aim & Movement</option>
+        <option>Map Control</option>
+        <option>Economy System</option>
+        <option>Utility Usage</option>
+      </select>
+      <div class="field-hint">Kursus ini akan terkunci di katalog sampai kursus prasyarat diselesaikan user.</div>
+    </div>
+  </div>
+
+  <!-- ===== PREVIEW LIVE ===== -->
+  <div class="section">
+    <div class="section-title">👁 Preview Card di Katalog</div>
+    <div class="preview-card">
+      <div class="icon-preview" id="preview-icon">🎯</div>
+      <div class="preview-card-body">
+        <div class="preview-card-title" id="preview-title">Nama kursus...</div>
+        <div class="preview-card-meta">
+          <span class="mini-badge" id="preview-level">Pemula</span>
+          <span class="mini-badge" id="preview-type">Kursus Wajib</span>
+          <span class="mini-badge popular" id="preview-popular" style="display:none;">🔥 Populer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-footer">
+    <button class="btn btn-ghost" onclick="alert('batal')">Batal</button>
+    <button class="btn btn-primary" onclick="alert('kursus tersimpan, redirect ke Kelola Kursus')">💾 Simpan Kursus</button>
+  </div>
+
+</div>
+
+<script>
+function syncPreview(){
+  const icon = document.getElementById("icon-input").value || "🎯";
+  const title = document.getElementById("title-input").value || "Nama kursus...";
+  const level = document.getElementById("level-input").value;
+  const type = document.getElementById("type-input").value;
+  const popular = document.getElementById("popular-input").checked;
+
+  document.getElementById("icon-preview").textContent = icon;
+  document.getElementById("preview-icon").textContent = icon;
+  document.getElementById("preview-title").textContent = title;
+  document.getElementById("preview-level").textContent = level;
+  document.getElementById("preview-type").textContent = type;
+  document.getElementById("preview-popular").style.display = popular ? "inline-block" : "none";
+}
+syncPreview();
+</script>
+</body>
+</html>

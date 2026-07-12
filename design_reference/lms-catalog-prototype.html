@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy — Katalog Kursus</title>
+<style>
+  :root{
+    --bg: #0a0e1a;
+    --panel: #12172a;
+    --panel-2: #171d33;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8eaf3;
+    --text-dim: #8891ad;
+    --text-dimmer: #5c6584;
+    --purple: #8b5cf6;
+    --blue: #38bdf8;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --grad: linear-gradient(135deg, #8b5cf6 0%, #38bdf8 100%);
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.15), transparent);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+  .wrap{ max-width: 1100px; margin: 0 auto; }
+
+  .page-head{ margin-bottom: 28px; }
+  .eyebrow{
+    font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--purple); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .page-title{ font-size: 26px; font-weight: 800; margin: 0 0 8px; }
+  .page-sub{ font-size: 14.5px; color: var(--text-dim); margin: 0; }
+
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+  }
+
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover{
+    transform: translateY(-3px);
+    border-color: rgba(139,92,246,0.45);
+    background: var(--panel-2);
+  }
+  .card.locked{ cursor: default; opacity: 0.55; }
+  .card.locked:hover{ transform: none; border-color: var(--border); background: var(--panel); }
+
+  .card-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px; }
+  .card-icon{
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 21px;
+    background: linear-gradient(135deg, rgba(139,92,246,0.22), rgba(56,189,248,0.16));
+  }
+  .badges{ display:flex; gap:6px; }
+  .badge{
+    font-size: 10.5px; font-weight: 700;
+    padding: 3px 9px; border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .badge-type{ background: rgba(139,92,246,0.16); color: #c4b5fd; }
+  .badge-popular{ background: rgba(251,191,36,0.16); color: var(--amber); }
+  .badge-selesai{ background: rgba(52,211,153,0.16); color: var(--green); }
+
+  .card-title{ font-size: 17.5px; font-weight: 700; color: var(--text); margin: 0 0 8px; line-height: 1.35; }
+  .card-desc{ font-size: 13px; color: var(--text-dim); line-height: 1.5; margin: 0 0 18px; flex: 1; }
+
+  .card-meta{
+    display: flex; flex-wrap: wrap; gap: 14px;
+    font-size: 12.5px; color: var(--text-dimmer);
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .card-meta span{ display:flex; align-items:center; gap: 5px; }
+
+  .card-progress{ margin-top: 14px; }
+  .card-progress-bar{ height: 5px; background: rgba(255,255,255,0.06); border-radius:999px; overflow:hidden; margin-bottom:6px; }
+  .card-progress-fill{ height:100%; background: var(--grad); border-radius:999px; }
+  .card-progress-text{ font-size: 11.5px; color: var(--text-dimmer); }
+
+  .lock-overlay{
+    position:absolute; top: 18px; right: 18px;
+    color: var(--text-dimmer);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-head">
+    <div class="eyebrow">Kursus</div>
+    <h1 class="page-title">Pilih Kursus CS2 Kamu</h1>
+    <p class="page-sub">Belajar dari dasar sampai mahir, satu topik per satu waktu — pilih yang mau kamu kuasai duluan.</p>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+</div>
+
+<script>
+const courses = [
+  {
+    icon: "🎯", type: "Kursus Wajib", popular: false, status: "progress", progress: 25,
+    title: "Aim & Movement",
+    desc: "Fondasi utama CS2 — crosshair placement, counter-strafing, dan spray control.",
+    durasi: "45 menit", level: "Pemula", rating: "4.8", modul: "4 modul"
+  },
+  {
+    icon: "🗺️", type: "Kursus Wajib", popular: true, status: "locked",
+    title: "Map Control",
+    desc: "Pelajari rotasi, timing, dan cara menguasai area penting di setiap map.",
+    durasi: "1 jam", level: "Menengah", rating: "4.7", modul: "5 modul"
+  },
+  {
+    icon: "💰", type: "Kursus Wajib", popular: false, status: "locked",
+    title: "Economy System",
+    desc: "Kapan harus full buy, eco, atau force buy — baca ekonomi tim & musuh.",
+    durasi: "40 menit", level: "Menengah", rating: "4.6", modul: "3 modul"
+  },
+  {
+    icon: "🧪", type: "Kursus Wajib", popular: false, status: "locked",
+    title: "Utility Usage",
+    desc: "Smoke, flash, dan molotov lineup yang wajib kamu hafal di rank manapun.",
+    durasi: "1 jam", level: "Menengah", rating: "4.9", modul: "5 modul"
+  },
+  {
+    icon: "🧠", type: "Kursus Lanjutan", popular: true, status: "locked",
+    title: "Game Sense",
+    desc: "Prediksi posisi musuh dan buat keputusan terbaik tanpa harus melihat mereka.",
+    durasi: "1.5 jam", level: "Lanjutan", rating: "4.9", modul: "4 modul"
+  }
+];
+
+function card(c){
+  const locked = c.status === "locked";
+  return `
+  <div class="card ${locked ? 'locked' : ''}" onclick="${locked ? '' : `openCourse('${c.title}')`}">
+    <div class="card-top">
+      <div class="card-icon">${c.icon}</div>
+      <div class="badges">
+        <span class="badge badge-type">${c.type}</span>
+        ${c.popular ? '<span class="badge badge-popular">🔥 Populer</span>' : ''}
+      </div>
+    </div>
+    ${locked ? `<div class="lock-overlay">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1a4 4 0 00-4 4v2H5a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V8a1 1 0 00-1-1h-1V5a4 4 0 00-4-4zm2 6V5a2 2 0 10-4 0v2h4z" clip-rule="evenodd"/></svg>
+    </div>` : ''}
+    <h3 class="card-title">${c.title}</h3>
+    <p class="card-desc">${c.desc}</p>
+    <div class="card-meta">
+      <span>🕒 ${c.durasi}</span>
+      <span>📖 ${c.level}</span>
+      <span>⭐ ${c.rating}</span>
+      <span>🧩 ${c.modul}</span>
+    </div>
+    ${c.status === "progress" ? `
+    <div class="card-progress">
+      <div class="card-progress-bar"><div class="card-progress-fill" style="width:${c.progress}%"></div></div>
+      <div class="card-progress-text">${c.progress}% selesai — lanjutkan belajar</div>
+    </div>` : ""}
+    ${locked ? `<div class="card-progress-text" style="margin-top:12px;">🔒 Selesaikan kursus sebelumnya dulu</div>` : ""}
+  </div>`;
+}
+
+document.getElementById("grid").innerHTML = courses.map(card).join("");
+
+function openCourse(title){
+  alert("Prototype: klik ini akan membawa user ke halaman modul untuk kursus \"" + title + "\" (halaman outline + quiz yang sudah dibuat sebelumnya).");
+}
+</script>
+</body>
+</html>

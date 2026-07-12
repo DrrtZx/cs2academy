@@ -40,7 +40,7 @@
     <a href="{{ route('admin.assignments') }}" class="admin-tab">
       <x-cs-icon name="clipboard-list" size="14" stroke="2" /> Tugas User
     </a>
-    <a href="{{ route('admin.quiz') }}" class="admin-tab">
+    <a href="{{ route('admin.courses') }}" class="admin-tab">
       <x-cs-icon name="lightbulb" size="14" stroke="2" /> Kelola Quiz
     </a>
   </div>

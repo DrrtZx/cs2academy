@@ -271,7 +271,7 @@
     <a href="{{ route('admin.assignments') }}?tab=kirim" class="admin-tab send-tab {{ request()->query('tab') === 'kirim' ? 'active' : '' }}">
       <x-cs-icon name="send" size="14" stroke="2" /> Kirim ke User
     </a>
-    <a href="{{ route('admin.quiz') }}" class="admin-tab">
+    <a href="{{ route('admin.courses') }}" class="admin-tab">
       <x-cs-icon name="lightbulb" size="14" stroke="2" /> Kelola Quiz
     </a>
   </div>

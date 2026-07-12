@@ -16,6 +16,7 @@ Route::get("/dashboard", function () {
 
 Route::get("/", [HomeController::class, "index"])->name("home");
 Route::get("/courses", [CourseController::class, "index"])->name("courses");
+Route::get("/courses/{course}", [CourseController::class, "show"])->name("courses.show");
 
 // ✅ Coaching bisa diakses tanpa login (pop-up muncul untuk guest)
 Route::get("/coaching", [CoachingController::class, "index"])->name("coaching");
@@ -39,11 +40,11 @@ Route::middleware("auth")->group(function () {
         "assignments.store",
     );
 
-    // Progress kursus (dipanggil via fetch saat user lulus quiz)
-    Route::post("/courses/{course}/complete", [
+    // Progress modul (dipanggil via fetch saat user lulus quiz per modul)
+    Route::post("/modules/{module}/complete", [
         CourseController::class,
-        "markComplete",
-    ])->name("courses.complete");
+        "markModuleComplete",
+    ])->name("modules.complete");
 
     // Profil user (Breeze) — hilang saat routes/web.php dikustomisasi
     Route::get("/profile", [ProfileController::class, "edit"])->name(
@@ -93,21 +94,57 @@ Route::middleware("auth")->group(function () {
         ->name("admin.assignments.delete")
         ->middleware("can:admin-only");
 
-    // Quiz Admin
-    Route::get("/admin/quiz", [AdminController::class, "quiz"])
-        ->name("admin.quiz")
+    // Kelola Course & Modul
+    Route::get("/admin/courses", [AdminController::class, "courses"])
+        ->name("admin.courses")
         ->middleware("can:admin-only");
 
-    Route::post("/admin/quiz/{course}", [AdminController::class, "storeQuiz"])
-        ->name("admin.quiz.store")
+    Route::post("/admin/courses", [AdminController::class, "storeCourse"])
+        ->name("admin.courses.store")
         ->middleware("can:admin-only");
 
-    Route::put("/admin/quiz/{quiz}", [AdminController::class, "updateQuiz"])
-        ->name("admin.quiz.update")
+    Route::get("/admin/courses/create", [AdminController::class, "create"])
+        ->name("admin.courses.create")
         ->middleware("can:admin-only");
 
-    Route::delete("/admin/quiz/{quiz}", [AdminController::class, "deleteQuiz"])
-        ->name("admin.quiz.delete")
+    Route::get("/admin/courses/{course}/edit", [AdminController::class, "edit"])
+        ->name("admin.courses.edit")
+        ->middleware("can:admin-only");
+
+    Route::put("/admin/courses/{course}", [AdminController::class, "updateCourse"])
+        ->name("admin.courses.update")
+        ->middleware("can:admin-only");
+
+    Route::delete("/admin/courses/{course}", [AdminController::class, "deleteCourse"])
+        ->name("admin.courses.delete")
+        ->middleware("can:admin-only");
+
+    Route::get("/admin/courses/{course}/modules/create", [AdminController::class, "createModule"])
+        ->name("admin.modules.create")
+        ->middleware("can:admin-only");
+
+    Route::get("/admin/courses/{course}/modules", [AdminController::class, "modules"])
+        ->name("admin.courses.modules")
+        ->middleware("can:admin-only");
+
+    Route::post("/admin/courses/{course}/modules", [AdminController::class, "storeModule"])
+        ->name("admin.modules.store")
+        ->middleware("can:admin-only");
+
+    Route::get("/admin/modules/{module}/edit", [AdminController::class, "editModule"])
+        ->name("admin.modules.edit")
+        ->middleware("can:admin-only");
+
+    Route::put("/admin/modules/{module}", [AdminController::class, "updateModule"])
+        ->name("admin.modules.update")
+        ->middleware("can:admin-only");
+
+    Route::delete("/admin/modules/{module}", [AdminController::class, "deleteModule"])
+        ->name("admin.modules.delete")
+        ->middleware("can:admin-only");
+
+    Route::post("/admin/modules/{module}/reorder", [AdminController::class, "reorderModule"])
+        ->name("admin.modules.reorder")
         ->middleware("can:admin-only");
 
     // Kirim pesan/tugas dari admin ke user

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2Academy Admin — Inbox Coaching</title>
+<style>
+  :root {
+    --bg: #100f1e;
+    --bg2: #181832;
+    --bg3: #20213f;
+    --bg4: #2a2c52;
+    --purple: #8b7bff;
+    --purple2: #b3a4ff;
+    --purple-btn: #7c5cf5;
+    --cyan: #3fd8ff;
+    --pink: #ff7ec4;
+    --text: #f2f2fb;
+    --text2: #a8a9d6;
+    --text3: #75769f;
+    --border: #2c2e54;
+    --green: #2be6ba;
+    --orange: #ffab5c;
+    --blue: #5ec8ff;
+    --red: #ff7272;
+    --grad-primary: linear-gradient(135deg, #7c5cf5, #8b7bff);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    height:100vh; overflow:hidden;
+  }
+  .app{
+    display:grid;
+    grid-template-columns: 320px 1fr;
+    height:100vh;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar{
+    background:var(--bg2);
+    border-right:1px solid var(--border);
+    display:flex; flex-direction:column;
+    min-height:0;
+  }
+  .sidebar-head{ padding:18px 18px 14px; border-bottom:1px solid var(--border); }
+  .sidebar-title{ font-size:16px; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+  .search-box{
+    background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:9px 12px; font-size:13px; color:var(--text); width:100%;
+  }
+  .search-box::placeholder{ color:var(--text3); }
+
+  .filter-tabs{ display:flex; gap:6px; padding:12px 18px; border-bottom:1px solid var(--border); }
+  .filter-tab{ font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:999px; background:var(--bg3); color:var(--text3); cursor:pointer; }
+  .filter-tab.active{ background:var(--grad-primary); color:#fff; }
+
+  .conv-list{ flex:1; overflow-y:auto; padding:8px; }
+  .conv-item{
+    display:flex; gap:11px; padding:12px 10px; border-radius:12px; cursor:pointer;
+    margin-bottom:2px; position:relative;
+  }
+  .conv-item:hover{ background:rgba(255,255,255,0.03); }
+  .conv-item.active{ background: linear-gradient(135deg, rgba(139,123,255,0.16), rgba(63,216,255,0.08)); }
+  .avatar{
+    width:42px; height:42px; border-radius:50%; flex-shrink:0;
+    background:var(--grad-primary); display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:700; color:#fff;
+  }
+  .conv-body{ flex:1; min-width:0; }
+  .conv-top-row{ display:flex; justify-content:space-between; align-items:center; gap:6px; }
+  .conv-name{ font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .conv-time{ font-size:10.5px; color:var(--text3); flex-shrink:0; }
+  .conv-preview-row{ display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:3px; }
+  .conv-preview{ font-size:12px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+  .conv-preview.unread{ color:var(--text2); font-weight:600; }
+  .unread-badge{
+    background:var(--red); color:#fff; font-size:10px; font-weight:800;
+    min-width:18px; height:18px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+    padding:0 5px; flex-shrink:0;
+  }
+  .conv-package{ font-size:9.5px; font-weight:700; color:var(--purple2); margin-top:3px; }
+
+  /* ===== CHAT PANEL ===== */
+  .chat-panel{ display:flex; flex-direction:column; min-height:0; }
+  .chat-header{
+    padding:16px 24px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--bg2);
+  }
+  .chat-header-left{ display:flex; align-items:center; gap:12px; }
+  .chat-header-name{ font-size:15px; font-weight:700; }
+  .chat-header-sub{ font-size:11.5px; color:var(--text3); margin-top:2px; }
+  .status-badge{ font-size:11px; font-weight:700; padding:5px 12px; border-radius:999px; background:rgba(94,200,255,0.15); color:var(--blue); display:flex; align-items:center; gap:5px; }
+
+  .chat-body{ flex:1; overflow-y:auto; padding:22px 24px; display:flex; flex-direction:column; gap:14px; background:var(--bg); }
+  .bubble-row{ display:flex; flex-direction:column; max-width:60%; }
+  .bubble-row.from-coach{ align-self:flex-start; }
+  .bubble-row.from-user{ align-self:flex-end; align-items:flex-end; }
+
+  .bubble-label{ font-size:10.5px; font-weight:800; letter-spacing:0.03em; margin-bottom:5px; padding-left:2px; }
+  .bubble-row.from-coach .bubble-label{ color:var(--green); }
+  .bubble-row.from-user .bubble-label{ color:var(--purple2); }
+
+  .bubble{ padding:12px 14px; border-radius:12px; font-size:13.5px; line-height:1.5; }
+  .bubble-row.from-coach .bubble{ background:rgba(43,230,186,0.08); border:1px solid rgba(43,230,186,0.25); border-top-left-radius:4px; }
+  .bubble-row.from-user .bubble{ background:var(--bg3); border:1px solid var(--border); border-top-right-radius:4px; }
+  .bubble-time{ font-size:10px; color:var(--text3); margin-top:5px; padding:0 3px; }
+
+  .chat-input-bar{
+    padding:16px 24px; border-top:1px solid var(--border); background:var(--bg2);
+    display:flex; gap:10px; align-items:center;
+  }
+  .chat-input{
+    flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:12px;
+    padding:12px 16px; color:var(--text); font-size:13.5px; font-family:inherit;
+  }
+  .chat-input::placeholder{ color:var(--text3); }
+  .btn-send{
+    background:var(--grad-primary); border:none; color:#fff; font-weight:700; font-size:13.5px;
+    padding:12px 20px; border-radius:12px; cursor:pointer; display:flex; align-items:center; gap:6px;
+    flex-shrink:0;
+  }
+
+  .empty-chat{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--text3); gap:8px;
+  }
+  .empty-chat .emoji{ font-size:34px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ================= SIDEBAR: DAFTAR PERCAKAPAN ================= -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-title"><span class="live-dot"></span> Inbox Coaching</div>
+      <input class="search-box" placeholder="Cari nama user..." oninput="filterConv(this.value)">
+    </div>
+    <div class="filter-tabs">
+      <div class="filter-tab active">Semua</div>
+      <div class="filter-tab">Belum Dibaca</div>
+      <div class="filter-tab">Arsip</div>
+    </div>
+    <div class="conv-list" id="conv-list"></div>
+  </div>
+
+  <!-- ================= CHAT PANEL ================= -->
+  <div class="chat-panel" id="chat-panel"></div>
+
+</div>
+
+<script>
+const conversations = [
+  {
+    id: 1, name: "Demo User", paket: "Panggil Pelatih", time: "4 menit lalu", unread: 2, status: "Berlangsung",
+    lastMsg: "Oke Admin, siap!",
+    messages: [
+      { from: "coach", text: "Halo! Sesi Panggil Pelatih aktif. Silakan masukkan ID Discord Anda beserta 3 opsi jadwal luang untuk sesi voice call.", time: "10:00" },
+      { from: "coach", text: "Oke User kamu pinter", time: "10:01" },
+      { from: "user", text: "Oke Admin, siap!", time: "10:03" },
+    ]
+  },
+  {
+    id: 2, name: "Darrell Ahnaf", paket: "Textual Review", time: "22 menit lalu", unread: 0, status: "Berlangsung",
+    lastMsg: "Baik, saya kirim link demo-nya ya",
+    messages: [
+      { from: "coach", text: "Halo! Kirimkan link demo/replay dan pertanyaan spesifik yang mau direview.", time: "09:40" },
+      { from: "user", text: "Baik, saya kirim link demo-nya ya", time: "09:44" },
+    ]
+  },
+  {
+    id: 3, name: "Rizky Pratama", paket: "Panggil Pelatih", time: "1 jam lalu", unread: 1, status: "Berlangsung",
+    lastMsg: "ID discord saya: rizky#1234",
+    messages: [
+      { from: "coach", text: "Halo! Sesi Panggil Pelatih aktif. Silakan masukkan ID Discord Anda.", time: "08:50" },
+      { from: "user", text: "ID discord saya: rizky#1234", time: "09:02" },
+    ]
+  },
+  {
+    id: 4, name: "Nabila Putri", paket: "Demo Review", time: "3 jam lalu", unread: 0, status: "Berlangsung",
+    lastMsg: "Terima kasih atas catatannya coach!",
+    messages: [
+      { from: "coach", text: "Sudah saya review demo-nya, catatan lengkap ada di bawah ya.", time: "06:10" },
+      { from: "user", text: "Terima kasih atas catatannya coach!", time: "06:30" },
+    ]
+  },
+];
+
+let activeId = 1;
+
+function initials(name){
+  return name.split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase();
+}
+
+function renderSidebar(){
+  const wrap = document.getElementById("conv-list");
+  wrap.innerHTML = conversations.map(c => `
+    <div class="conv-item ${c.id === activeId ? 'active' : ''}" onclick="openConv(${c.id})">
+      <div class="avatar">${initials(c.name)}</div>
+      <div class="conv-body">
+        <div class="conv-top-row">
+          <div class="conv-name">${c.name}</div>
+          <div class="conv-time">${c.time}</div>
+        </div>
+        <div class="conv-preview-row">
+          <div class="conv-preview ${c.unread > 0 ? 'unread' : ''}">${c.lastMsg}</div>
+          ${c.unread > 0 ? `<div class="unread-badge">${c.unread}</div>` : ''}
+        </div>
+        <div class="conv-package">${c.paket}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderChat(){
+  const c = conversations.find(x => x.id === activeId);
+  const panel = document.getElementById("chat-panel");
+
+  if(!c){
+    panel.innerHTML = `<div class="empty-chat"><div class="emoji">💬</div><div>Pilih percakapan di sebelah kiri untuk mulai membalas</div></div>`;
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="avatar">${initials(c.name)}</div>
+        <div>
+          <div class="chat-header-name">${c.name}</div>
+          <div class="chat-header-sub">Paket: ${c.paket}</div>
+        </div>
+      </div>
+      <div class="status-badge">● ${c.status}</div>
+    </div>
+    <div class="chat-body" id="chat-body">
+      ${c.messages.map(m => `
+        <div class="bubble-row from-${m.from}">
+          <div class="bubble-label">${m.from === 'coach' ? 'COACH / ADMIN' : c.name.toUpperCase()}</div>
+          <div class="bubble">${m.text}</div>
+          <div class="bubble-time">${m.time}</div>
+        </div>
+      `).join("")}
+    </div>
+    <div class="chat-input-bar">
+      <input class="chat-input" id="chat-input" placeholder="Tulis balasan ke ${c.name}...">
+      <button class="btn-send" onclick="sendMessage()">Kirim 🚀</button>
+    </div>
+  `;
+
+  const body = document.getElementById("chat-body");
+  body.scrollTop = body.scrollHeight;
+}
+
+function openConv(id){
+  activeId = id;
+  const c = conversations.find(x => x.id === id);
+  if(c) c.unread = 0; // mark as read
+  renderSidebar();
+  renderChat();
+}
+
+function sendMessage(){
+  const input = document.getElementById("chat-input");
+  if(!input.value.trim()) return;
+  const c = conversations.find(x => x.id === activeId);
+  c.messages.push({ from: "coach", text: input.value, time: "Sekarang" });
+  c.lastMsg = input.value;
+  c.time = "Baru saja";
+  input.value = "";
+  renderSidebar();
+  renderChat();
+}
+
+function filterConv(query){
+  const items = document.querySelectorAll(".conv-item");
+  const q = query.toLowerCase();
+  conversations.forEach((c, i) => {
+    items[i].style.display = c.name.toLowerCase().includes(q) ? "flex" : "none";
+  });
+}
+
+renderSidebar();
+renderChat();
+</script>
+</body>
+</html>
