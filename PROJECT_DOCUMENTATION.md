@@ -464,3 +464,39 @@ Legacy table — digunakan di sistem lama (quiz langsung per course). Sekarang p
 | **Kelola Course** | `/admin/courses` | Level 1: Card list course (icon, title, badges, meta). Tombol: Kelola Modul, Edit (✎), Hapus (🗑). Level 2: List modul (reorder ▲/▼, Edit, Hapus). Level 3: Form tambah/edit modul (info dasar + outline rows + quiz accordion + YouTube preview) |
 | **Floating Chat Widget** | Semua halaman admin | Tombol 💬 pojok kanan bawah dengan unread badge. Panel meluncur: sidebar sesi (tab Aktif/Arsip) + chat detail + input + "Selesaikan Sesi". Polling auto |
 | **Preview Mode** | — | Admin bisa lihat situs sebagai user biasa via toggle di navbar |
+
+---
+
+## 6. LOKALISASI BAHASA INDONESIA
+
+Project menggunakan Bahasa Indonesia untuk UI, dengan kaidah: **serapan umum tetap** (Coaching, Admin, Dashboard, Discord, YouTube, Password, Email — sudah lazim), **sisanya Bahasa Indonesia natural**.
+
+### 6A. File Bahasa Laravel — `lang/id/`
+
+| File | Fungsi |
+|------|--------|
+| `lang/id/auth.php` | Pesan error auth: `failed`, `password`, `throttle` |
+| `lang/id/pagination.php` | Label pagination: `previous` → "Sebelumnya", `next` → "Berikutnya" |
+| `lang/id/passwords.php` | Pesan reset password: `reset`, `sent`, `throttled`, `token`, `user` |
+| `lang/id/validation.php` | 100+ aturan validasi + `attributes` (nama, email, judul, discord_id, dll) + custom message (avatar.max → "Foto terlalu besar! Maksimal 2MB.") |
+
+### 6B. Konfigurasi
+
+- `APP_LOCALE=id` di `.env` + `.env.example`
+- `config/app.php` → `locale` = `id`
+
+### 6C. Perubahan Blade (non-exhaustive)
+
+| Area | Before | After |
+|------|--------|-------|
+| Navbar | `Home` / `Courses` | **Beranda** / **Kursus** |
+| Auth views | `Remember me`, `Forgot password`, `Log in`, `Register` | **Ingat saya**, **Lupa password?**, **Masuk**, **Daftar** |
+| Assignments | `read-only` | **hanya bisa dibaca** |
+| Profile | `Update Password` | **Ganti Password** |
+| Payment | `BCA Virtual Account Number` | **Nomer BCA Virtual Account** |
+
+### 6D. Kata yang Sengaja TIDAK Diterjemahkan
+
+Coaching, Dashboard, Admin, Password, Email, Textual Review, Panggil Pelatih, Demo Review, Discord, YouTube, BCA Virtual Account, Aim & Movement, Map Control, User, Profile, Quiz — semua dianggap serapan umum atau istilah gaming/esports.
+
+> Detail lengkap: lihat `BAHASA.md` di root project.
