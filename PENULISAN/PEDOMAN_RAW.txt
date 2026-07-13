@@ -1,0 +1,685 @@
+UNIVERSITAS
+GUNADARMA
+PENULISAN ILMIAH
+Buku Pedoman ini dibuat untuk membantu mahasiswa program studi Sistem Informasi dalam penyelesaian PI agar dapat diselesaikan tepat waktu.
+
+EEdidsiis1i 3- 2- 0220626
+
+SISTEM INFORMASI
+FAKULTAS ILMU KOMPUTER DAN TEKNOLOGI INFORMASI
+
+DAFTAR ISI
+1. PENDAHULUAN ................................................................................. 3
+1.1 Latar Belakang ........................................................................................... 3 1.2 Tujuan ......................................................................................................... 3 1.3 Bentuk Penulisan Ilmiah............................................................................ 3
+2. STRUKTUR DAN FORMAT TULISAN ILMIAH............................... 5
+2.1 Bagian Awal................................................................................................ 5 2.1.1 Halaman Sampul ............................................................................ 5 2.1.2 Halaman Judul ................................................................................ 5 2.1.3 Halaman Pernyataan Orisinalitas dan Publikasi.......................... 5 2.1.4 Halaman Pengesahan .................................................................... 6 2.1.5 Abstrak............................................................................................. 6 2.1.6 Kata Pengantar ............................................................................... 7 2.1.7 Daftar Isi........................................................................................... 7 2.1.8 Daftar Tabel, Daftar Gambar, Daftar Rumus, Daftar Lampiran 8
+2.2 Bagian Isi .................................................................................................... 8 2.2.1 Pendahuluan (Bagian 1) ................................................................ 8 2.2.2 Tinjauan Pustaka (Bagian 2)........................................................ 9 2.2.3 Pembahasan (Bagian 3) .............................................................. 10 2.2.4 Penutup (Bagian 4)....................................................................... 10
+2.3 Bagian Akhir ............................................................................................. 11 2.3.1 Daftar Pustaka .............................................................................. 11 2.3.2 Lampiran ........................................................................................ 11
+3. TEKNIS PENULISAN ....................................................................... 12
+3.1 Kertas........................................................................................................ 12 3.2 Format Pengetikan................................................................................... 12 3.3 Penomoran Bab serta Subbab ............................................................... 12 3.4 Penomoran Halaman............................................................................... 13 3.5 Judul dan Nomor Gambar/Grafik/Tabel ................................................. 13 3.6 Format Penulisan Daftar Pustaka .......................................................... 14 3.7 Format Pengutipan .................................................................................. 15 3.8 Format Lain.............................................................................................. 15
+4. TEKNIK PEMBIMBINGAN DAN SIDANG PI................................. 16
+4.1 Teknik Pembimbingan............................................................................. 16 4.2 Sidang PI .................................................................................................. 16
+5. HASIL TULISAN/KERJA PRAKTEK.............................................. 18
+5.1 Hasil Tulisan Ilmiah.................................................................................. 18 5.2 Presentasi Hasil Tulisan.......................................................................... 19 5.3 Pengumpulan Tanda Tangan Ketua Jurusan ........................................ 19 5.4 Pengumpulan Tanda Tangan Kasubag Sidang PI ................................ 19 5.5 Pengumpulan ke Perpustakaan...............................................
+1
+
+19
+6. LAMPIRAN.........................................................................................21
+5.1 Lampiran 1 Halaman Judul ...................................................................21 5.2 Lampiran 2 Pernyataan Orisinalitas dan Publikasi..............................22 5.3 Lampiran 3 Lembar Pengesahan..........................................................23 5.4 Lampiran 4 Penulisan Abstrak ..............................................................24 5.5 Lampiran 5 Kata Pengantar...................................................................25 5.6 Lampiran 6 Daftar Isi..............................................................................26 5.7 Lampiran 7 Daftar Tabel/Daftar Gambar/Daftar Lampiran .................27 5.8 Lampiran 8 Penamaan Bagian..............................................................30 5.9 Lampiran 9 Penulisan Sitasi..................................................................31 5.10 Lampiran 10 Daftar Pustaka....................................................................32 5.11 Lampiran 11 Lembar Pernyataan Ujicoba..............................................34 5.12 Lampiran 12 Penamaan Lampiran Listing Program .............................35 5.13 Lampiran 13 Penamaan Lampiran Output Program .............................36 5.14 Lampiran 14 Surat Persetujuan ACC .....................................................37 5.15 Lampiran 15 Isian Sertifikat Setara Sarjana Muda................................38
+2
+
+1. PENDAHULUAN
+1.1. Latar Belakang
+Pembuatan tulisan ilmiah merupakan mata kuliah yang wajib diambil dan dikerjakan oleh seluruh mahasiswa S1 di Universitas Gunadarma. Mata kuliah yang bertujuan untuk melatih mahasiswa untuk mengidentifikasi dan memecahkan masalah dari hasil pengamatan, ekaperimen atau pengalaman kerja dengan menggunakan pengetahuan dan ketrampilan bidang sistem informasi yang dituangkan dalam bentuk sebuah laporan tertulis berdasarkan kaidah penelitian ilmiah.
+Jumlah mahasiswa yang besar dan luasnya implementasi bidang sistem informasi dalam kehidupan menyebabkan keragaman topik yang dipilih oleh mahasiswa sangat beragam. Keragaman topik yang dipilih mahasiswa menunjukan bahwa mahasiswa jurusan informasi peka terhadap kondisi sekitar dimana mereka bertempat tinggal, hal ini menjadi kebanggan program studi Sistem Informasi. Namun demikian keadaan di atas perlu ditunjang dengan adanya sebuah panduan yang dapat dijadikan sebagai acuan bagi mahasiswa untuk dapat menyelesaikan mata kuliah Penulisan Ilmiah/Kerja Praktek tepat waktu.
+1.2. Tujuan
+Tujuan pembuatan pedoman penulisan ilmiah adalah memberikan panduan kepada mahasiswa yang dapat digunakan oleh mahasiswa sebagai acauan untuk menentukan tema atau topik tulisan ilmiah, bentuk tulisan ilmiah, dan format penulisan. Pedoman tulisan ilmiah ini juga dapat digunakan sebagai pedoman oleh pembimbing dalam proses pembimbing, sehingga dapat mempercepat proses penyelesaian tulisan ilmiah sebagai luaran dari mata kuliah Penulisan Ilmiah/kerja praktek di semester 6.
+1.3. Bentuk Penulisan Ilmiah
+Mahasiswa program studi Sistem Informasi diberi kebebasan untuk menentukan bentuk isi tulisan ilmiah yang akan dibuat dengan memperhatikan beberapa hal berikut: 1) Relevan dengan bidang ilmu Sistem Informasi. 2) Tingkat kedalaman dan keluasan isi tulisan ilmiah minimum setara dengan
+level 5 KKNI. 3) Batasan masalah disesuaikan dengan batas waktu penyelesaian tulisan ilmiah
+(1 semester). 4) Tidak melakukan plagiasi dari hasil penelitian atau tulisan ilmiah yang sudah
+ada. 3
+
+Beberapa bentuk tulisan Ilmiah: 1) Sistem Informasi Bisnis (Fokus pada pengembangan sistem untuk
+mendukung bisnis dan amanjemen). 2) Manajemen Proyek dan Tata Kelola Sistem Informasi (Fokus pada
+pengelolaan proyek SI, IT governace, audit SI, serta evaluasi kinerja sistem dan tim). 3) Basis Data dan Data Analytics (Fokus pada pengelolaan dan analisis data 4) Pengembangan dan Evaluasi Aplikasi (Fokus pada pembangunan aplikasi berbasis web/mobile serta pengujian kualitas dan usability). 5) Bussiness Intelligence dan Decision Support Systems (Fokus pada pengambilan keputusan stategis). 6) Inovasi dan Transformasi Digital (Fokus pada pemanfaatan teknologi untuk inovasi dan transformasi); Pemanfaatan Teknologi Cerdas (AI/IoT) dalam sistem informasi (Fokus pada integrasi AI, machine learning, atau IoT dalam solusi sistem informasi). 7) Eksplorasi tools, software, bahasa pemrograman atau aplikasi (termasuk AI) dengan contoh penggunaannya (Fokus pada pemahaman fungsionalitas, identifikasi kelebihan dan kekurangan, analisis performa, dokumentasi teknis, rekomendasi pengguna, temuan masalah, peluang pengembangan, benchmarking, laporan kompatibilitas).
+4
+
+2. STRUKTUR DAN FORMAT TULISAN ILMIAH
+Struktur tulisan ilmiah terdiri dari 3 bagian, yaitu: 1) Bagian Awal 2) Bagian Isi 3) Bagian Akhir
+2.1. Bagian Awal
+Bagian Awal, terdiri dari : 1) Halaman Sampul 2) Halaman Judul 3) Halaman Pernyataan Orisinalitas dan Publikasi 4) Halaman Pengesahan 5) Abstrak 6) Kata Pengantar 7) Daftar Isi 8) Daftar Tabel, Daftar Gambar, Daftar Rumus, Daftar Lampiran (jika diperlukan)
+2.1.1. Halaman Sampul Halaman sampul adalah halaman sampul depan/ cover Tulisan Ilmiah.
+Halaman ini harus memberikan informasi singkat, jelas dan tidak bermakna ganda (ambigu) kepada pembaca. Halaman sampul ini memuat informasi berupa nama institusi Universitas Gunadarma, Fakultas, Logo Universitas Gunadarma, jenis karya ilmiah (Tulisan Ilmiah), Judul, Identitas Penulis (nama dan npm), Jurusan, Nama Pembimbing. Kota (Jakarta), Tahun Pengesahan.
+2.1.2. Halaman Judul Halaman judul secara umum adalah informasi yang sama dengan halaman
+sampul. Terlihat pada lampiran 1. Ketentuan penulisan Halaman Judul adalah sebagai berikut:
+a. Diketik simetris di tengah (center). b. Jenis huruf adalah Times New Roman dan semua huruf ditulis dengan spasi
+tunggal (line spacing = single) c. Logo Gunadarma dengan diameter 6 cm d. Nama Universitas, Jenis karya ilmiah dan Judul ditulis dalam Huruf Besar
+dengan ukuran 14 poin.
+5
+
+e. Nama Fakultas, Nama Penulis, NPM, Nama Jurusan, Nama Pembimbing, Kota, Tahun Pembuatan skripsi ditulis dalam Huruf Besar diawal kata dengan ukuran 12 poin.
+Contoh Halaman Judul dapat dilihat pada Lampiran 1
+2.1.3. Halaman Pernyataan Orisinalitas dan Publikasi Halaman ini berisi pernyataan tertulis dari penulis bahwa tulisan Ilmiah yang
+disusun adalah hasil karya sendiri dan ditulis dengan mengikuti kaidah penulisan ilmiah dan dapat dipublikasikan sepenuhnya oleh pihak Universitas. Halaman ini terdiri dari: Nama Penulis, NPM, Judul Tulisan Ilmiah, Tanggal Sidang, Tanggal Lulus dan Penyataan Tulisan Ilmiah adalah hasil karyanya sendiri dan dapat dipublikasikan sepenuhnya oleh Universitas.
+Ketentuan penulisan Halaman Pernyataan Originalitas dan Publikasi adalah Jenis font yang digunakan adalah Times New Roman 12 poin, spasi 1.5 dan posisi rata kiri dan kanan (justify).
+Contoh Halaman Pernyataan Originalitas dapat dilihat pada Lampiran 2
+2.1.4. Halaman Pengesahan Halaman pengesahan dituliskan Judul PI, Nama, NPM, Tanggal Sidang,
+Tanggal Lulus, dan tanda tangan Pembimbing, Kasubag. Sidang PI, serta Ketua Program Studi Sistem Informasi. Halaman ini sebagai bentuk penjaminan keabsahan tulisan ilmiah dan pernyataan penerimaannya. Terlihat pada lampiran 3.
+Ketentuan penulisan Halaman Pengesahan adalah Jenis font yang digunakan adalah Times New Roman 12 poin, spasi 1.
+Contoh Halaman Pengesahan dapat dilihat pada Lampiran 3
+2.1.5. Abstrak Berisi ikhtisar dari tulisan yang berisi permasalahan, tujuan, metode yang
+digunakan, hasil dan simpulan. Abstrak ini untuk memudahkan pembaca mengerti dengan cepat isi dari Tulisan Ilmiah.
+Ketentuan penulisan abstrak adalah sebagai berikut: a. Maksimum 200 kata dalam satu paragraf, diketik dengan jenis font Times New
+Roman 12 poin, spasi tunggal (line spacing = single). b. Abstrak disusun dalam dua bahasa, yaitu bahasa Indonesia dan bahasa
+Inggris. c. Jika memungkinkan, pengetikan untuk abstrak bahasa Indonesia dan Inggris
+diletakkan dalam satu halaman.
+6
+
+d. Nama Mahasiswa, NPM, Judul Tulisan Ilmiah, Program Studi, kata kunci (3-5 kata diurut abjad) ditulis di atas abstrak. Untuk Abstrak dalam Bahasa Indonesia, Kata Kunci diberikan dalam Bahasa Indonesia. Untuk Abstrak dalam Bahasa Inggris, Kata Kunci diberikan dalam Bahasa Inggris (dicari padanan katanya).
+e. Di bagian bawah Abstrak dituliskan tahun Daftar Pustaka yang digunakan. f. Semua istilah asing, kecuali nama, dicetak miring (italic).
+Contoh Abstrak dapat dilihat pada Lampiran 4
+
+2.1.6. Kata Pengantar Halaman Kata Pengantar memuat pengantar singkat tulisan ilmiah.
+Halaman kata pengantar memuat ucapan terima kasih atau penghargaan kepada berbagai pihak yang telah membantu dalam penyusunan tulisan ilmiah. Nama pihak yang membantu harus dicantumkan gelar akademik. Sebaiknya, ucapan terima kasih atau penghargaan tersebut juga mencantumkan bantuan yang mereka berikan, misalnya bantuan dalam memperoleh masukan, data, sumber informasi, serta bantuan dalam menyelesaikan tulisan ilmiah.
+Ketentuan penulisan Kata Pengantar sebagai berikut: a. Semua huruf ditulis dengan jenis Times New Roman 12 poin, spasi 1,5 (line
+spacing = 1.5 lines). b. Judul Kata Pengantar ditulis dengan tipe Times New Roman 12 poin, dicetak
+tebal dan huruf besar. c. Jarak antara judul dan isi Kata Pengantar adalah 2 x 1,5 spasi d. Urutan pihak-pihak yang diberi ucapan terima kasih adalah sebagai berikut: 1)
+Rektor, (2) Dekan, (3) Ketua Jurusan, (4) Kasubag Sidang PI, (5) Pembimbing, (6) Perusahaan, (7) Keluarga, (8) Rekan-rekan, dan seterusnya secara berurutan. (Untuk nomor 1 ­ 5 jika ada nama yang belum punya Gelar Depan maka diberi kata depan "Bapak/ Ibu", contoh: Bapak Julius Nursyamsi, SE., MM. atau Ibu Fani Yulia Rosyada, SE., MMSI; Nama orang tua harus ditulis dengan lengkap).
+
+Contoh Kata Pengantar dapat dilihat pada Lampiran 5
+
+2.1.7. Daftar Isi Daftar Isi memuat semua bagian tulisan beserta nomor
+masing-masing, yang ditulis sama dengan isi yang bersangkutan. Ketentuan penulisan Daftar Isi dapat dilihat sebagai berikut:
+
+halaman
+
+7
+
+a. Semua huruf ditulis dengan tipe Times New Roman 12 poin dengan spasi tunggal (line spacing = single).
+b. Khusus untuk judul tiap bab ditulis dengan Times New Roman 12 poin, dicetak tebal dan huruf besar (kapital).
+c. Jarak antara judul dengan isi Daftar Isi adalah 3 spasi.
+Contoh Daftar Isi dapat dilihat pada Lampiran 6
+2.1.8. Daftar Tabel, Daftar Gambar, Daftar Rumus, Daftar Lampiran Lampiran merupakan data atau pelengkap atau hasil olahan yang
+menunjang penulisan tugas akhir, tetapi tidak dicantumkan di dalam isi tuga skripsi, karena akan mengganggu kesinambungan pembacaan. Lampiran yang perlu disertakan dikelompokkan menurut jenisnya, antara lain jadwal, tabel, daftar pertanyaan, gambar, grafik, desain.
+Ketentuan penulisan Daftar Gambar Skripsi secara umum adalah sebagai berikut: a. Semua huruf ditulis dengan tipe Times New Roman 12 poin dalam spasi
+tunggal (line spacing single). b. Khusus untuk judul Daftar Gambar ditulis dengan tipe Times New Roman 12
+poin, dicetak tebal dan huruf besar (kapital).
+Contoh Daftar Tabel, Daftar Gambar, Daftar Rumus, dan Daftar Lampiran dapat dilihat pada Lampiran 7
+2.2. Bagian Isi
+Bagian isi terdiri dari 4 (empat) bagian, yaitu Pendahuluan, Tinjauan Pustaka, Pembahasan serta Penutup.
+2.2.1. Pendahuluan (Bagian 1) Pendahuluan menguraikan pokok persoalan, terdiri atas:
+a. Latar Belakang Menguraikan mengapa penulis sampai kepada pemilihan topik permasalahan yang bersangkutan. Bagian ini memaparkan secara singkat, tajam dan terurut, alasan mengapa suatu topik penelitian dipilih yang menjadi acuan penulisan. Bagian ini sering disebut sebagai motivator atau pendorong dilakukannya penelitian. Minimal terdiri dari 3 (tiga) alinea. Alinea pertama menguraikan masalah yang akan dibahas dalam penelitian. Alinea kedua menguraikan perkembangan teknologi yang akan digunakan. Alinea ketiga menguraikan solusi terhadap permasalahan yang ada.
+8
+
+b. Ruang Lingkup Memberikan batasan yang jelas bagian mana dari persoalan yang dikaji yang menggambarkan rumusan konkrit dari masalah utama yang akan diteliti.
+c. Tujuan Penelitian Menggambarkan hasil yang diharapkan dari penelitian ini dengan memberikan jawaban terhadap masalah yang diteliti (bukan tujuan penulisan), yang akan tertulis pada simpulan.
+d. Metode Penelitian Bagian metode penelitian menjelaskan secara rinci setiap kegiatan/ langkah-langkah penelitian yang dilakukan untuk menjawab tujuan yang sudah diuraikan pada bagian 1. Bagian ini juga menjelaskan peralatan dan bahan yang dibutuhkan dalam penelitian (jika ada). Inti dari bagian ini adalah pembaca dapat melakukan ulang persis seperti peneliti lakukan berdasarkan uraian yang diberikan peneliti dalam bagian ini. Semua langkah-langkah yang dilakukan tidak boleh ada yang ditutupi, dan dijelaskan secara kronologis dan sistematis. Untuk penelitian ilmu komputer, bagian ini dapat diisi dengan uraian peralatan yang dibutuhkan, algoritma/ metode yang digunakan, prosedur implementasi (mengacu pada metode yang digunakan), komponen utama yang dibutuhkan, perangkat komputer dan software untuk program flash, diagram alur, pembuatan program. Alinea pertama menjelaskan tentang langkah/ tahapan yang dilakukan dalam penelitian, alinea kedua membahas mengenai hardware dan software yang digunakan dalam penelitian.
+e. Sistematika Tulisan Ilmiah Memberikan gambaran umum dari bagian ke bagian dari isi Tulisan Ilmiah yang dituangkan dalam bentuk narasi, bukan dengan penomoran.
+Contoh Penamaan Bagian dapat dilihat pada Lampiran 8
+2.2.2. Tinjauan Pustaka (Bagian 2) Menguraikan teori-teori yang menunjang tulisan/penelitian (definisi,
+pengertian, teori dan lain-lain), yang bisa diperkuat dengan menunjukkan hasil penelitian sebelumnya. Dapat pula ditambahkan alat bantu/ program penunjang yang digunakan untuk membantu penelitian, sebatas perkembangan terkini, kelebihan, keuntungan dan keterbatasan alat bantu. Alat bantu tersebut memiliki karakteristik yang sesuai untuk pencapaian solusi tujuan. Tidak perlu memasukkan manualnya. Diwajibkan untuk memasukkan minimal dua artikel (dari jurnal/ prosiding) yang mendukung. Sumber dari tinjauan pustaka ini tidak boleh berasal dari wikipedia, blogspot, wordpress atau jenis lainnya yang belum terjamin kebenarannya. Menuliskan rujukan sesuai dengan format FIKTI.
+9
+
+Contoh Penulisan Sitasi dapat dilihat pada Lampiran 9
+2.2.3. Pembahasan (Bagian 3) Bagian pembahasan menguraikan tahapan kegiatan penelitian yang
+dilakukan untuk menjawab tujuan penelitian dan hasil yang dicapai sesuai dengan tujuan penelitian yang dituangkan pada subbagian 1.3. Kalimat yang digunakan pada bagian ini adalah kalimat informasi bukan kalimat perintah. o Apabila tulisan ilmiah berupa disain, analisis atau pengembangan sebuah
+aplikasi atau sistem berbasis desktop atau mobile. (termasuk UI/UX, game, aplikasi web, Aplikasi mobile, inovasi digital, manajemen proses bisnis) pembahasan berupa langkah disain, analisis dan pengembangan aplikasi sistem dan hasil berupa disain, hasil analisis, saran perbaikan dari hasil analisis atau sebuah aplikasi atau sistem. o Apabila tulisan ilmiah berupa disain, analisis dan pengembangan sebuah sistem keamanan komputer, jaringan komputer atau infrastruktur teknologi informasi. (Termasuk IoT, Cloud Computing, Smart Home, Smart City) pembahasan berupa langkah disain, analisis dan pengembangan sebuah sistem dan hasil berupa disain, hasil analisis, saran perbaikan dari hasil analisis atau sebuah sistem keamanan komputer, jaringan komputer atau infrastruktur teknologi informasi. o Apabila tulisan ilmiah berupa implementasi dari sebuah konsep teori sistem informasi dalam rangka pemecahan masalah. (misal : Matematika, Graph, Kecerdasan Artificial) pembahasan berupa langkah implementasi disertai dengan contoh serta hasil implementasi konsep dan teori. o Apabila tulisan ilmiah berupa hasil kerja praktek, pembahasan berisi tentang informasi kegiatan yang dilakukan selama mengikuti kerja praktek serta hasil yang diperoleh dari rangkaian kerja paraktek.
+2.2.4. Penutup (Bagian 4) Bagian penutup merupakan akhir dari struktur utama penulisan yang terdiri
+dari 2 bagian yaitu bagian kesimpulan dan saran. a. Kesimpulan
+Kesimpulan berisikan jawaban dari apa yang menjadi tujuan penelitian yang telah dituangkan pada subbagian 1.3 dan menuangkan hasil ujicoba yang telah dilakukan pada bagian 3. b. Saran Ditujukan kepada pihak-pihak terkait, sehubungan dengan pengembangan penelitian selanjutnya. Hindari kata-kata yang bermakna negatif.
+contoh: "Aplikasi/alat ini tidak memberikan informasi dalam bentuk tiga dimensi", diubah menjadi "Aplikasi/ alat ini masih dapat dikembangkan dengan memberikan informasi dalam bentuk tiga dimensi".
+10
+
+2.3. Bagian Akhir
+Bagian akhir ini terdiri dari: a. Daftar Pustaka b. Lampiran
+2.3.1. Daftar Pustaka Berisi daftar referensi (buku, jurnal, majalah, ebook, dan sebagainya), yang
+digunakan dalam tulisan. Minimal 10 referensi yang digunakan dalam tulisan. Berisi informasi tentang sumber pustaka yang telah dirujuk dalam tubuh tulisan. Untuk setiap pustaka yang dirujuk dalam naskah harus muncul dalam daftar pustaka, begitu juga sebaliknya setiap pustaka yang muncul dalam daftar pustaka harus pernah dirujuk dalam tubuh tulisan. Hindari referensi yang bersumber dari blog. Penulisan dari sebuah URL, gunakan opsi "remove hyperlink". Penulisan mengikuti format FIKTI dan diurutkan berdasarkan nama pengarang. Lihat Lampiran 10.
+2.3.2. Lampiran Penjelasan tambahan merupakan penjelasan rinci dari apa yang disajikan
+di bagian-bagian terkait sebelumnya. Untuk program studi Sistem Informasi dapat berupa lembar pernyataan ujicoba aplikasi (Lampiran 11), listing program (Lampiran 12), dan output aplikasi (Lampiran 13).
+11
+
+3. TEKNIK PENULISAN
+Teknik penulisan merupakan faktor untuk mewujudkan Tulisan Ilmiah agar rapi dan sama.
+3.1. Kertas
+Spesifikasi kertas yang digunakan : - Jenis : HVS - Warna : Putih polos - Berat : 80 gram - Ukuran : A4 (21,5 cm x 29,7 cm)
+3.2. Format Pengetikan
+Berikut adalah format pengetikan: a. Menggunakan kertas ukuran A4. b. Margin atas: 4 cm, margin bawah: 3 cm. c. Margin kiri: 4 cm, margin kanan: 3 cm. d. Jarak spasi: 1,5 spasi dengan before dan after: 0 (khusus ABSTRAK hanya 1
+spasi). e. Jenis huruf (Font): Times New Roman. f. Ukuran/ variasi huruf:
+- Judul Bagian: 14/ Tebal, HURUF KAPITAL - Isi: 12/ Normal - Judul Subbagian : 12/ Tebal, HURUF KAPITAL g. Isi Lampiran menggunakan ukuran: 8 dengan spasi 1.
+3.3. Penomoran Bagian serta Subbagian
+Aturan penomoran bagian serta subbagian sebagai berikut: a. Bagian diberi nomor dengan menggunakan angka arab/ latin. b. Subbagian diberi nomor dengan menggunakan angka arab/ latin dengan
+mengacu pada nomor bagian/ subbagian tempat bagian ini terdapat.
+Contoh: 1. PENDAHULUAN 1.1. Latar Belakang 1.2. Batasan Masalah 2. TINJAUAN PUSTAKA 2.1. Subbagian 2.2. Subbagian 2.2.1. Judul Sub-Subbagian 2.2.2. Judul Sub-Subbagian
+12
+
+c. Penamaan subbagian tidak boleh sendiri atau tunggal, minimal harus ada 2 (dua) subbagian.
+d. Penulisan nomor dan judul bagian di tengah dengan huruf besar, ukuran font 14, tebal.
+e. Penulisan nomor dan judul subbagian dimulai dari kiri, dimulai dengan huruf besar, ukuran font 12, tebal.
+f. Judul Subbagian ditulis dengan font style bold (cetak tebal), dimulai dari sebelah kiri, huruf pertama setiap kata ditulis dengan huruf besar (kapital), kecuali kata-kata tugas, seperti preposisi ("di", "ke", "dari", "yang", "antara", "pada", "untuk", "tentang", "dengan"); kata sambung ("dan", "atau", "sejak", "setelah", "karena").
+g. Judul sub-subbagian tidak boleh hanya ada satu, minimal 2 (dua) sub-subbagian. Jika hanya satu, tidak perlu menggunakan sub-subbagian.
+3.4. Penomoran Halaman
+Aturan dalam penomoran halaman sebagai berikut: a. Bagian Awal
+Nomor halaman ditulis dengan angka romawi huruf kecil (i, ii, iii, iv, ...). Posisi di tengah bawah (2 cm dari bawah). Khusus untuk lembar judul dan lembar pengesahan, nomor halaman tidak perlu diketik, tapi tetap dihitung.
+b. Bagian Pokok Nomor halaman ditulis dengan angka arab/ latin. Halaman pertama dari bab pertama adalah halaman nomor satu. Peletakan nomor halaman untuk setiap awal bab di bagian bawah tengah, sedangkan halaman lainnya di pojok kanan atas.
+c. Bagian akhir Nomor halaman ditulis di bagian bawah tengah dengan angka latin diawali dengan huruf L-. Contoh L-1, L-2,.......
+3.5. Judul dan Nomor Gambar/ Grafik dan Tabel
+Pemberian judul dan nomor gambar atau tabel memiliki aturan sebagai berikut: a. Judul gambar/ grafik diketik di bagian bawah tengah dari gambar.
+b. Judul tabel diketik di sebelah atas tengah dari tabel. Judul tabel diketik di sebelah atas tengah dari tabel. Judul-judul kolom tidak cetak tebal. Spasi untuk tabel dibuat 1 mulai dari judul tabel hingga isi tabel. Layout bisa menyesuaikan. Jika tabel lebih dari satu halaman, dibuat setiap halaman muncul judulnya (Layout>Repeat header rows)
+c. Penomoran tergantung pada bab yang bersangkutan,
+contoh: Gambar 3.1 berarti gambar pertama yang ada di bagian 3.
+13
+
+d. Penunjukkan gambar dan tabel dengan menyebutkan nomornya, misal ".... yang ditunjukkan pada Gambar 3.1.", TIDAK BOLEH "..... yang ditunjukkan pada gambar di atas/bawah".
+3.6. Format Penulisan Daftar Pustaka
+Daftar Pustaka mengikuti aturan format penulisan daftar pustaka. a. Dituliskan secara alfabetik, tidak diberi nomor urut. Apabila ada pengarang
+menulis lebih dari satu buku, maka diurut berdasarkan buku yang paling lama dibuat. b. Nama pengarang asing ditulis dengan format: nama keluarga, nama depan (dibalik). c. Nama pengarang Indonesia (ras Asia) ditulis normal. d. Gelar tidak perlu dituliskan. e. Setiap pustaka diketik dengan jarak satu spasi. Jarak antara satu pustaka dengan pustaka lainnya diberi jarak dua spasi. f. Semua nama pengarang ditulis lengkap. g. Tahun terbit disarankan minimal 5 tahun di belakang. h. Sumber pustaka lainnya dari internet non formal, jurnal/ prosiding. i. Judul Buku/ Artikel/ Prosiding/ Jurnal ditulis dengan menggunakan garis bawah/ tebal/ miring. j. Format penulisan pustaka mengikuti aturan FIKTI. k. Penulisan daftar pustaka tergantung jenis informasinya yang secara umum memiliki urutan sebagai berikut:
+1. Buku Penulis. Tahun. Judul Buku (edisi). Tempat Terbit: Penerbit.
+2. Buku Online Penulis. Tahun. Judul Buku (edisi). Tempat: Penerbit. Diakses dari URL... tanggal .....
+3. Jurnal/ Prosiding Penulis. Tahun. Judul Artikel. Nama Jurnal/ Prosiding. Vol. No. Halaman.
+4. Jurnal Online/ Web Profesional Penulis. Tahun. Judul Artikel. Nama Jurnal. Vol. No. Halaman. Diakses dari URL .... tanggal .....
+5. Artikel Online Penulis. Tahun. Judul Artikel. Diakses dari URL .... tanggal ......
+6. Dokumen dari Situs Universitas atau Bagian Penulis. Tahun. Judul dokumen online. Diakses dari nama Institusi, Judul Web, URL..... tanggal ......
+14
+
+7. Publikasi Pemerintah Online Institusi. Tahun. Judul Publikasi (nomor publikasi). Tempat: Penerbit. Diakses dari URL .... tanggal ......
+3.7. Format Pengutipan
+Pengutipan dibuat sederhana, judul materi yang diacu tidak perlu diletakkan di bagian bawah pada halaman yang bersangkutan, melainkan cukup dengan memberikan nama pengarang dan tahun setelah selesai kutipan yang diambil mengikuti rujukan format FIKTI, misalnya ....kutipan....... (nama pengarang, tahun). Referensi diletakkan di belakang kalimat sebelum titik.
+3.7. Format Lain
+Format lain yang perlu diperhatikan: a. Tidak boleh ada singkatan, misal dll, sbb, a.l; harus diuraikan (dan lain-lain,
+sebagai berikut, antara lain). b. Singkatan lain, perlu disebutkan satu kali kepanjangannya baru singkatannya,
+untuk selanjutnya boleh digunakan singkatannya saja, misal Video Display Unit (VDU), untuk selanjutnya bisa disebut VDU saja. c. Sedapat mungkin, kata asing di-Indonesia-kan. Jika belum ada kata serapannya, kata asing tersebut dibuat dalam font italic. d. Tidak boleh ada kata ganti orang dalam tulisan, misal Anda, Kita, Kamu, Saya. e. Buat kalimat menjadi kalimat informasi atau kalimat berita/ ilmiah.
+15
+
+4. TEKNIK PEMBIMBINGAN DAN SIDANG PI
+
+4.1. Teknik Pembimbingan
+Teknik Pembimbingan melibatkan dosen sebagai pembimbing dan mahasiswa sebagai yang dibimbing untuk membuat Tulisan Ilmiah sebagai salah satu syarat pemenuhan mata kuliah.
+
+1. Dosen menunaikan kewajiban membimbing dan mengarahkan mahasiswa
+
+bimbingannya dalam hal penulisan hingga pembuatan presentasi untuk
+
+sidang PI. Pedoman PI dapat diunduh pada link
+
+https://fikti.gunadarma.ac.id/sisinformasi/?page_id=2722.
+
+2. Bimbingan harus dilakukan minimal 10 kali pertemuan
+
+3. Setiap melakukan konsultasi bimbingan, mahasiswa membawa buku
+
+bimbingan Tulisan Ilmiah, agar dapat terpantau kemajuannya. Buku
+
+bimbingan
+
+dapat
+
+diunduh
+
+pada
+
+link
+
+berikut
+
+https://fikti.gunadarma.ac.id/sisinformasi/?page_id=2722.
+
+4. Diwajibkan membuat buku manual/ poster.
+
+4.2. Sidang PI
+
+Mahasiswa yang telah mendapatkan ACC SURAT PERSETUJUAN UJIAN
+
+SIDANG PENULISAN PENELITIAN/KERJA PRAKTEK dari dosen Pembimbing
+
+untuk Tulisan Ilmiahnya artinya mahasiswa tersebut telah menyelesaikan secara
+
+penuh Tulisan Ilmiahnya serta dianggap layak oleh pembimbing untuk maju
+
+sidang Penulisan Ilmiah dan diwajibkan melakukan pendaftaran sidang PI.
+
+Persyaratan yang perlu dipersiapkan diantaranya KRS Aktif yang terdapat
+
+matakuliah Penulisan Ilmiah, Surat Persetujuan Ujian Sidang Penulisan
+
+Penelitian/Kerja Praktek dengan format PDF, dan form isian sertifikat setara
+
+sarjana
+
+muda
+
+yang
+
+dapat
+
+diunduh
+
+pada
+
+http://baak.gunadarma.ac.id/infopi/files/FORM-ISIAN-SERTIFIKAT-SETARA-SARJ
+
+ANA-MUDA.pdf.
+
+Mahasiswa dapat mengirimkan persyaratan sidang tersebut pada email
+
+pifikti@gmail.com dengan subject: DaftarSidangPI-Nama-NPM, dan tunggu
+
+email balasan yang berisi arahan langkah selanjutnya dari bagian PI FIKTI.
+
+Informasi lengkapnyadisampaikan oleh bagian sidang penulisan ilmiah melalui link
+
+Berikut:
+
+https://docs.google.com/presentation/d/1qNm2XG7xZ3jQnNZv0Bdo0onZWiVD0b-
+
+0/edit?usp=sharing&ouid=118035840684069294682&rtpof=true&sd=true.
+
+Hal
+
+yang perlu disiapkan untuk sidang PI adalah:
+
+1. Mahasiswa menggunakan: 16
+
+a. Pria: kemeja putih lengan panjang, celana panjang hitam (bukan jeans), dasi hitam, rambut rapi (tidak gondrong) dan sepatu warna gelap. b. Wanita: kemeja/ blus putih, rok hitam (bukan jeans), rambut rapi, bila berhijab, menggunakan kerudung berwarna putih, dan sepatu warna gelap. 2. Naskah Tulisan Ilmiah dibuat dari Cover sampai dengan Lampiran dalam format pdf. 3. Hasil Tulisan Ilmiah dipresentasikan dengan membawa bahan/materi presentasi yang dibuat dalam format file presentasi. 4. Naskah tulisan ilmiah diketik dengan menggunakan aplikasi pengolah kata legal atau open source, misalnya Office, Open Office, LaTeX, dan sebagainya dengan mengikuti aturan ini. 5. Setelah sidang mahasiswa mendapatkan catatan perbaikan dari dosen revisi dan mahasiswa diwajibkan untuk memperbaiki sesuai dengan catatan perbaikan tersebut lalu mengirimkan kepada dosen revisi untuk dikoreksi kembali. Tulisan Ilmiah sudah dinyatakan sesuai dengan arahan dosen revisi maka dosen revisi akan melakukan validasi terhadap revisi tersebut dan mahasiswa bisa untuk mencetak naskah tulisan ilmiah untuk dibuat hardcover.
+Mahasiswa diberi waktu perbaikan selama maksimal 2 (dua) minggu dari tanggal sidang peserta
+17
+
+5. HASIL TULISAN/ KERJA PRAKTEK
+
+5.1. Hasil Tulisan Ilmiah
+Bentuk tulisan menurut aturan: a. Diketik dengan menggunakan aplikasi pengolah kata legal atau open source,
+antara lain: Office, Open Office, LaTeX, dan sebagainya dengan mengikuti aturan Untuk mahasiswa yang telah lulus sidang Penulisan Ilmiah, file yang diserahkan ke jurusan harus dalam format Word/ Open Office/ LATeX dan PDF (*.PDF). b. Dicetak dengan menggunakan printer dengan resolusi minimal 150 dpi (dianjurkan dengan LASER PRINTER). c. Dijilid berbentuk buku sebanyak 3 (tiga) eksemplar (untuk penguji, boleh asli atau fotokopi) dengan jumlah halaman bagian pokok paling sedikit 50 (lima puluh) halaman tidak termasuk halaman awal dan halaman akhir. d. Diseminarkan dengan membawa bahan/ materi presentasi yang dibuat dalam format file presentasi, baik dalam bentuk softcopy (disimpan dalam flashdisk/ CD) maupun dalam bentuk hardcopy (dicetak pada lembar plastik transparansi). e. Susunan Isi File Tulisan Ilmiah yang terpisah, terdiri dari:
+
+1) COVER/ SAMPUL DEPAN
+
+2) LEMBAR PENGESAHAN
+
+3) KATA PENGANTAR
+
+4) ABSTRAK
+
+5) DAFTAR ISI
+
+6) DAFTAR TABEL
+
+7) DAFTAR GAMBAR
+
+8) DAFTAR LAMPIRAN
+
+9) BAGIAN 1...
+
+file terpisah untuk setiap bagian
+
+10) BAGIAN 2 ......
+
+11) DAFTAR PUSTAKA
+
+12) LAMPIRAN/ LISTING PROGRAM
+
+f. Ketentuan Untuk HARD COVER. Di punggung hardcover diberi/ dituliskan: Judul PI, NPM, Nama Mahasiswa, Tahun Penulisan.
+f. Ketentuan ini harap diperhatikan karena bila tidak sesuai akan DITOLAK. g. Cara mengonversi dokumen Microsoft Word menggunakan program bantu
+seperti Adobe Acrobat Distiller (www.adobe.com), CutePDF (www.acrosoftware.com), dan lain-lain. h. Untuk dokumen OpenOffice, dapat menggunakan fitur built-in dari program yang bersangkutan untuk meghasilkan dokumen PDF. Direkomendasikan untuk menggunakan LaTeX.
+
+18
+
+5.2. Presentasi Hasil Tulisan
+
+Setelah tulisan ilmiah selesai, dilanjutkan dengan pembuatan presentasi
+
+hasil tulisan, dengan aturan:
+
+a. Tayangan dibuat dalam format presentasi (menggunakan perangkat lunak
+
+presentasi) yang disimpan dalam bentuk softcopy dan hardcopy. Template
+
+tayangan pada link https://fikti.gunadarma.ac.id/sisinformasi/?page_id=2722.
+
+b. Tayangan presentasi berisi pokok-pokok Tulisan Ilmiah
+
+c. Jumlah slide tidak lebih dari 15 halaman (lampiran slide disimpan dan
+
+ditampilkan pada saat dibutuhkan)
+
+d. Waktu presentasi tidak lebih dari 10 menit
+
+e. Isi tayangan presentasi:
+
+-
+
+Slide-1: Judul, Nama, NPM, Dosen Pembimbing
+
+-
+
+Slide-2: Latar Belakang dan Rumusan Masalah
+
+-
+
+Slide-3: Tujuan
+
+-
+
+Slide-4: Metode Penelitian
+
+-
+
+Slide-5: Pembahasan
+
+-
+
+...
+
+-
+
+...
+
+-
+
+Slide-10: Kesimpulan
+
+5.3. Pengumpulan Tanda Tangan Ketua Program Studi
+Mengirim tulisan ilmiah dan buku manual ke alamat sisinfo.pi@gmail.com dikirim ke dengan format subject: Npm_Nama dan nama file: tahun pembuatan_npm_nama. rar.
+Pembuat buku manual (untuk aplikasi, website dan lain-lain kecuali analisis), penulisan dan running program (untuk aplikasi contoh: .exe). Pembuatan buku manual dalam format word. Contoh template pembuatan buku manual dapat dilihat pada alamat:https://fikti.gunadarma.ac.id/sisinformasi/?page_id=2722.
+Selanjutnya bawa berkas ke D422 yang terdiri dari: Cover, Lembar Pengesahan (sudah ditandatangani Dosen Pembimbing), Abstrak, Kata Pengantar, dan surat catatan revisi yang sudah di ACC (terdapat tgl ACC) dimasukkan kedalam Map Bening. Mahasiswa diharapkan mengumpulkan kewajiban ini dalam waktu 2 (dua) minggu setelah selesai revisi.
+
+5.4. Pengumpulan Tanda Tangan Kasubag Sidang PI
+Memberikan berkas Penulisan Ilmiah yang sudah ditandatangani Dosen Pembimbing dan Ketua Program Studi ke loket administrasi Kampus D.
+
+5.5. Pengumpulan ke Perpustakaan
+Scan Lembar Pengesahan dan Orisinalitas (yang sudah ditandatangani lengkap). Unggah semua Tulisan Ilmiah dan hasil scan ke Perpus "studentsite". Menyerahkan hardcover tulisan ilmiah yang sudah ditandatangan dosen
+19
+
+pembimbing, kajur dan kasubag serta surat lulus sidang PI ke bagian/ loket
+
+perpustakaan untuk verifikasi. Setelah mendapatkan blangko sumbangan buku
+
+setara D3, lakukan pembayaran pada bank DKI dan kembali ke loket
+
+perpustakaan untuk mendapatkan bukti penyerahan PI. Lebih detil dapat dilihat
+
+pada alamat https://library.gunadarma.ac.id/info/sop-sumbang-penulisan-ilmiah.
+
+Mahasiswa dapat mengambil sertifikat setara sarjana muda dengan melihat
+
+informasi
+
+pada
+
+alamat
+
+http://bapsi.gunadarma.ac.id/wp-content/uploads/2020/06/loket-ijazah-transkrip-2.j
+
+pg dengan membawa bukti pembayaran sumbangan buku dan surat acc
+
+persetujuan sidang yang terdapat cap lulus.
+
+20
+
+Lampiran 1. Halaman Judul
+UNIVERSITAS GUNADARMA
+FAKULTAS ILMU KOMPUTER DAN TEKNOLOGI INFORMASI
+
+PENULISAN ILMIAH
+*DI ISI JUDUL PENULISAN
+
+DI SUSUN OLEH :
+
+NAMA NPM PROGRAM STUDI PEMBIMBING
+
+: *Di isi Nama Mahasiswa : *Di isi NPM Mahasiswa : Sistem Informasi : *Di isi nama Pembimbing Lengkap dengan Gelar
+
+JAKARTA TAHUN LULUS
+21
+
+Lampiran 2. Pernyataan Orisinalitas dan Publikasi
+PERNYATAAN ORISINALITAS DAN PUBLIKASI
+
+Saya yang bertanda tangan di bawah ini,
+
+Nama NPM Judul PI Tanggal Sidang Tanggal Lulus
+
+: <<Nama Mahasiswa>> : <<NPM Mahasiswa>> : <<Judul Penulisan Ilmiah>> : <<Tanggal diadakannya sidang>> : <<Tanggal kelulusan mahasiswa>>
+
+menyatakan bahwa tulisan ini adalah merupakan hasil karya saya sendiri dan dapat dipublikasikan sepenuhnya oleh Universitas Gunadarma. Segala kutipan dalam bentuk apa pun telah mengikuti kaidah, etika yang berlaku. Mengenai isi dan tulisan adalah merupakan tanggung jawab Penulis, bukan Universitas Gunadarma. Demikian pernyataan ini dibuat dengan sebenarnya dan dengan penuh kesadaran.
+
+Foto Diri, Ukuran 3x4, Hitam Putih
+
+Jakarta, <<Tanggal ­ bulan - tahun ACC>> <<T T D>>
+( <<Nama Mahasiswa>> )
+
+22
+
+Lampiran 3. Lembar Pengesahan
+LEMBAR PENGESAHAN
+
+Judul Penulisan Ilmiah : <<Judul Penulisan Ilmiah>>
+
+Nama
+
+: <<Nama Mahasiswa>>
+
+NPM
+
+: <<NPM Mahasiswa>>
+
+Program Studi
+
+: Sistem Informasi
+
+Tanggal Sidang
+
+: <<Tanggal diadakannya Sidang>>
+
+Tanggal Lulus
+
+: <<Tanggal kelulusan Mahasiswa>>
+
+Pembimbing
+
+Mengetahui, Kepala Subbagian Sidang PI
+
+( Nama dan Gelar Pembimbing )
+
+( Dr. Sri Nawangsari, SE., MM., M.I.Kom. )
+
+Ketua Program Studi
+
+( Dr. Naeli Umniati, ST, MMSI. ) 23
+
+Lampiran 4. Penulisan Abstrak
+
+ABSTRAK
+
+Nama Mahasiswa, NPM Mahasiswa JUDUL PI Tulisan Ilmiah . Sistem Informasi. Fakultas Ilmu Komputer dan Teknologi Informasi. Universitas Gunadarma. Tahun Lulus Kata kunci : katakunci1, katakunci2, katakunci3 (3 - 5 kata, urut abjad)
+(xii + 62 + Lampiran)
+Abstrak merupakan pemadatan dari hasil penelitian/tulisan. Ditulis 1 spasi dengan jumlah maksimum 200 kata (maksimum 1 halaman). Isi abstrak mencakup masalah utama, tujuan atau pertanyaan yang ingin dijawab oleh peneliti, metode penelitian/penulisan, hasil penelitian dan kesimpulan yang diperoleh dari penelitian. ............................................................... .................................................................................................................. ................................................................................................................. ................................................................................................................. ................................................................................................................. ................................................................................................................. ................................................................................................................. ................................................................................................................. ................................................................................................................. ................................................................................................................. .................................................................................................................
+Daftar Pustaka (<<tahun awal>> ­ <<tahun akhir>>)
+
+24
+
+Lampiran 5. Kata Pengantar
+
+KATA PENGANTAR
+
+Segala puji dan syukur ke hadirat Tuhan Yang Maha Kuasa yang telah memberikan berkat, anugerah dan karunia yang melimpah, sehingga penulis dapat menyelesaikan Penulisan Ilmiah ini. Penulisan Ilmiah ini disusun guna melengkapi sebagian syarat dalam mencapai gelar Setara Sarjana Muda pada program studi Sistem Informasi, Fakultas Ilmu Komputer dan Teknologi Informasi, Universitas Gunadarma. Adapun judul Penulisan Ilmiah ini adalah <<"JUDUL PI>>.
+Walaupun banyak kesulitan yang penulis harus hadapi ketika menyusun Penulisan Ilmiah ini, namun berkat bantuan dan dorongan dari berbagai pihak akhirnya tugas ini dapat diselesaikan dengan baik. Untukitu penulis mengucapkan terima kasih, kepada:
+1. Prof. Dr. E.S. Margianti, SE., MM., selaku Rektor Universitas Gunadarma. 2. Prof. Dr. Tubagus Maulana Kusuma, SKom., MEngsc., selaku Dekan Fakultas Ilmu
+Komputer dan Teknologi Informasi Universitas Gunadarma. 3. Dr. Naeli Umniati, ST.,MMSI., selaku Ketua Program Studi Sistem Informasi Fakultas Ilmu
+Komputer dan Teknologi Informasi Universitas Gunadarma. 4. Dr. Sri Nawangsari, SE., MM., M.I.Kom., selaku Kepala Sub Bagian Sidang Penulisan
+Fakultas Ilmu Komputer dan Teknologi Informasi Universitas Gunadarma. 5. .............., selaku Dosen Pembimbing ..........................................................................................
+...................................................................................................................................................... 6. ...................................................................................................................................................... 7. ......................................................................................................................................................
+dan seterusnya.........
+
+Jakarta, <<Bulan ­ Tahun>> TTD
+( <<Nama Penulis>> )
+
+25
+
+Lampiran 6. Daftar Isi
+
+DAFTAR ISI
+
+LEMBAR JUDUL ........................................................................................................i PERNYATAAN ORIGINALITAS DAN PUBILKASI ...............................................ii LEMBAR PENGESAHAN...........................................................................................iii ABSTRAK ....................................................................................................................iv KATA PENGANTAR...................................................................................................v DAFTAR ISI .................................................................................................................vii DAFTAR TABEL .........................................................................................................x DAFTAR GAMBAR.....................................................................................................xi DAFTAR LAMPIRAN .................................................................................................xiii
+1. PENDAHULUAN ..................................................................................................1 1.1 Latar Belakang ..................................................................................................1 1.2 Ruang Lingkup .................................................................................................2 1.3 Tujuan Penelitian ..............................................................................................2 1.4 Metode Penelitian .............................................................................................3 1.5 Sistematika Tulisan Ilmiah ................................................................................3
+2. TINJAUAN PUSTAKA .........................................................................................4 2.1 Sistem Pakar .....................................................................................................4 2.1.1 Kelebihan dan Kelemahan Sistem Pakar ............................................... 2.2 Laptop/Komputer Jinjing .................................................................................
+3. PERANCANGAN DAN IMPLEMENTASI ......................................................... 3.1 Gambaran Umum Aplikasi .................................................................................
+4. PENUTUP ................................................................................................................ 4.1 Kesimpulan ....................................................................... ................................. 4.2 Saran ...................................................................................................................
+DAFTAR PUSTAKA ..................................................................................................... LAMPIRAN ................................................................................................................... L-1
+
+26
+
+Lampiran 7. Daftar Tabel/Daftar Gambar/Daftar Lampiran
+DAFTAR TABEL
+Tabel 2.1 Tabel Menjelaskan tentang Versi Android ..................................................10 Tabel 2.2 Tabel Simbol-Simbol Flowchart .................................................................28 <<lanjutkan isi tabelnya>>
+27
+
+DAFTAR GAMBAR
+Gambar 2.1 Komponen-Komponen Sistem Pakar ......................................................... 7 Gambar 2.2 Tampilan Project Android Studio .............................................................. 16 <<lanjutkan isi tabelnya>>
+28
+
+DAFTAR LAMPIRAN
+Lampiran 1 Pernyataan Ujicoba Aplikasi...................................................................... L-1 Lampiran 2 Listing Program ........................................................................................... L-2 Lampiran 3 Output Program............................................................................................ L-17
+29
+
+Lampiran 8. Penamaan Bagian 1. PENDAHULUAN 1.1. Latar Belakang 1.2. Ruang Lingkup 2. TINJAUAN PUSTAKA 2.1. Judul Subbagian 2.2. Judul Subbagian 2.2.1. Judul Sub-Subbagian 2.2.2. Judul Sub-Subbagian
+Catatan: - Semua penomoran subbagian berada di sebelah kiri - Subsubbagian tidak boleh 1 (sendiri), minimal harus ada 2 subbubbagian - Jarak judul bagian besar ke dalam tulisan, 3X enter (enter ketiga) - Jarak antara sub bagian, 2X enter (enter kedua)
+30
+
+Lampiran 9. Penulisan Sitasi
+
+PENULISAN SITASI
+
+Menurut (Munawar, 2018) UML adalah ................. .................. ................ .................. ................... ..................... ............... ... ..........
+Sejarah perkembangan aplikasi mobile menurut (Edy, 2018) ...... .......... .......... .................. ................................................... ................. .......... .....................
+Handphone yang dikatakan sebagai smartphone adalah salah satu perangkat mobile yang awalnya hanya berfungsi sebagai alat komunikasi, namun kini memiliki fungsi lebih (Edy, 2016).
+Kuis adalah salah satu bentuk game edukasi, di mana user harus menjawab soal untuk mendapatkan nilai di akhir game (Bonifacio, Fitri dan Indra, 2018)............ ............. ........................
+Millealab adalah perangkat atau tools berbasis claud computing yang dapat membantu pembuatan konten bahan ajar (Anggoro, 2020). .................... ........ ........... ..........................
+Format proposal skripsi di Universitas Gunadarma telah diatur penulisannya mengikuti template yang telah disediakan (Sistem Informasi, 2018). ............... .......... .................... ........... ......................
+Lulusan sarjana strata 1 (S1) diharapkan dapat mengusai konsep teoritis secara mendalam baik di bidang pengetahuan maupuan keterampilan, (Kemenristekdikti, 2015). ......... .............. .............
+
+31
+
+Lampiran 10. Daftar Pustaka
+DAFTAR PUSTAKA
+
+Contoh Penulisan Referensi dari Buku
+Munawar. (2018). Analisis Perancangan Sistem Berorientasi Objek dengan UML. ISBN 9786026232779. Jakarta: Penerbit Informatika.
+
+Contoh Penulisan Referensi dari Buku Online
+
+Edy Budiman. (2018). Mobile Programming for Student. Mulawarman University Press.
+
+Diakses
+
+dari
+
+https://www.academia.edu/38253550/Buku_Ajar_Mobile_Programing_for_Student
+
+.pdf.
+
+Contoh Penulisan Referensi dari Jurnal
+Edy Budiman. (2016). Pemanfaatan Teknologi Location Based Service Dalam Pengembangan Aplikais Profil Kampus Universitas Mulawarman Berbasis Mobile. Jurnal Ilmiah ILKOM Volume 8 Nomor 3 (Desember 2016). ISSN: 20871716
+
+Contoh Penulisan Referensi dari Jurnal Online
+
+Bonifacio Barros, Fitri Marisa, Indra Dharma Wijaya. (2018). Pembuatan Game Kuis
+
+Siapa Pintar. Jurnal Informatika Merdeka Pasuruan. Vol 3, No 1 2018. Diakses
+
+tanggal
+
+14
+
+Februari
+
+2020
+
+dari
+
+https://ejurnal.unmerpas.ac.id/index.php/informatika/article/view/88.
+
+Contoh Penulisan Referensi dari Artikel Online
+Anggoro Surya Jati. (Rabu, 12 Feb 2020 20:48 WIB). Millealab, Platform Pembuat Konten VR untuk Guru. Tulisan pada https://inet.detik.com/cyberlife/d4896885/millealab-platform-pembuat-konten-vr-untukguru?_ga=2.264309197.398782407.1581668434-589898642.1531627318.
+
+Contoh Penulisan Referensi dari Dokumen dari Situs atau Bagian
+
+Gunadarma. (2020). Format Proposal Skripsi. Diakses dari Jurusan Sistem Informasi,
+
+Sistem
+
+Informasi
+
+Universitas
+
+Gunadarma,
+
+https://filkom.gunadarma.ac.id/sisinformasi/door/download/1787686878814613676
+
+909FORMAT_PROPOSAL_SKRIPSI_2.pdf.
+
+32
+
+Contoh Penulisan Referensi dari Publikasi Pemerintah Online Kemenristekdikti. (2016). Sosialisasi Kemampuan Lulusan. Diakses dari
+http://www.kopertis12.or.id/wpcontent/uploads/2016/06/small_SN_DIKTI_44_2015_SOSIALISASI.pdf.
+33
+
+Lampiran 11. Lembar Pernyataan Ujicoba
+LEMBAR PERNYATAAN UJICOBA APLIKASI
+
+Saya yang bertandatangan di bawah ini:
+
+Nama
+
+: ............................
+
+NPM
+
+: ...........................
+
+Judul PI : ......................................................................
+
+.......................................................................
+
+.......................................................................
+
+Menyatakan bahwa aplikasi dalam penulisan ilmiah ini telah selesai dan diujicobakan. Semua fungsi telah berjalan dengan baik.
+
+Demikian pernyataan ujicoba ini dibuat dengan sebenar-benarnya dan dengan penuh kesadaran.
+
+Jakarta, tanggal ­ bulan dalam kata ­ tahun (ujicoba sebelum sidang)
+
+Mahasiswa
+
+Pembimbing
+
+TTD
+
+TTD
+
+( nama mahasiswa )
+
+( nama pembimbing )
+
+34
+
+Lampiran 12. Penamaan Lampiran Listing Program
+LISTING PROGRAM
+1. GoToScene.cs using System.Collections; using System.Collections.Generic; using UnityEngine; public class GoToScene : MonoBehaviour { public void scene(string scene) { Application.LoadLevel(scene); } public void Download() { Application.OpenURL("https://drive.google.com/uc?export=download&id=124R5mupSEbATaz1GZWlqE4oxgM6ifKy"); } public void ExitApplication() { Application.Quit(); } }
+2. DefaultTrackableEventHandler.cs /*============================================================================== Copyright (c) 2010-2014 Qualcomm Connected Experiences, Inc. All Rights Reserved. Confidential and Proprietary - Protected under copyright and other laws. ==============================================================================*/ using UnityEngine; using UnityEngine.UI; namespace Vuforia { /// <summary> /// A custom handler that implements the ITrackableEventHandler interface. /// </summary> public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandler { public Transform ButtonAudio;
+public Transform TextDescription; public Transform PanelFound; public Transform PanelLost; #region PRIVATE_MEMBER_VARIABLES private TrackableBehaviour mTrackableBehaviour; #endregion // PRIVATE_MEMBER_VARIABLES #region UNTIY_MONOBEHAVIOUR_METHODS void Start() {
+mTrackableBehaviour = GetComponent<TrackableBehaviour>(); if (mTrackableBehaviour) {
+mTrackableBehaviour.RegisterTrackableEventHandler(this); } } #endregion // UNTIY_MONOBEHAVIOUR_METHODS #region PUBLIC_METHODS /// <summary> /// Implementation of the ITrackableEventHandler function called when
+the /// tracking state changes.
+35
+
+Lampiran 13. Penamaan Lampiran Output Program
+OUTPUT PROGRAM
+1. Tampilan Halaman Splash Screen
+2. Tampilan Halaman Menu
+3. Tampilan Halaman Mulai AR
+36
+
+Lampiran 14. Surat Persetujuan ACC 37
+
+Lampiran 15. Isian Sertifikat Setara Sarjana Muda 38
+
+
