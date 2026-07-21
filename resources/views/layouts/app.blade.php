@@ -167,9 +167,6 @@
                     <div class="f-group">
                         <label class="f-label">Password</label>
                         <input type="password" name="password" class="f-inp" placeholder="Password kamu" required>
-                        <div class="modal-forgot">
-                            <a href="{{ route('password.request') }}">Lupa password?</a>
-                        </div>
                     </div>
                     <button type="submit" class="btn-full">Masuk →</button>
                     <div class="modal-demo">

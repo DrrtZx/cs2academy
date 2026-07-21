@@ -378,7 +378,7 @@
                                 <label for="c-password">Password</label>
                                 <input type="password" name="password" id="c-password" placeholder="Password kamu" required>
                             </div>
-                            <div class="forgot-row"><a href="{{ route('password.request') }}">Lupa password?</a></div>
+
                             <button type="submit" class="auth-submit">Masuk →</button>
                         </form>
                         <div class="auth-switch">Belum punya akun? <a onclick="switchCoachTab('register')">Daftar Gratis</a>
