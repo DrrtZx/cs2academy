@@ -219,7 +219,7 @@
 
         {{-- Closed notice --}}
         <div id="chat-closed-{{ $item->id }}" style="display:none;text-align:center;padding:12px;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);border-radius:10px;margin-top:8px;">
-          <div style="color:var(--green);font-weight:700;font-size:13px;margin-bottom:6px;">✅ Sesi ini sudah selesai</div>
+          <div style="color:var(--green);font-weight:700;font-size:13px;margin-bottom:6px;">Sesi ini sudah selesai</div>
           <a href="{{ route('coaching') }}" style="display:inline-block;background:var(--grad-primary);color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;">+ Pilih Paket Coaching Baru</a>
         </div>
       </div>
@@ -250,8 +250,7 @@
 
     @if($archivedSessions->isNotEmpty())
       <div class="readonly-notice">
-        <span style="font-size:1.1rem;">📖</span>
-        <span>Riwayat percakapan dengan coach — sudah <strong>hanya bisa dibaca</strong> dan tidak bisa dibalas lagi.</span>
+        <span>Arsip Percakapan — Sesi coaching telah selesai dan disimpan dalam mode baca (read-only).</span>
       </div>
 
       <div class="chat-timeline">
