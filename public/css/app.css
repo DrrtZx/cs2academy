@@ -323,13 +323,16 @@ footer::before {
     color: var(--text3);
 }
 
-/* ── Modal Auth ── */
-.modal-overlay {
+/* ── Global Modals & Popups (Unified Design System) ── */
+.modal-overlay,
+.bup-overlay,
+.bm-overlay,
+.success-overlay {
     position: fixed;
     inset: 0;
     background: rgba(5, 7, 15, 0.82);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 10000;
     display: flex;
     align-items: center;
@@ -340,12 +343,20 @@ footer::before {
     transition: opacity .25s ease-out;
 }
 
-.modal-overlay.open {
+.modal-overlay.open,
+.modal-overlay.show,
+.bup-overlay.bup-open,
+.bm-overlay.bm-open,
+.success-overlay.open {
     opacity: 1;
     pointer-events: all;
+    display: flex !important;
 }
 
-.modal-box {
+.modal-box,
+.bup-box,
+.bm-box,
+.success-box {
     position: relative;
     width: 100%;
     max-width: 440px;
@@ -353,17 +364,23 @@ footer::before {
     border: 1px solid var(--border);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.06);
     transform: translateY(16px) scale(0.98);
     transition: transform .25s ease-out;
 }
 
-.modal-overlay.open .modal-box {
+.modal-overlay.open .modal-box,
+.modal-overlay.show .modal-box,
+.bup-overlay.bup-open .bup-box,
+.bm-overlay.bm-open .bm-box,
+.success-overlay.open .success-box {
     transform: translateY(0) scale(1);
 }
 
-.modal-head {
-    padding: 1.75rem 2rem 1.25rem;
+.modal-head,
+.bup-head,
+.bm-head {
+    padding: 1.5rem 1.75rem 1.25rem;
     background: linear-gradient(135deg, var(--bg3), var(--bg4));
     border-bottom: 1px solid var(--border);
     text-align: center;

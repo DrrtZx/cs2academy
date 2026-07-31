@@ -161,9 +161,6 @@
                         <input type="password" name="password" class="f-inp" placeholder="Password kamu" required>
                     </div>
                     <button type="submit" class="btn-full">Masuk →</button>
-                    <div class="modal-demo">
-                        Demo: <strong>demo@cs2.id / Demo1234!</strong>
-                    </div>
                 </form>
             </div>
 
