@@ -192,7 +192,7 @@
             </div>
           </div>
           <span class="status-badge status-{{ $item->status }}" id="status-badge-{{ $item->id }}">
-            {{ $item->status === 'menunggu' ? '⏳ Menunggu' : ($item->status === 'diproses' ? '🔄 Berlangsung' : '✅ Selesai') }}
+            {{ $item->status === 'menunggu' ? 'Menunggu' : ($item->status === 'diproses' ? 'Berlangsung' : 'Selesai') }}
           </span>
         </div>
 
@@ -228,10 +228,11 @@
       @else
         <div style="text-align:center;padding:3rem 1.5rem;color:var(--text3);">
           <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:rgba(139,123,255,0.12);border:1px solid rgba(139,123,255,0.25);margin-bottom:1rem;color:var(--purple2);">
-            <x-cs-icon name="message-square" size="24" stroke="1.75" />
+            <x-cs-icon name="message-square" size="24" stroke="2" />
           </div>
-          <p style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:0.4rem;">Belum ada sesi coaching aktif</p>
-          <p style="font-size:0.82rem;">Sesi akan otomatis muncul di sini setelah admin menyetujui transaksi coaching kamu.</p>
+          <p style="font-weight:600;margin-bottom:0.4rem;">Belum Ada Sesi Coaching</p>
+          <p style="font-size:0.82rem;margin-bottom:1.25rem;">Kamu belum memiliki sesi coaching yang aktif. Pilih paket untuk berkonsultasi dengan coach.</p>
+          <a href="{{ route('coaching') }}" style="display:inline-block;background:var(--grad-primary);color:#fff;padding:10px 20px;border-radius:10px;font-size:0.85rem;font-weight:700;text-decoration:none;box-shadow:0 4px 14px -4px rgba(139,123,255,.5);">Pilih Paket Coaching</a>
         </div>
       @endif
     @endforelse
@@ -254,13 +255,13 @@
             {{-- Pesan dari Coach/Admin --}}
             <div class="chat-msg chat-coach">
               <div class="chat-bubble">
-                <div class="chat-bubble-header coach-header">📨 Coach / Admin</div>
+                <div class="chat-bubble-header coach-header">Coach / Admin</div>
                 <div class="chat-bubble-text">{{ $item->tugas_teks }}</div>
                 <div class="chat-bubble-meta">
                   <span>{{ $item->created_at->format('d M Y, H:i') }}</span>
                   <span>·</span>
                   <span>{{ $item->created_at->diffForHumans() }}</span>
-                  <span class="status-badge status-selesai">✅ Selesai</span>
+                  <span class="status-badge status-selesai">Selesai</span>
                 </div>
               </div>
             </div>
@@ -351,7 +352,7 @@ function loadUserMessages(sessionId) {
       if (data.is_closed) {
         if (inputArea) inputArea.style.display = 'none';
         if (closedNotice) closedNotice.style.display = 'block';
-        if (badge) { badge.className = 'status-badge status-selesai'; badge.textContent = '✅ Selesai'; }
+        if (badge) { badge.className = 'status-badge status-selesai'; badge.textContent = 'Selesai'; }
       }
     });
 }
