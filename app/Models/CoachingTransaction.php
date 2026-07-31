@@ -12,6 +12,15 @@ class CoachingTransaction extends Model
         'package_price',
         'va_code',
         'status',
+        'bukti_transfer',
+        'bukti_uploaded_at',
+    ];
+
+    /**
+     * Cast attributes to native types.
+     */
+    protected $casts = [
+        'bukti_uploaded_at' => 'datetime',
     ];
 
     /**
@@ -36,5 +45,17 @@ class CoachingTransaction extends Model
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
+    }
+
+    /**
+     * Accessor: URL public untuk bukti transfer.
+     * Uses Laravel route to serve file directly (avoids symlink 403 with artisan serve).
+     */
+    public function getBuktiUrlAttribute()
+    {
+        if (!$this->bukti_transfer) {
+            return null;
+        }
+        return route('bukti.serve', ['filename' => $this->bukti_transfer]);
     }
 }

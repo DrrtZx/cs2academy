@@ -2,11 +2,11 @@
   {{-- Floating button --}}
   <button id="chat-toggle-btn" onclick="toggleChatWidget()"
     style="width:56px;height:56px;border-radius:50%;background:var(--grad-primary);border:none;color:#fff;
-    font-size:22px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4);position:relative;display:flex;align-items:center;justify-content:center;">
-    💬
+    cursor:pointer;box-shadow:0 8px 24px rgba(139,123,255,0.45);position:relative;display:flex;align-items:center;justify-content:center;transition:transform .2s ease;">
+    <x-cs-icon name="message-square" size="22" stroke="2" />
     <span id="chat-unread-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--red);
-    color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;
-    display:flex;align-items:center;justify-content:center;padding:0 5px;">0</span>
+    color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 2px 8px rgba(255,114,114,0.6);border:2px solid var(--bg2);">0</span>
   </button>
 
   {{-- Chat panel --}}
@@ -17,7 +17,7 @@
     {{-- Header --}}
     <div style="background:var(--bg3);padding:14px 16px;border-bottom:1px solid var(--border);
       display:flex;align-items:center;justify-content:space-between;">
-      <span style="font-weight:700;font-size:14px;color:var(--text);">💬 Coaching Inbox</span>
+      <span style="font-weight:700;font-size:14px;color:var(--text);display:flex;align-items:center;gap:7px;"><x-cs-icon name="message-square" size="16" stroke="2" /> Coaching Inbox</span>
       <button onclick="toggleChatWidget()"
         style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;">✕</button>
     </div>
@@ -242,18 +242,24 @@ function sendReply() {
 
 function completeSession() {
   if (!chatWidget.activeId) return;
-  if (!confirm('Selesaikan sesi ini? User akan bisa membeli paket coaching baru setelah sesi selesai.')) return;
-  var token = document.querySelector('meta[name="csrf-token"]');
-  fetch('/admin/coaching-inbox/' + chatWidget.activeId + '/complete', {
-    method: 'POST',
-    headers: { 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' }
-  }).then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.success) {
-        loadMessages(chatWidget.activeId);
-        refreshSidebar();
-      }
-    });
+  showCustomConfirm({
+    title: 'Selesaikan Sesi Coaching?',
+    text: 'Sesi ini akan ditandai selesai dan user bisa membeli paket coaching baru.',
+    confirmText: 'Selesaikan Sesi',
+    onConfirm: function() {
+      var token = document.querySelector('meta[name="csrf-token"]');
+      fetch('/admin/coaching-inbox/' + chatWidget.activeId + '/complete', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' }
+      }).then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.success) {
+            loadMessages(chatWidget.activeId);
+            refreshSidebar();
+          }
+        });
+    }
+  });
 }
 
 function startPolling() {
@@ -280,13 +286,25 @@ function stopMsgPolling() {
 
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// Initial unread check
-document.addEventListener('DOMContentLoaded', function() {
-  fetch('/admin/coaching-inbox/summary')
+// Initial unread check and continuous background polling for unread badge
+function refreshSidebarQuietly() {
+  fetch('/admin/coaching-inbox/summary?tab=aktif')
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      if (!data) return;
       chatWidget.sessions = data.sessions || [];
+      chatWidget.counts = data.counts || { aktif: 0, unread: 0, arsip: 0 };
+      if (chatWidget.open) {
+        renderSidebar();
+        renderTabBadges();
+      }
       updateUnreadBadge();
-    });
+    })
+    .catch(function(e) {});
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  refreshSidebarQuietly();
+  setInterval(refreshSidebarQuietly, 4000);
 });
 </script>

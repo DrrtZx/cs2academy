@@ -11,6 +11,10 @@ class HomeController extends Controller
 {
     public function index()
     {
+        if (auth()->check() && auth()->user()->isAdmin() && !session('admin_preview_mode', false)) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $stats = [
             // Total user yang sudah terdaftar (role = user)
             'total_players'     => User::where('role', 'user')->count(),

@@ -3,13 +3,13 @@
 
 @push('styles')
 <style>
-.catalog-wrap { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+.catalog-wrap { max-width: 1280px; margin: 0 auto; padding: 3rem 2rem; }
 .catalog-head { margin-bottom: 28px; }
 .catalog-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--purple); text-transform: uppercase; margin-bottom: 8px; }
 .catalog-title { font-size: 26px; font-weight: 800; margin: 0 0 8px; color: var(--text); }
 .catalog-sub { font-size: 14.5px; color: var(--text2); margin: 0; }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-top: 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 22px; margin-top: 24px; }
 
 .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 22px; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease; display: flex; flex-direction: column; position: relative; overflow: hidden; text-decoration: none; color: inherit; }
 .card:hover { transform: translateY(-3px); border-color: rgba(139,123,255,0.45); background: var(--bg3); }
@@ -37,15 +37,6 @@
 
 .lock-overlay { position: absolute; top: 18px; right: 18px; color: var(--text3); }
 
-/* Guest modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(5,7,15,0.72); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 24px; }
-.modal-overlay.open { display: flex; }
-.modal-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 400px; padding: 0; }
-.modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; padding: 4px 8px; }
-.modal-head { padding: 2rem 1.75rem 0; }
-.modal-logo { margin-bottom: 0.75rem; }
-.btn-full { width: 100%; padding: 11px; border-radius: 10px; border: none; background: var(--grad-primary); color: #fff; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: inherit; }
-.btn-full:hover { filter: brightness(1.08); }
 </style>
 @endpush
 
@@ -65,7 +56,7 @@
       </div>
       <div class="modal-logo"><x-cs-logo size="18" /></div>
       <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:0.3rem;">Akses Terkunci</h3>
-      <p style="font-size:0.82rem;color:var(--text2);">Login atau daftar gratis untuk mengakses seluruh materi kursus CS2.</p>
+      <p style="font-size:0.82rem;color:var(--text2);">Buat akun gratis dulu yuk untuk akses seluruh materi & latihan CS2.</p>
     </div>
     <div style="padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:10px;">
       <button class="btn-full" onclick="document.getElementById('guestModal').classList.remove('open');openModal('login');">Masuk ke Akun</button>
@@ -83,10 +74,17 @@ document.addEventListener('DOMContentLoaded', function() {
 @endguest
 
 <div class="catalog-wrap">
+  @if(request('completed'))
+    <div style="background:rgba(43,230,186,0.12);border:1px solid rgba(43,230,186,0.3);border-radius:12px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;color:var(--green);font-size:0.9rem;font-weight:600;">
+      <x-cs-icon name="trophy" size="20" stroke="2" />
+      <div>🎉 Selamat! Kamu telah menyelesaikan seluruh modul pada kursus tersebut. Kursus berikutnya sudah terbuka!</div>
+    </div>
+  @endif
+
   <div class="catalog-head">
     <div class="catalog-eyebrow">Kursus</div>
     <h1 class="catalog-title">Pilih Kursus CS2 Kamu</h1>
-    <p class="catalog-sub">Belajar dari dasar sampai mahir, satu topik per satu waktu — pilih yang mau kamu kuasai duluan.</p>
+    <p class="catalog-sub">Materi terstruktur dari fundamental sampai strategi pro match — pilih topik yang mau kamu matangkan hari ini.</p>
   </div>
 
   <div class="grid">
@@ -111,10 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <h3 class="card-title">{{ $c['title'] }}</h3>
         <p class="card-desc">{{ $c['body'] }}</p>
         <div class="card-meta">
-          <span>🕒 {{ $c['durasi'] }}</span>
-          <span>📖 {{ $c['level'] }}</span>
-          <span>🧩 {{ $c['modules_count'] }} modul</span>
-          <span>❓ {{ $c['quizzes_count'] }} quiz</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><x-cs-icon name="clock" size="13" stroke="2" /> {{ $c['durasi'] }}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><x-cs-icon name="book-open" size="13" stroke="2" /> {{ $c['level'] }}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><x-cs-icon name="clipboard-list" size="13" stroke="2" /> {{ $c['modules_count'] }} modul</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><x-cs-icon name="sparkles" size="13" stroke="2" /> {{ $c['quizzes_count'] }} quiz</span>
         </div>
         @if(!$locked && $c['progress'] > 0 && $c['progress'] < 100)
         <div class="card-progress">
@@ -123,10 +121,10 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         @endif
         @if($c['progress'] === 100)
-        <div class="card-progress-text" style="margin-top:12px;color:var(--green);">✅ Selesai — semua modul sudah dikerjakan</div>
+        <div class="card-progress-text" style="margin-top:12px;color:var(--green);display:flex;align-items:center;gap:6px;"><x-cs-icon name="check-circle" size="14" stroke="2.5" /> Selesai — semua modul sudah dikerjakan</div>
         @endif
         @if($locked)
-        <div class="card-progress-text" style="margin-top:12px;">🔒 Selesaikan kursus sebelumnya dulu</div>
+        <div class="card-progress-text" style="margin-top:12px;display:flex;align-items:center;gap:6px;"><x-cs-icon name="lock" size="13" stroke="2.5" /> Selesaikan kursus sebelumnya dulu</div>
         @endif
       @if(!$locked)
         </a>

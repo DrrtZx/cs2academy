@@ -3,12 +3,12 @@
 
 @push('styles')
 <style>
-.wrap { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 2.5rem 2rem; }
 .breadcrumb { font-size: 13px; color: var(--text3); margin-bottom: 18px; }
 .breadcrumb b { color: var(--text2); font-weight: 500; }
 .breadcrumb a { color: var(--cyan); text-decoration: none; }
 
-.layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
 
 /* Sidebar */
 .sidebar { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
@@ -82,14 +82,6 @@
 .empty-title { font-size: 16px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
 .empty-sub { font-size: 13.5px; }
 
-/* Guest modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(5,7,15,0.72); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 24px; }
-.modal-overlay.open { display: flex; }
-.modal-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 400px; padding: 0; }
-.modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; padding: 4px 8px; }
-.modal-head { padding: 2rem 1.75rem 0; }
-.modal-logo { margin-bottom: 0.75rem; }
-.btn-full { width: 100%; padding: 11px; border-radius: 10px; border: none; background: var(--grad-primary); color: #fff; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: inherit; }
 </style>
 @endpush
 
@@ -151,7 +143,15 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <div class="module-body">
             <div class="module-name">{{ $mod['title'] }}</div>
-            <div class="module-sub">{{ $mod['status'] === 'done' ? '✓ Selesai' : ($mod['status'] === 'locked' ? '🔒 Terkunci' : '📖 Baca sekarang') }}</div>
+            <div class="module-sub">
+              @if($mod['status'] === 'done')
+                <span style="display:inline-flex;align-items:center;gap:4px;color:var(--green);font-weight:600;"><x-cs-icon name="check-circle" size="12" stroke="2.5" /> Selesai</span>
+              @elseif($mod['status'] === 'locked')
+                <span style="display:inline-flex;align-items:center;gap:4px;color:var(--text3);font-weight:500;"><x-cs-icon name="lock" size="11" stroke="2.5" /> Terkunci</span>
+              @else
+                <span style="display:inline-flex;align-items:center;gap:4px;color:var(--purple2);font-weight:600;"><x-cs-icon name="book-open" size="12" stroke="2.5" /> Baca sekarang</span>
+              @endif
+            </div>
           </div>
         </div>
         @endforeach
@@ -179,7 +179,7 @@ const COURSE_ID = {{ $course->id }};
 const IS_AUTH = @json(auth()->check());
 let activeId = {{ $activeModId }};
 let quizIndex = 0;        // soal ke-berapa yang sedang aktif
-let quizDone = {};        // tracking soal mana yg sudah dijawab: { "0": true, "1": false }
+let quizCorrect = {};      // tracking hasil kuis per soal: { "0": true (benar), "1": false (salah) }
 
 @guest
 document.addEventListener('DOMContentLoaded', function() {
@@ -206,7 +206,7 @@ function selectModule(id) {
   }
   activeId = id;
   quizIndex = 0;
-  quizDone = {};
+  quizCorrect = {};
   renderSidebar();
   renderMain();
 }
@@ -226,7 +226,7 @@ function renderMain() {
   crumb.textContent = ' › ' + m.title;
 
   if (m.status === 'locked') {
-    panel.innerHTML = '<div class="empty-state"><div class="empty-emoji">🔒</div><div class="empty-title">Modul ini masih terkunci</div><div class="empty-sub">Selesaikan modul sebelumnya dulu untuk membuka "' + escHtml(m.title) + '".</div></div>';
+    panel.innerHTML = '<div class="empty-state"><div style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:rgba(255,140,66,0.12);border:1px solid rgba(255,140,66,0.3);margin-bottom:1rem;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="empty-title">Modul Ini Terkunci</div><div class="empty-sub">Selesaikan modul sebelumnya dulu untuk membuka "' + escHtml(m.title) + '".</div></div>';
     return;
   }
 
@@ -240,7 +240,7 @@ function renderMain() {
   var outlineHtml = '';
   if (m.body) {
     var points = m.body.split('\n').filter(function(l) { return l.trim(); });
-    outlineHtml = '<div class="outline-box"><div class="outline-title">📋 Apa yang akan kamu pelajari</div><ul class="outline-list">' +
+    outlineHtml = '<div class="outline-box"><div class="outline-title" style="display:flex;align-items:center;gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--purple2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M9 14l2 2 4-4"/><line x1="9" y1="10" x2="15" y2="10"/></svg> Apa yang akan kamu pelajari</div><ul class="outline-list">' +
       points.map(function(o) { return '<li><span class="outline-dot"></span>' + escHtml(o) + '</li>'; }).join('') +
       '</ul></div>';
   }
@@ -249,27 +249,58 @@ function renderMain() {
   if (m.quizzes && m.quizzes.length > 0) {
     var q = m.quizzes[quizIndex] || m.quizzes[0];
     var totalQ = m.quizzes.length;
+    var isModDone = (m.status === 'done');
+
     var dotsHtml = m.quizzes.map(function(_, i) {
       var cls = '';
-      if (quizDone[i]) cls = ' done';
+      if (isModDone || quizCorrect[i] === true) cls = ' done';
       else if (i === quizIndex) cls = ' cur';
       return '<div class="qz-dot' + cls + '" id="qd-' + i + '"></div>';
     }).join('');
+
+    var modIdx = MODULES.findIndex(function(x) { return x.id === activeId; });
+    var isLastModInCourse = (modIdx + 1 === MODULES.length);
+    var nxtLabel = '';
+
+    if (quizCorrect[quizIndex] === false) {
+      nxtLabel = 'Coba Lagi 🔄';
+    } else if (quizIndex + 1 < totalQ) {
+      nxtLabel = 'Soal Selanjutnya →';
+    } else if (!isLastModInCourse) {
+      nxtLabel = 'Lanjut Modul Berikutnya →';
+    } else {
+      nxtLabel = isModDone ? 'Kembali ke Katalog Kursus →' : 'Selesaikan Kursus 🎉';
+    }
+
+    var isQAnswered = isModDone || (quizCorrect[quizIndex] !== undefined);
+    var optsHtml = q.opts.map(function(o, i) {
+      var optCls = 'quiz-option';
+      if (isQAnswered) {
+        optCls += ' dis';
+        if (i === q.ans) optCls += ' cor';
+      }
+      return '<button class="' + optCls + '" id="qo-' + i + '" onclick="ansQ(' + i + ')">' + String.fromCharCode(65 + i) + '. ' + escHtml(o) + '</button>';
+    }).join('');
+
+    var fbHtml = '';
+    if (isModDone || quizCorrect[quizIndex] === true) {
+      fbHtml = '<div class="quiz-fb show cor" id="qz-fb">✅ <strong>Jawaban Benar:</strong> ' + escHtml(q.ex) + '</div>';
+    } else if (quizCorrect[quizIndex] === false) {
+      fbHtml = '<div class="quiz-fb show wrn" id="qz-fb">❌ <strong>Salah.</strong> ' + escHtml(q.ex) + '</div>';
+    } else {
+      fbHtml = '<div class="quiz-fb" id="qz-fb"></div>';
+    }
+
+    var nxtBtnCls = 'quiz-nxt' + (isQAnswered ? ' show' : '');
 
     quizHtml = '<div class="quiz-box">' +
       '<div class="quiz-top"><span class="quiz-badge">Quiz</span><span class="quiz-title">Uji Pemahaman (' + (quizIndex + 1) + '/' + totalQ + ')</span></div>' +
       '<div class="qz-prog" id="qz-prog">' + dotsHtml + '</div>' +
       '<div class="quiz-question" id="qz-q">' + escHtml(q.q) + '</div>' +
-      '<div class="quiz-options" id="qz-opts">' +
-        q.opts.map(function(o, i) {
-          return '<button class="quiz-option" id="qo-' + i + '" onclick="ansQ(' + i + ')">' + String.fromCharCode(65 + i) + '. ' + escHtml(o) + '</button>';
-        }).join('') +
-      '</div>' +
-      '<div class="quiz-fb" id="qz-fb"></div>' +
-      '<button class="quiz-nxt" id="qz-nxt" onclick="nextQuizQ()">Lihat Hasil ✓</button>' +
+      '<div class="quiz-options" id="qz-opts">' + optsHtml + '</div>' +
+      fbHtml +
+      '<button class="' + nxtBtnCls + '" id="qz-nxt" onclick="nextQuizQ()">' + nxtLabel + '</button>' +
     '</div>';
-  } else if (m.status === 'done') {
-    quizHtml = '<div class="outline-box" style="text-align:center;color:var(--green);"><strong>✓ Modul ini sudah kamu selesaikan</strong></div>';
   }
 
   panel.innerHTML =
@@ -282,60 +313,90 @@ function renderMain() {
 function ansQ(chosen) {
   if (!requireAuth()) return;
   var m = MODULES.find(function(x) { return x.id === activeId; });
+  if (m.status === 'done') return;
   var q = m.quizzes[quizIndex];
-  if (quizDone[quizIndex]) return;
-  quizDone[quizIndex] = true;
+  if (quizCorrect[quizIndex] !== undefined) return;
+
+  var isCorrect = (chosen === q.ans);
+  quizCorrect[quizIndex] = isCorrect;
 
   document.querySelectorAll('.quiz-option').forEach(function(o) { o.classList.add('dis'); });
 
   var fb = document.getElementById('qz-fb');
-  if (chosen === q.ans) {
+  var nxtBtn = document.getElementById('qz-nxt');
+  var modIdx = MODULES.findIndex(function(x) { return x.id === activeId; });
+  var isLastModInCourse = (modIdx + 1 === MODULES.length);
+
+  if (isCorrect) {
     document.getElementById('qo-' + chosen).classList.add('cor');
     fb.className = 'quiz-fb show cor';
     fb.innerHTML = '✅ <strong>Benar!</strong> ' + escHtml(q.ex);
+
+    if (quizIndex + 1 < m.quizzes.length) {
+      nxtBtn.textContent = 'Soal Selanjutnya →';
+    } else if (!isLastModInCourse) {
+      nxtBtn.textContent = 'Lanjut Modul Berikutnya →';
+    } else {
+      nxtBtn.textContent = 'Selesaikan Kursus 🎉';
+    }
+
+    var dot = document.getElementById('qd-' + quizIndex);
+    if (dot) { dot.className = 'qz-dot done'; }
+
+    // Cek jika seluruh kuis di modul ini berhasil dijawab DENGAN BENAR
+    var allCorrect = m.quizzes.every(function(_, i) { return quizCorrect[i] === true; });
+    if (allCorrect && IS_AUTH) {
+      var token = document.querySelector('meta[name="csrf-token"]');
+      fetch('/modules/' + m.id + '/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' },
+        body: JSON.stringify({ score: 1 })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        m.status = 'done';
+        var idx = MODULES.findIndex(function(x) { return x.id === activeId; });
+        if (idx + 1 < MODULES.length && MODULES[idx + 1].status === 'locked') {
+          MODULES[idx + 1].status = 'active';
+        }
+        renderSidebar();
+        updateProgress();
+      }).catch(function() {});
+    }
   } else {
+    // Jika SALAH
     document.getElementById('qo-' + chosen).classList.add('wrn');
     document.getElementById('qo-' + q.ans).classList.add('cor');
     fb.className = 'quiz-fb show wrn';
     fb.innerHTML = '❌ <strong>Salah.</strong> ' + escHtml(q.ex);
+    nxtBtn.textContent = 'Coba Lagi 🔄';
   }
-  document.getElementById('qz-nxt').classList.add('show');
 
-  // Update dots
-  var dot = document.getElementById('qd-' + quizIndex);
-  if (dot) { dot.className = 'qz-dot done'; }
-
-  // Kalau semua soal terjawab → simpan progress
-  var allDone = m.quizzes.every(function(_, i) { return quizDone[i]; });
-  if (allDone && IS_AUTH) {
-    var token = document.querySelector('meta[name="csrf-token"]');
-    fetch('/modules/' + m.id + '/complete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' },
-      body: JSON.stringify({ score: 1 })
-    }).then(function(r) { return r.json(); }).then(function(data) {
-      m.status = 'done';
-      var idx = MODULES.findIndex(function(x) { return x.id === activeId; });
-      if (idx + 1 < MODULES.length && MODULES[idx + 1].status === 'locked') {
-        MODULES[idx + 1].status = 'active';
-      }
-      renderSidebar();
-      updateProgress();
-    }).catch(function() {});
-  }
+  nxtBtn.classList.add('show');
 }
 
 function nextQuizQ() {
   if (!requireAuth()) return;
   var m = MODULES.find(function(x) { return x.id === activeId; });
+
+  // Jika jawaban sebelumnya SALAH, klik "Coba Lagi 🔄" akan mereset soal ini
+  if (quizCorrect[quizIndex] === false) {
+    delete quizCorrect[quizIndex];
+    renderMain();
+    return;
+  }
+
   if (quizIndex + 1 < m.quizzes.length) {
     quizIndex++;
     renderMain();
   } else {
     if (m.status === 'done') {
       var idx = MODULES.findIndex(function(x) { return x.id === activeId; });
-      if (idx + 1 < MODULES.length && MODULES[idx + 1].status !== 'locked') {
+      if (idx + 1 < MODULES.length) {
+        if (MODULES[idx + 1].status === 'locked') {
+          MODULES[idx + 1].status = 'active';
+        }
         selectModule(MODULES[idx + 1].id);
+      } else {
+        window.location.href = "{{ route('courses') }}?completed=1&course=" + COURSE_ID;
       }
     }
   }

@@ -133,21 +133,23 @@
 
 @section('content')
 <div class="assign-wrap">
-  <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.4rem;">📝 Tugas & Sesi Coaching Saya</h2>
+  <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:0.4rem;display:flex;align-items:center;gap:8px;">
+    <x-cs-icon name="file-edit" size="22" stroke="2" /> Tugas & Sesi Coaching Saya
+  </h2>
   <p style="color:var(--text2);font-size:0.875rem;margin-bottom:1.75rem;">Pantau sesi aktif, kirim pertanyaan, dan baca arsip feedback dari coach kamu.</p>
 
   {{-- Tab Navigation --}}
   <div class="sess-tabs" role="tablist">
     @if($activeSessions->count() > 0)
       <button class="sess-tab active" id="tab-active" onclick="switchSessTab('active')" role="tab" aria-selected="true">
-        🎮 Sesi Aktif
+        <x-cs-icon name="zap" size="14" stroke="2" /> Sesi Aktif
         <span class="tab-count">{{ $activeSessions->count() }}</span>
       </button>
     @endif
     <button class="sess-tab {{ $activeSessions->count() > 0 ? '' : 'active' }}"
             id="tab-archive" onclick="switchSessTab('archive')" role="tab"
             aria-selected="{{ $activeSessions->count() > 0 ? 'false' : 'true' }}">
-      📦 Arsip Selesai
+      <x-cs-icon name="inbox" size="14" stroke="2" /> Arsip Selesai
       <span class="tab-count">{{ $archivedSessions->count() }}</span>
     </button>
   </div>
@@ -206,9 +208,12 @@
           <p style="font-size:0.82rem;">Pilih paket coaching untuk memulai sesi dengan coach.</p>
         </div>
       @else
-        <div style="text-align:center;padding:2.5rem;color:var(--text3);">
-          <div style="font-size:2.5rem;margin-bottom:0.75rem;">📭</div>
-          <p>Belum ada sesi aktif.</p>
+        <div style="text-align:center;padding:3rem 1.5rem;color:var(--text3);">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:rgba(139,123,255,0.12);border:1px solid rgba(139,123,255,0.25);margin-bottom:1rem;color:var(--purple2);">
+            <x-cs-icon name="message-square" size="24" stroke="1.75" />
+          </div>
+          <p style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:0.4rem;">Belum ada sesi coaching aktif</p>
+          <p style="font-size:0.82rem;">Sesi akan otomatis muncul di sini setelah admin menyetujui transaksi coaching kamu.</p>
         </div>
       @endif
     @endforelse
@@ -358,5 +363,19 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(function() { loadUserMessages(id); }, 4000);
   });
 });
+
+// Auto-refresh polling setiap 30 detik untuk cek update tugas baru
+let lastActiveCount = {{ $activeSessions->count() }};
+setInterval(function() {
+  fetch('{{ route("assignments.check") }}')
+    .then(res => res.json())
+    .then(data => {
+      if (data.active_count !== lastActiveCount || data.has_unread) {
+        // Ada perubahan jumlah tugas aktif atau ada pesan belum dibaca, reload halaman
+        window.location.reload();
+      }
+    })
+    .catch(err => console.error('Polling error:', err));
+}, 30000); // 30 detik
 </script>
 @endpush

@@ -26,3 +26,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /release.zip
+.envlocal
+*.zip
+test_insert_bukti.php
+test-results/

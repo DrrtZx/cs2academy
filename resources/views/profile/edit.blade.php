@@ -37,7 +37,7 @@
 @section('content')
 <div class="pw">
 
-  <h2>⚙️ Profile Settings</h2>
+  <h2>Profile Settings</h2>
   <p class="sub">Kelola informasi akun dan pengaturan keamanan kamu.</p>
 
   @if(session('success'))
@@ -57,14 +57,14 @@
       <div class="profile-name">{{ auth()->user()->name }}</div>
       <div class="profile-email">{{ auth()->user()->email }}</div>
       @if(auth()->user()->discord_id)
-        <div style="font-size:0.78rem;color:var(--purple2);margin-top:4px;">🎧 {{ auth()->user()->discord_id }}</div>
+        <div style="font-size:0.78rem;color:var(--purple2);margin-top:4px;">Discord: {{ auth()->user()->discord_id }}</div>
       @endif
     </div>
   </div>
 
   {{-- Info Akun --}}
   <div class="card">
-    <div class="card-title">📋 Info Akun</div>
+    <div class="card-title">Info Akun</div>
     <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
       @csrf @method('PATCH')
 
@@ -81,14 +81,14 @@
       </div>
 
       <div class="field">
-        <label>📷 Foto Profile</label>
+        <label>Foto Profile</label>
         <input type="file" name="avatar" accept="image/*" style="font-size:13px;color:var(--text2);">
         <div class="field-hint">JPG/PNG, maksimal 2MB.</div>
-        @error('avatar') <div style="background:rgba(255,114,114,0.1);border:1px solid rgba(255,114,114,0.3);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.8rem;color:var(--red);font-weight:600;">⚠️ {{ $message }}</div> @enderror
+        @error('avatar') <div style="background:rgba(255,114,114,0.1);border:1px solid rgba(255,114,114,0.3);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.8rem;color:var(--red);font-weight:600;">{{ $message }}</div> @enderror
       </div>
 
       <div class="field">
-        <label>🎧 Discord ID</label>
+        <label>Discord ID</label>
         <input type="text" name="discord_id" value="{{ old('discord_id', auth()->user()->discord_id) }}" placeholder="username#0000">
         <div class="field-hint">Untuk sesi Panggil Pelatih — coach akan menghubungi kamu via Discord.</div>
         @error('discord_id') <div style="color:var(--red);font-size:0.75rem;margin-top:4px;">{{ $message }}</div> @enderror
@@ -100,7 +100,7 @@
 
   {{-- Keamanan --}}
   <div class="card">
-    <div class="card-title">🔒 Keamanan</div>
+    <div class="card-title">Keamanan</div>
     <form method="POST" action="{{ route('profile.password') }}">
       @csrf @method('PUT')
 

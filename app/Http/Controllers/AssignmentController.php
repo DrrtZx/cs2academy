@@ -86,4 +86,27 @@ class AssignmentController extends Controller
             'is_closed' => $assignment->status === 'selesai',
         ]);
     }
+
+    /** API: Check apakah ada update di assignments untuk auto-refresh */
+    public function checkUpdates()
+    {
+        $userId = auth()->id();
+        
+        $activeCount = Assignment::where('user_id', $userId)
+            ->where('status', '!=', 'selesai')
+            ->count();
+
+        $latestUnread = Assignment::where('user_id', $userId)
+            ->whereHas('messages', function($q) use ($userId) {
+                $q->where('sender_id', '!=', $userId)
+                  ->whereNull('read_at');
+            })
+            ->exists();
+
+        return response()->json([
+            'active_count' => $activeCount,
+            'has_unread' => $latestUnread,
+            'reload' => false, // Frontend yang menentukan
+        ]);
+    }
 }

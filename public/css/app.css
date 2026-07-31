@@ -68,7 +68,7 @@ nav {
     align-items: center;
     gap: 1.75rem;
     height: 68px;
-    max-width: 1240px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 2rem;
 }
@@ -191,7 +191,7 @@ nav {
 }
 
 /* ── User Badge ── */
-.user-badge {
+.nav-right .user-badge {
     display: flex;
     align-items: center;
     gap: 9px;
@@ -202,21 +202,21 @@ nav {
     font-size: 0.85rem;
 }
 
-.user-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--grad-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.72rem;
-    font-weight: 800;
-    color: #fff;
-    flex-shrink: 0;
+.nav-right .user-badge .user-avatar {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 50% !important;
+    background: var(--grad-primary) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    flex-shrink: 0 !important;
 }
 
-.user-badge .uname {
+.nav-right .user-badge .uname {
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--text);
@@ -252,7 +252,8 @@ nav {
     border-radius: 11px;
     font-size: 0.85rem;
     font-weight: 600;
-    margin: 1rem 2rem;
+    max-width: 1280px;
+    margin: 1rem auto;
 }
 
 .alert-success {
@@ -272,7 +273,7 @@ footer {
     position: relative;
     border-top: 1px solid var(--border);
     padding: 2.5rem 2rem;
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -315,16 +316,17 @@ footer::before {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(6px);
-    z-index: 500;
+    background: rgba(5, 7, 15, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .25s;
+    transition: opacity .25s ease-out;
 }
 
 .modal-overlay.open {
@@ -338,15 +340,15 @@ footer::before {
     max-width: 440px;
     background: var(--bg2);
     border: 1px solid var(--border);
-    border-radius: 22px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-    transform: translateY(20px);
-    transition: transform .25s;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transform: translateY(16px) scale(0.98);
+    transition: transform .25s ease-out;
 }
 
 .modal-overlay.open .modal-box {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
 .modal-head {
@@ -433,20 +435,25 @@ footer::before {
     position: absolute;
     top: 14px;
     right: 16px;
-    background: none;
-    border: none;
-    color: var(--text3);
-    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 1rem;
     cursor: pointer;
-    line-height: 1;
-    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all .2s;
+    z-index: 10;
 }
 
 .modal-close:hover {
-    color: var(--text);
+    background: rgba(255, 80, 80, 0.15);
+    color: #ff5f5f;
+    border-color: rgba(255, 80, 80, 0.3);
 }
 
 /* Link & hint di dalam modal */

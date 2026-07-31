@@ -9,12 +9,11 @@
     <div class="hero-bg">
         <div class="hero">
             <div class="hero-badge">
-                <x-cs-icon name="trophy" size="13" stroke="2" /> Platform CS2 #1 di Indonesia
+                <x-cs-icon name="trophy" size="13" stroke="2" /> Platform Coaching CS2 Indonesia
             </div>
-            <h1 class="hero-title">Kuasai CS2
-                dengan<br><em>Pelatihan Eksklusif</em>
+            <h1 class="hero-title">Naik Rank CS2 Lebih Cepat,<br><em>Dibimbing Pro Player</em>
             </h1>
-            <p class="hero-desc">Belajar CS2 dengan cara yang beda — kursus interaktif, quiz langsung dipraktekkan, dan bisa langsung coaching sama pro player. Naikin rank kamu, beneran.</p>
+            <p class="hero-desc">Asah cara mainmu lewat modul interaktif, kuis praktis, dan sesi bedah taktik 1-on-1 bareng coach kompetitif. Gameplay makin rapi, rank auto naik.</p>
             <div class="hero-cta">
                 <a href="{{ route('coaching') }}" class="btn-hero-primary">Mulai Sekarang</a>
                 <a href="{{ route('courses') }}" class="btn-hero-secondary">Lihat Kursus</a>
@@ -46,7 +45,7 @@
 
     {{-- Skill Topics Bar --}}
     <div class="topics-bar">
-        <p class="topics-bar-label">Materi yang Kami Ajarkan</p>
+        <p class="topics-bar-label">Topik Gameplay yang Bakal Kamu Kuasai</p>
         <div class="topics-list">
             @foreach([
                 ['target',    'Aim Training'],
@@ -72,7 +71,7 @@
             <div class="how-head">
                 <div class="how-badge">CARA KERJA</div>
                 <h2 class="how-title">Bagaimana CS2 Academy Bekerja?</h2>
-                <p class="how-sub">Cukup 3 langkah untuk mulai berkembang bareng coach profesional</p>
+                <p class="how-sub">3 Langkah simpel buat mulai konsultasi dan tingkatkan cara mainmu</p>
             </div>
 
             <div class="how-grid">
@@ -80,7 +79,7 @@
                 <div class="how-card">
                     <span class="how-num how-num--purple">1</span>
                     <h3>Pilih Layanan</h3>
-                    <p>Pilih paket coaching yang sesuai level dan kebutuhanmu — dari textual review sampai sesi 1-on-1.</p>
+                    <p>Pilih paket coaching yang paling cocok buat gaya mainmu — dari catatan review sampai sesi 1-on-1.</p>
                     <div class="how-mock">
                         <div class="mock-tabs">
                             <span class="mock-tab active">Coaching</span>
@@ -115,7 +114,7 @@
                 <div class="how-card">
                     <span class="how-num how-num--blue">3</span>
                     <h3>Dapat Coach & Mulai!</h3>
-                    <p>Coach profesional langsung ditugaskan dan siap bantu kamu lewat chat maupun voice call.</p>
+                    <p>Coach siap terhubung di Discord buat bimbing kamu lewat voice call maupun catatan review.</p>
                     <div class="how-mock how-mock--chat">
                         <div class="chat-head"><span class="chat-dot"></span> Coach Rafi <span class="chat-online">● Online</span></div>
                         <div class="chat-bubble them">
@@ -139,7 +138,7 @@
                 </span>
             </div>
             <h2 class="cta-title">Siap Naik Rank?</h2>
-            <p class="cta-desc">Banyak pemain udah buktiin sendiri. Sekarang giliran kamu.</p>
+            <p class="cta-desc">Ratusan player udah ngerasain bedanya. Sekarang giliran kamu pembuktian di Matchmaking & Faceit.</p>
             <a href="{{ route('coaching') }}" class="btn-cta">
                 <x-cs-icon name="zap" size="16" stroke="2" /> Mulai Coaching Sekarang
             </a>

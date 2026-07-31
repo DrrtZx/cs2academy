@@ -123,7 +123,7 @@ $allCourses = $isModulesView ? null : $courses;
         </div>
         <div class="row-actions">
           <a href="{{ route('admin.modules.edit', $mod) }}" class="btn-icon" title="Edit modul">✎</a>
-          <form method="POST" action="{{ route('admin.modules.delete', $mod) }}" onsubmit="return confirm('Hapus modul ini? Quiz di dalamnya juga ikut kehapus.')" style="margin:0;">
+          <form method="POST" action="{{ route('admin.modules.delete', $mod) }}" onsubmit="return confirmDeleteModule(this);" style="margin:0;">
             @csrf @method('DELETE')
             <button type="submit" class="btn-icon danger" title="Hapus modul">🗑</button>
           </form>
@@ -165,7 +165,7 @@ $allCourses = $isModulesView ? null : $courses;
         <div class="row-actions">
           <a href="{{ route('admin.courses.modules', $c) }}" class="btn btn-ghost btn-sm">Kelola Modul</a>
           <a href="{{ route('admin.courses.edit', $c) }}" class="btn-icon" title="Edit kursus">✎</a>
-          <form method="POST" action="{{ route('admin.courses.delete', $c) }}" onsubmit="return confirm('Hapus kursus ini?')" style="margin:0;">
+          <form method="POST" action="{{ route('admin.courses.delete', $c) }}" onsubmit="return confirmDeleteCourse(this);" style="margin:0;">
             @csrf @method('DELETE')
             <button type="submit" class="btn-icon danger" title="Hapus kursus">🗑</button>
           </form>

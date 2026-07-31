@@ -26,15 +26,23 @@ require __DIR__ . "/auth.php";
 
 // ── HALAMAN YANG BUTUH LOGIN ──
 Route::middleware("auth")->group(function () {
+    // Serve bukti transfer files through Laravel (avoids symlink 403 with artisan serve)
+    Route::get("/storage/bukti-transfer/{filename}", [CoachingController::class, "serveBukti"])->name("bukti.serve");
+
     // Payment tetap butuh login
     Route::get("/payment", [CoachingController::class, "payment"])->name("payment");
     Route::post("/payment/store", [CoachingController::class, "store"])->name("payment.store");
     Route::get("/payment/pending", [CoachingController::class, "pendingStatus"])->name("payment.pending");
+    Route::post("/payment/upload-bukti", [CoachingController::class, "uploadBukti"])->name("payment.upload");
+    Route::get("/payment/check-status", [CoachingController::class, "checkPaymentStatus"])->name("payment.check");
     Route::get("/payment/success", [CoachingController::class, "success"])->name("payment.success");
 
     // Tugas User
     Route::get("/assignments", [AssignmentController::class, "index"])->name(
         "assignments.index",
+    );
+    Route::get("/assignments/check-updates", [AssignmentController::class, "checkUpdates"])->name(
+        "assignments.check",
     );
 
     // Coaching Chat — User reply
@@ -69,6 +77,10 @@ Route::middleware("auth")->group(function () {
     // Admin (khusus role admin)
     Route::get("/admin", [AdminController::class, "dashboard"])
         ->name("admin.dashboard")
+        ->middleware("can:admin-only");
+
+    Route::get("/admin/check-pending", [AdminController::class, "checkPendingTransactions"])
+        ->name("admin.check.pending")
         ->middleware("can:admin-only");
 
     Route::get("/admin/users", [AdminController::class, "users"])
@@ -187,6 +199,10 @@ Route::middleware("auth")->group(function () {
         ->middleware('can:admin-only');
 
     // Coaching transaction approval
+    Route::get('/admin/coaching/{transaction}/detail', [AdminController::class, 'transactionDetail'])
+        ->name('admin.coaching.detail')
+        ->middleware('can:admin-only');
+
     Route::post('/admin/coaching/{transaction}/approve', [AdminController::class, 'approveTransaction'])
         ->name('admin.coaching.approve')
         ->middleware('can:admin-only');

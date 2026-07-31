@@ -4,9 +4,9 @@
 @push('styles')
     <style>
         .coaching-wrap {
-            max-width: 1060px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 4rem 2rem;
+            padding: 3.5rem 2rem;
         }
 
         .tabs-wrapper {
@@ -60,14 +60,16 @@
         }
 
         .svc-ic {
-            width: 42px;
-            height: 42px;
-            background: rgba(124, 111, 224, 0.2);
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            background: rgba(139, 123, 255, 0.12);
+            border: 1px solid rgba(139, 123, 255, 0.25);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 0.9rem;
+            color: var(--purple2);
         }
 
         .svc-card h3 {
@@ -341,8 +343,7 @@
                         </div>
                         <div class="modal-logo"><x-cs-logo size="18" /></div>
                         <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:0.3rem;">Akses Terkunci</h3>
-                        <p style="font-size:0.82rem;color:var(--text2);">Login atau daftar gratis untuk mengakses seluruh materi
-                            coaching CS2.</p>
+                        <p style="font-size:0.82rem;color:var(--text2);">Buat akun gratis dulu yuk untuk langsung pilih paket coaching dan terhubung dengan coach.</p>
                     </div>
                     <div style="padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:10px;">
                         <button class="btn-full" onclick="showAuthForm('login')">Masuk ke Akun</button>
@@ -354,71 +355,68 @@
                         Tanpa kartu kredit &middot; &#10003; Akses instan</div>
                 </div>
 
-                {{-- Konten form auth (tersembunyi awalnya) --}}
+                {{-- Form Login / Register --}}
                 <div id="coachAuthView" style="display:none;">
                     <div class="auth-tabs">
-                        <button class="auth-tab active" id="cTabLogin" onclick="switchCoachTab('login')">Masuk</button>
-                        <button class="auth-tab" id="cTabRegister" onclick="switchCoachTab('register')">Daftar Gratis</button>
+                        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Masuk</button>
+                        <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Daftar</button>
                     </div>
 
-                    {{-- LOGIN --}}
-                    <div class="auth-form active" id="cFormLogin">
-                        <div style="text-align:center;margin-bottom:1.2rem;">
-                            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;">Selamat Datang 😊</h3>
-                            <p style="color:var(--text2);font-size:0.82rem;">Masuk ke akun CS2Academy kamu</p>
-                        </div>
-                        <form method="POST" action="{{ route('login') }}">
-                            @csrf
-                            <div class="fg">
-                                <label for="c-email">Email</label>
-                                <input type="email" name="email" id="c-email" placeholder="email@kamu.com"
-                                    value="{{ old('email') }}" required>
-                            </div>
-                            <div class="fg">
-                                <label for="c-password">Password</label>
-                                <input type="password" name="password" id="c-password" placeholder="Password kamu" required>
-                            </div>
+                    {{-- Login Form --}}
+                    <form id="formCoachLogin" method="POST" action="{{ route('login') }}" class="auth-form"
+                        style="padding:0 1.75rem 1.5rem;">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="{{ request()->fullUrl() }}">
+                        <div id="loginError" class="auth-error" style="display:none;"></div>
 
-                            <button type="submit" class="auth-submit">Masuk →</button>
-                        </form>
-                        <div class="auth-switch">Belum punya akun? <a onclick="switchCoachTab('register')">Daftar Gratis</a>
+                        <div class="form-g">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-ctrl" placeholder="nama@email.com" required>
                         </div>
-                        <div class="auth-demo">Demo: <strong>demo@cs2.id</strong> / <strong>Demo1234!</strong></div>
-                    </div>
+                        <div class="form-g">
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-ctrl" placeholder="••••••••" required>
+                        </div>
+                        <div class="forgot-row">
+                            <a href="{{ route('password.request') }}">Lupa Password?</a>
+                        </div>
+                        <button type="submit" class="auth-submit">Masuk ke Akun</button>
+                        <div class="auth-switch">
+                            Belum punya akun? <a onclick="switchAuthTab('register')">Daftar Gratis</a>
+                        </div>
+                    </form>
 
-                    {{-- REGISTER --}}
-                    <div class="auth-form" id="cFormRegister">
-                        <div style="text-align:center;margin-bottom:1.2rem;">
-                            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;">Buat Akun Baru</h3>
-                            <p style="color:var(--text2);font-size:0.82rem;">Gratis selamanya · Mulai belajar hari ini</p>
+                    {{-- Register Form --}}
+                    <form id="formCoachRegister" method="POST" action="{{ route('register') }}" class="auth-form"
+                        style="display:none;padding:0 1.75rem 1.5rem;">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="{{ request()->fullUrl() }}">
+                        <div id="registerError" class="auth-error" style="display:none;"></div>
+
+                        <div class="form-g">
+                            <label>Nama Lengkap</label>
+                            <input type="text" name="name" class="form-ctrl" placeholder="Nama kamu" required>
                         </div>
-                        <form method="POST" action="{{ route('register') }}">
-                            @csrf
-                            <div class="fg">
-                                <label for="c-name">Nama Lengkap</label>
-                                <input type="text" name="name" id="c-name" placeholder="Nama kamu"
-                                    value="{{ old('name') }}" required>
-                            </div>
-                            <div class="fg">
-                                <label for="c-reg-email">Email</label>
-                                <input type="email" name="email" id="c-reg-email" placeholder="email@kamu.com"
-                                    value="{{ old('email') }}" required>
-                            </div>
-                            <div class="fg">
-                                <label for="c-reg-pw">Password</label>
-                                <input type="password" name="password" id="c-reg-pw" placeholder="Minimal 8 karakter" required>
-                            </div>
-                            <div class="fg">
-                                <label for="c-reg-pwc">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation" id="c-reg-pwc" placeholder="Ulangi password"
-                                    required>
-                            </div>
-                            <button type="submit" class="auth-submit">Buat Akun →</button>
-                        </form>
-                        <div class="auth-switch">Sudah punya akun? <a onclick="switchCoachTab('login')">Masuk</a></div>
-                    </div>
+                        <div class="form-g">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-ctrl" placeholder="nama@email.com" required>
+                        </div>
+                        <div class="form-g">
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-ctrl" placeholder="Minimal 8 karakter"
+                                required>
+                        </div>
+                        <div class="form-g">
+                            <label>Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" class="form-ctrl" placeholder="Ulangi password"
+                                required>
+                        </div>
+                        <button type="submit" class="auth-submit">Daftar Akun Baru</button>
+                        <div class="auth-switch">
+                            Sudah punya akun? <a onclick="switchAuthTab('login')">Masuk</a>
+                        </div>
+                    </form>
                 </div>
-
             </div>
         </div>
     @endguest
@@ -443,7 +441,7 @@
                 COACHING</div>
             <h2 style="font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:0.6rem;">Pilih Program Coaching CS2
                 Kamu</h2>
-            <p style="color:var(--text2);font-size:0.9rem;">Langsung ditangani coach yang udah main di level kompetitif — bukan teori doang</p>
+            <p style="color:var(--text2);font-size:0.9rem;">Mentoring langsung dari pelatih aktif di skena kompetitif CS2 — fokus ke eksekusi & gameplay nyata.</p>
                 @guest
                     <div
                         style="margin-top:1rem;background:rgba(124,111,224,0.08);border:1px solid rgba(124,111,224,0.25);border-radius:12px;padding:10px 18px;display:inline-flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--purple2);">
@@ -458,53 +456,49 @@
                 <button class="tab-btn" onclick="swTab('call',this)">Panggil Pelatih</button>
                 <button class="tab-btn" onclick="swTab('demo',this)">Demo Review</button>
             </div>
-
-            @php
+                @php
                 $services = [
                     'textual' => [
-                        'icon' => 'T',
-                        'style' => 'font-size:.9rem;font-weight:900;color:var(--purple2);',
+                        'icon' => 'file-text',
                         'title' => 'Textual Review',
                         'desc' =>
-                            'Ngobrol 1 jam via voice call sama coach, terus kamu dapet catatan tertulis dari hasil sesinya. Bisa ngomongin apa aja — role, positioning, economy, mindset, sampai kebiasaan yang bikin kamu stuck di rank sekarang.',
+                            'Sesi evaluasi 1 jam via voice call plus rangkuman poin penting tertulis. Bebas bedah role, positioning, utilitas, hingga kebiasaan kecil yang bikin kamu kepentok rank.',
                         'harga' => 'Rp 100.000',
                         'sub' => '✦ Langsung ditinjau oleh coach aktif',
-                        'p1' => '⚡',
+                        'p1_icon' => 'zap',
                         'p1l' => 'Coach Masuk',
                         'p1v' => '< 5 Menit',
-                        'p2' => '🕐',
+                        'p2_icon' => 'clock',
                         'p2l' => 'Durasi Sesi',
                         'p2v' => '1 Jam',
                         'param' => 'Textual+Review',
                     ],
                     'call' => [
-                        'icon' => '📞',
-                        'style' => '',
+                        'icon' => 'phone',
                         'title' => 'Panggil Pelatih',
                         'desc' =>
-                            'Voice call langsung sama coach CS2. Tanya-tanya, bahas strategi, atau minta review gameplay kamu secara langsung. Coachnya nyesuain materi sama level dan masalah spesifik yang lagi kamu hadapi.',
+                            'Tanya jawab dan bedah taktik secara langsung 1-on-1 via Discord. Materi disesuaikan persis dengan kendala utama yang sering bikin kamu kalah clutch.',
                         'harga' => 'Rp 250.000',
                         'sub' => '✦ Sesi 1-on-1 via Discord',
-                        'p1' => '⚡',
+                        'p1_icon' => 'zap',
                         'p1l' => 'Coach Masuk',
                         'p1v' => '< 5 Menit',
-                        'p2' => '🎙',
+                        'p2_icon' => 'users',
                         'p2l' => 'Platform',
                         'p2v' => 'Discord',
                         'param' => 'Panggil+Pelatih',
                     ],
                     'demo' => [
-                        'icon' => '🎬',
-                        'style' => '',
+                        'icon' => 'film',
                         'title' => 'Demo Review',
                         'desc' =>
-                            'Upload demo game kamu, nanti coach yang nonton dan bedah semuanya. Kamu bakal dapet laporan yang isinya: momen bagus yang perlu dikembangin, kesalahan yang sering muncul, dan tips konkret buat naik rank lebih cepat.',
+                            'Kirimkan demo match terbaik atau terburukmu. Coach bakal analisis setiap ronde dan kirim breakdown mendalam tentang crosshair placement, rotasi, dan timing.',
                         'harga' => 'Rp 300.000',
                         'sub' => '✦ Laporan pembahasan lengkap',
-                        'p1' => '⚡',
+                        'p1_icon' => 'zap',
                         'p1l' => 'Analyst Masuk',
                         'p1v' => '< 5 Menit',
-                        'p2' => '🕐',
+                        'p2_icon' => 'clock',
                         'p2l' => 'Waktu Review',
                         'p2v' => '24–48 Jam',
                         'param' => 'Demo+Review',
@@ -515,7 +509,9 @@
             @foreach ($services as $key => $s)
                 <div class="tab-c {{ $key === 'textual' ? 'active' : '' }}" id="tc-{{ $key }}">
                     <div class="svc-card">
-                        <div class="svc-ic" style="{{ $s['style'] }}">{{ $s['icon'] }}</div>
+                        <div class="svc-ic">
+                            <x-cs-icon :name="$s['icon']" size="20" stroke="2" />
+                        </div>
                         <h3>{{ $s['title'] }}</h3>
                         <p>{{ $s['desc'] }}</p>
                     </div>
@@ -526,11 +522,13 @@
                         <div class="price-amt">{{ $s['harga'] }}</div>
                         <div class="price-sub">{{ $s['sub'] }}</div>
                         <div class="info-pills">
-                            <div class="ip">{{ $s['p1'] }}<div>
-                                    <span>{{ $s['p1l'] }}</span><br><strong>{{ $s['p1v'] }}</strong></div>
+                            <div class="ip">
+                                <x-cs-icon :name="$s['p1_icon']" size="15" stroke="2" style="color:var(--purple2);flex-shrink:0;" />
+                                <div><span>{{ $s['p1l'] }}</span><br><strong>{{ $s['p1v'] }}</strong></div>
                             </div>
-                            <div class="ip">{{ $s['p2'] }}<div>
-                                    <span>{{ $s['p2l'] }}</span><br><strong>{{ $s['p2v'] }}</strong></div>
+                            <div class="ip">
+                                <x-cs-icon :name="$s['p2_icon']" size="15" stroke="2" style="color:var(--purple2);flex-shrink:0;" />
+                                <div><span>{{ $s['p2l'] }}</span><br><strong>{{ $s['p2v'] }}</strong></div>
                             </div>
                         </div>
                         @auth

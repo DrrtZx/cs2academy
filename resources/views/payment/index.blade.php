@@ -21,7 +21,6 @@
 @section('content')
 <div class="pay-wrap">
   <div style="text-align:center;margin-bottom:1.75rem;">
-    <div style="font-size:2rem;margin-bottom:.5rem;">🏦</div>
     <h2 style="font-size:1.5rem;font-weight:800;margin-bottom:.35rem;">Pembayaran BCA Virtual Account</h2>
     <p style="color:var(--text2);font-size:.875rem;">Selesaikan pembayaran dalam <strong>1×24 jam</strong> sebelum pesanan otomatis kedaluwarsa</p>
   </div>
@@ -49,7 +48,7 @@
       <div style="margin-bottom:1.25rem;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem;">Cara Pembayaran</div>
 
-        <div style="margin-bottom:0.2rem;font-size:0.78rem;font-weight:700;color:var(--text);">🏧 via BCA Mobile / myBCA</div>
+        <div style="margin-bottom:0.2rem;font-size:0.78rem;font-weight:700;color:var(--text);">via BCA Mobile / myBCA</div>
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-text">Buka aplikasi <strong>myBCA</strong> atau <strong>BCA Mobile</strong></div>
@@ -72,7 +71,7 @@
         </div>
 
         <details style="margin-top:0.8rem;cursor:pointer;">
-          <summary style="font-size:0.78rem;color:var(--purple2);font-weight:600;">🔄 Alternatif via KlikBCA / ATM</summary>
+          <summary style="font-size:0.78rem;color:var(--purple2);font-weight:600;">Alternatif via KlikBCA / ATM</summary>
           <div style="margin-top:0.6rem;padding-left:0;">
             <div class="step-item">
               <div class="step-num" style="background:rgba(0,212,170,0.15);color:var(--green);">A</div>
@@ -92,11 +91,10 @@
         <input type="hidden" name="package_name"  value="{{ $layanan }}">
         <input type="hidden" name="package_price" value="{{ $harga }}">
         <div style="background:rgba(255,140,66,0.08);border:1px solid rgba(255,140,66,0.25);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.78rem;color:var(--orange);display:flex;gap:8px;align-items:flex-start;">
-          <span style="font-size:1rem;flex-shrink:0;">⏱️</span>
           <span>Setelah klik konfirmasi, lakukan pembayaran maksimal <strong>1×24 jam</strong>.
             Admin akan memverifikasi setelah dana masuk.</span>
         </div>
-        <button type="submit" class="pay-btn">🏦 Konfirmasi & Lihat Virtual Account</button>
+        <button type="submit" class="pay-btn">Konfirmasi & Lihat Virtual Account</button>
       </form>
 
       <a href="{{ route('coaching') }}" style="display:block;width:100%;text-align:center;background:transparent;color:var(--text2);border:1px solid var(--border);padding:9px;border-radius:9px;font-size:0.85rem;margin-top:10px;">← Kembali ke Paket Coaching</a>

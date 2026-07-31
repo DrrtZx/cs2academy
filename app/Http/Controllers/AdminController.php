@@ -45,13 +45,21 @@ class AdminController extends Controller
     public function users(Request $request)
     {
         $search = trim($request->get('search', ''));
+
+        $stats = [
+            'total' => User::count(),
+            'admin' => User::where('role', 'admin')->count(),
+            'user'  => User::where('role', 'user')->count(),
+            'paid'  => User::where('has_paid', true)->count(),
+        ];
+
         $users = User::when($search, fn($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"))
             ->orderBy('role')
             ->orderBy('name')
             ->paginate(15)
             ->appends(['search' => $search]);
 
-        return view('admin.users', compact('users', 'search'));
+        return view('admin.users', compact('users', 'search', 'stats'));
     }
 
     // Aktifkan mode preview: admin melihat situs seperti tampilan role user biasa
@@ -121,6 +129,71 @@ class AdminController extends Controller
     {
         $transaction->update(['status' => 'rejected']);
         return back()->with('success', "❌ Transaksi dari {$transaction->user->name} telah ditolak.");
+    }
+
+    /**
+     * API: Detail transaksi untuk popup admin (dengan bukti transfer).
+     */
+    public function transactionDetail(CoachingTransaction $transaction)
+    {
+        $transaction->load('user');
+        
+        $buktiUrl = null;
+        $buktiType = null;
+        
+        if ($transaction->bukti_transfer) {
+            // Use url() so it resolves to the current request's host (works on localhost + production)
+            $buktiUrl = url('/storage/bukti-transfer/' . $transaction->bukti_transfer);
+            $extension = strtolower(pathinfo($transaction->bukti_transfer, PATHINFO_EXTENSION));
+            $buktiType = in_array($extension, ['jpg', 'jpeg', 'png']) ? 'image' : 'pdf';
+        }
+
+        return response()->json([
+            'id' => $transaction->id,
+            'user_name' => $transaction->user->name,
+            'user_email' => $transaction->user->email,
+            'package_name' => $transaction->package_name,
+            'package_price' => $transaction->package_price,
+            'status' => $transaction->status,
+            'va_code' => $transaction->va_code,
+            'created_at' => $transaction->created_at->format('d M Y H:i'),
+            'bukti_transfer' => $buktiUrl,
+            'bukti_type' => $buktiType,
+            'bukti_uploaded_at' => $transaction->bukti_uploaded_at 
+                ? $transaction->bukti_uploaded_at->format('d M Y H:i')
+                : null,
+        ]);
+    }
+
+    /**
+     * API: Check apakah ada transaksi pending baru untuk auto-refresh.
+     * Returns snapshot hash + full list for live DOM update (no page reload needed).
+     */
+    public function checkPendingTransactions()
+    {
+        $pending = CoachingTransaction::with('user')
+            ->pending()
+            ->latest()
+            ->get();
+
+        // Hash of sorted IDs → frontend detects any add/remove instantly
+        $snapshot = md5($pending->pluck('id')->sort()->implode(','));
+
+        return response()->json([
+            'count'        => $pending->count(),
+            'snapshot'     => $snapshot,
+            'transactions' => $pending->map(fn($t) => [
+                'id'            => $t->id,
+                'user_name'     => $t->user->name,
+                'user_email'    => $t->user->email,
+                'package_name'  => $t->package_name,
+                'package_price' => $t->package_price,
+                'has_bukti'     => (bool) $t->bukti_transfer,
+                'ago'           => $t->created_at->diffForHumans(),
+                'approve_url'   => route('admin.coaching.approve', $t),
+                'reject_url'    => route('admin.coaching.reject', $t),
+            ]),
+        ]);
     }
 
     /** Halaman Sesi Coaching (dulunya assignments) */

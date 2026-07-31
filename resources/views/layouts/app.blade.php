@@ -14,17 +14,18 @@
 
     <nav>
         <div class="nav-inner">
-            <a href="{{ route('home') }}" class="logo">
-                <x-cs-logo />
-            </a>
             @php
                 $isAdminUser = auth()->check() && auth()->user()->isAdmin();
                 $previewMode = (bool) session('admin_preview_mode', false);
                 $showUserNav = !$isAdminUser || $previewMode;
+                $logoUrl     = ($isAdminUser && !$previewMode) ? route('admin.dashboard') : route('home');
             @endphp
+            <a href="{{ $logoUrl }}" class="logo">
+                <x-cs-logo />
+            </a>
             <div class="nav-links">
-                <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
                 @if ($showUserNav)
+                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
                     <a href="{{ route('courses') }}"
                         class="nav-link {{ request()->routeIs('courses') ? 'active' : '' }}">Kursus</a>
                     <a href="{{ route('coaching') }}"
@@ -45,22 +46,13 @@
             </div>
             <div class="nav-right">
                 @auth
-                    @if ($isAdminUser)
-                        @if ($previewMode)
-                            <form method="POST" action="{{ route('admin.preview.off') }}" class="nav-form">
-                                @csrf
-                                <button type="submit" class="btn-g btn-g--back">
-                                    <x-cs-icon name="arrow-left" size="14" /> Kembali ke Admin
-                                </button>
-                            </form>
-                        @else
-                            <form method="POST" action="{{ route('admin.preview.on') }}" class="nav-form">
-                                @csrf
-                                <button type="submit" class="btn-g">
-                                    <x-cs-icon name="eye" size="14" /> Lihat sebagai User
-                                </button>
-                            </form>
-                        @endif
+                    @if ($isAdminUser && $previewMode)
+                        <form method="POST" action="{{ route('admin.preview.off') }}" class="nav-form">
+                            @csrf
+                            <button type="submit" class="btn-g btn-g--back">
+                                <x-cs-icon name="arrow-left" size="14" /> Kembali ke Admin
+                            </button>
+                        </form>
                     @endif
                     <div class="user-badge" style="position:relative; cursor:pointer;" onclick="this.querySelector('.user-drop').classList.toggle('open')">
                         <span class="user-avatar" style="position:relative; overflow:hidden;">
@@ -79,14 +71,14 @@
                                 <a href="{{ route('assignments.index') }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:12px;text-decoration:none;border-bottom:1px solid var(--border);">
                                     <span style="width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0;animation:coaching-pulse 2s infinite;"></span>
                                     <span style="color:var(--green);font-weight:700;">1 Sesi Aktif</span>
-                                    <span style="color:var(--text2);font-size:11px;margin-left:auto;">📋 Tugas Saya →</span>
+                                    <span style="color:var(--text2);font-size:11px;margin-left:auto;">Tugas Saya →</span>
                                 </a>
                             @endif
-                            <a href="{{ route('profile.edit') }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;color:var(--text);text-decoration:none;">👤 Profile Settings</a>
+                            <a href="{{ route('profile.edit') }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;color:var(--text);text-decoration:none;">Profile Settings</a>
                             <div style="border-top:1px solid var(--border);">
                                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                                     @csrf
-                                    <button type="submit" style="width:100%;text-align:left;background:none;border:none;padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;">🚪 Keluar</button>
+                                    <button type="submit" style="width:100%;text-align:left;background:none;border:none;padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;">Keluar</button>
                                 </form>
                             </div>
                         </div>
@@ -290,6 +282,61 @@
                 document.body.style.overflow = 'hidden';
             });
         @endif
+    </script>
+
+    {{-- ══════════════════════════════════
+     MODAL CONFIRMATION (Custom Styled)
+     ══════════════════════════════════ --}}
+    <div class="modal-overlay" id="confirmModal" style="z-index: 20000;">
+        <div class="modal-box" style="max-width:400px;padding:1.75rem 1.5rem;text-align:center;">
+            <h3 id="confirmTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:0.4rem;color:var(--text);">Konfirmasi</h3>
+            <p id="confirmText" style="font-size:0.85rem;color:var(--text2);line-height:1.5;margin-bottom:1.5rem;">Apakah kamu yakin ingin melanjutkan?</p>
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button type="button" id="confirmCancelBtn" onclick="closeConfirmModal()" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:0.85rem;font-weight:700;cursor:pointer;">Batal</button>
+                <button type="button" id="confirmActionBtn" style="flex:1;padding:10px;border-radius:10px;border:none;background:var(--grad-primary);color:#fff;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 8px 20px -8px rgba(139,123,255,0.7);">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let _confirmCallback = null;
+    function showCustomConfirm(options) {
+      const modal = document.getElementById('confirmModal');
+      const title = document.getElementById('confirmTitle');
+      const text  = document.getElementById('confirmText');
+      const actBtn = document.getElementById('confirmActionBtn');
+
+      if (options.title) title.textContent = options.title;
+      if (options.text) text.textContent = options.text;
+      if (options.confirmText) actBtn.textContent = options.confirmText;
+      if (options.danger) {
+        actBtn.style.background = '#ff5f5f';
+        actBtn.style.boxShadow = '0 8px 20px -8px rgba(255,95,95,0.7)';
+      } else {
+        actBtn.style.background = 'var(--grad-primary)';
+        actBtn.style.boxShadow = '0 8px 20px -8px rgba(139,123,255,0.7)';
+      }
+
+      _confirmCallback = options.onConfirm || null;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmModal() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      _confirmCallback = null;
+    }
+
+    document.getElementById('confirmActionBtn').addEventListener('click', function() {
+      if (_confirmCallback) _confirmCallback();
+      closeConfirmModal();
+    });
+
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+      if (e.target === this) closeConfirmModal();
+    });
     </script>
 
     {{-- Admin floating chat widget --}}

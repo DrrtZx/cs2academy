@@ -17,7 +17,7 @@
 .session-card.finished { opacity: 0.7; }
 .session-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
 .user-info { display: flex; align-items: center; gap: 10px; }
-.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+.coaching-session-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #fff; flex-shrink: 0; }
 .session-meta { font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
 .session-body { color: var(--text2); font-size: 0.875rem; line-height: 1.7; }
 
@@ -60,17 +60,17 @@
     <a href="{{ route('admin.courses') }}" class="admin-tab"><x-cs-icon name="book-open" size="14" stroke="2" /> Kelola Course</a>
   </div>
 
-  <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:0.3rem;">🎮 Sesi Coaching</h2>
+  <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:0.3rem;">Sesi Coaching</h2>
   <p style="color:var(--text2);font-size:0.875rem;margin-bottom:1.75rem;">Chat langsung dengan user via sesi coaching yang aktif.</p>
 
   {{-- SESI AKTIF --}}
   @if($coachingSessionsActive->isNotEmpty())
-    <div class="section-divider">🎮 Aktif ({{ $coachingSessionsActive->count() }})</div>
+    <div class="section-divider">Aktif ({{ $coachingSessionsActive->count() }})</div>
     @foreach($coachingSessionsActive as $sesi)
       <div class="session-card" id="session-{{ $sesi->id }}" data-id="{{ $sesi->id }}">
         <div class="session-head">
           <div class="user-info">
-            <div class="user-avatar">{{ strtoupper(mb_substr($sesi->user->name, 0, 1)) }}</div>
+            <div class="coaching-session-avatar">{{ strtoupper(mb_substr($sesi->user->name, 0, 1)) }}</div>
             <div>
               <div style="font-weight:700;font-size:0.95rem;color:var(--text);">{{ $sesi->user->name }}</div>
               <div class="session-meta">{{ $sesi->judul }} · {{ $sesi->created_at->diffForHumans() }}</div>
@@ -80,8 +80,8 @@
 
         <div class="chat-box">
           <div class="chat-header-bar">
-            <span>💬 Percakapan</span>
-            <button onclick="completeSessionInline({{ $sesi->id }})" style="background:var(--green);border:none;border-radius:6px;padding:5px 12px;color:#000;font-weight:700;cursor:pointer;font-size:11px;font-family:inherit;">✓ Selesaikan</button>
+            <span>Percakapan</span>
+            <button onclick="completeSessionInline({{ $sesi->id }})" style="background:var(--green);border:none;border-radius:6px;padding:5px 12px;color:#000;font-weight:700;cursor:pointer;font-size:11px;font-family:inherit;">Selesaikan</button>
           </div>
           <div class="chat-msgs" id="msgs-{{ $sesi->id }}">Memuat...</div>
           <div class="chat-input-row">
@@ -89,19 +89,19 @@
             <button onclick="sendInlineReply({{ $sesi->id }})">Kirim</button>
           </div>
         </div>
-        <div class="finished-notice" id="closed-{{ $sesi->id }}" style="display:none;">✅ Sesi ini sudah selesai — read only</div>
+        <div class="finished-notice" id="closed-{{ $sesi->id }}" style="display:none;">Sesi ini sudah selesai — read only</div>
       </div>
     @endforeach
   @endif
 
   {{-- ARSIP (dropdown accordion) --}}
   @if($coachingSessionsFinished->isNotEmpty())
-    <div class="section-divider" style="margin-top:2rem;">📦 Arsip ({{ $coachingSessionsFinished->count() }})</div>
+    <div class="section-divider" style="margin-top:2rem;">Arsip ({{ $coachingSessionsFinished->count() }})</div>
     @foreach($coachingSessionsFinished as $sesi)
       <div class="session-card finished" data-id="{{ $sesi->id }}" style="overflow:hidden;">
         <div class="session-head" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.arr').classList.toggle('open');" style="cursor:pointer;">
           <div class="user-info" style="flex:1;">
-            <div class="user-avatar">{{ strtoupper(mb_substr($sesi->user->name, 0, 1)) }}</div>
+            <div class="coaching-session-avatar">{{ strtoupper(mb_substr($sesi->user->name, 0, 1)) }}</div>
             <div>
               <div style="font-weight:700;font-size:0.95rem;color:var(--text);">{{ $sesi->user->name }}</div>
               <div class="session-meta">{{ $sesi->judul }} · Selesai {{ $sesi->completed_at?->diffForHumans() ?? $sesi->updated_at->diffForHumans() }}</div>
@@ -168,13 +168,19 @@ function sendInlineReply(id) {
 }
 
 function completeSessionInline(id) {
-  if (!confirm('Selesaikan sesi ini? User akan bisa beli paket coaching baru.')) return;
-  var token = document.querySelector('meta[name="csrf-token"]');
-  fetch('/admin/coaching-inbox/' + id + '/complete', {
-    method: 'POST',
-    headers: { 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' }
-  }).then(function(r) { return r.json(); }).then(function(d) {
-    if (d.success) location.reload();
+  showCustomConfirm({
+    title: 'Selesaikan Sesi Coaching?',
+    text: 'Sesi ini akan ditandai selesai dan user dapat membeli paket coaching baru.',
+    confirmText: 'Selesaikan Sesi',
+    onConfirm: function() {
+      var token = document.querySelector('meta[name="csrf-token"]');
+      fetch('/admin/coaching-inbox/' + id + '/complete', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token.getAttribute('content'), 'Accept': 'application/json' }
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        if (d.success) location.reload();
+      });
+    }
   });
 }
 
