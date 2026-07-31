@@ -91,7 +91,7 @@
                     </form>
                 @else
                     <button class="btn-g" onclick="openModal('login')">Masuk</button>
-                    <button class="btn-p" onclick="openModal('register')">Daftar Gratis</button>
+                    <button class="btn-p" onclick="openModal('register')">Daftar Akun</button>
                 @endauth
             </div>
         </div>
@@ -138,12 +138,12 @@
             <div class="modal-head">
                 <div class="modal-logo"><x-cs-logo size="20" /></div>
                 <h3 id="modalTitle">Selamat Datang</h3>
-                <p id="modalSub">Masuk ke akunmu dan lanjut belajar</p>
+                <p id="modalSub">Masuk ke akun CS2Academy kamu</p>
             </div>
 
             <div class="modal-tabs">
                 <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Masuk</button>
-                <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Daftar Gratis</button>
+                <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Daftar Akun</button>
             </div>
 
             {{-- LOGIN PANE --}}
@@ -243,8 +243,8 @@
                 document.getElementById('modalTitle').textContent = 'Selamat Datang';
                 document.getElementById('modalSub').textContent = 'Masuk ke akun CS2Academy kamu';
             } else {
-                document.getElementById('modalTitle').textContent = 'Buat Akun Baru';
-                document.getElementById('modalSub').textContent = 'Gratis, gak perlu kartu kredit. Daftar sekarang!';
+                document.getElementById('modalTitle').textContent = 'Daftar Akun Baru';
+                document.getElementById('modalSub').textContent = 'Buat akun CS2Academy untuk mulai belajar dan konsultasi dengan coach';
             }
         }
         // Tutup modal kalau klik di luar box

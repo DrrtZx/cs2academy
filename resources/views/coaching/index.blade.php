@@ -382,7 +382,7 @@
                         </div>
                         <button type="submit" class="auth-submit">Masuk ke Akun</button>
                         <div class="auth-switch">
-                            Belum punya akun? <a onclick="switchAuthTab('register')">Daftar Gratis</a>
+                            Belum punya akun? <a onclick="switchAuthTab('register')">Daftar Akun</a>
                         </div>
                     </form>
 

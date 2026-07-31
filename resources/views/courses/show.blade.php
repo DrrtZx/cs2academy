@@ -105,7 +105,7 @@
     </div>
     <div style="padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:10px;">
       <button class="btn-full" onclick="document.getElementById('guestModal').classList.remove('open');openModal('login');">Masuk ke Akun</button>
-      <button onclick="document.getElementById('guestModal').classList.remove('open');openModal('register');" style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.9rem;font-weight:600;cursor:pointer;">Daftar Gratis &rarr;</button>
+      <button onclick="document.getElementById('guestModal').classList.remove('open');openModal('register');" style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.9rem;font-weight:600;cursor:pointer;">Daftar Akun &rarr;</button>
     </div>
     <div style="text-align:center;padding:0 1.75rem 1.25rem;font-size:0.78rem;color:var(--text3);">✓ Gratis · ✓ Tanpa kartu kredit · ✓ Akses instan</div>
   </div>
