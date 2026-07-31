@@ -240,6 +240,25 @@
 </div>
 @endif
 
+{{-- Modal Payment Approved (Design modern tanpa alert bawaan browser) --}}
+<div class="bup-overlay" id="payApprovedModal">
+  <div class="bup-box" style="text-align:center;padding:2.25rem 1.75rem;max-width:440px;">
+    <div style="width:72px;height:72px;border-radius:50%;background:rgba(0,212,170,0.15);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem auto;box-shadow:0 0 30px rgba(0,212,170,0.35);">
+      <x-cs-icon name="check" size="36" stroke="3" style="color:var(--green);" />
+    </div>
+    <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:0.4rem;color:var(--text);">Pembayaran Dikonfirmasi! 🎉</h3>
+    <p style="font-size:0.88rem;color:var(--text2);line-height:1.6;margin-bottom:1.25rem;">
+      Pembayaran Anda untuk paket <strong style="color:var(--purple2);" id="approvedPkgName">{{ $transaction->package_name }}</strong> telah diverifikasi oleh Admin. Sesi coaching Anda kini telah aktif!
+    </p>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:0.85rem;margin-bottom:1.25rem;font-size:0.8rem;color:var(--text3);">
+      Mengalihkan dalam <strong style="color:var(--green);" id="approvedCountdown">3</strong> detik...
+    </div>
+    <a href="{{ route('payment.success') }}" style="display:block;width:100%;padding:13px;border-radius:10px;font-size:0.9rem;font-weight:700;background:var(--grad-primary);color:#fff;text-decoration:none;box-shadow:0 8px 24px -6px rgba(139,123,255,.5);">
+      Lihat Bukti & Sesi Coaching →
+    </a>
+  </div>
+</div>
+
 @push('scripts')
 <script>
 function copyVa() {
@@ -295,18 +314,51 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') bupClose();
 });
 
-// Auto-refresh polling setiap 30 detik
+// Auto-refresh polling setiap 5 detik dengan Modal cantik tanpa alert() browser
 let lastStatus = '{{ $transaction->status }}';
-setInterval(function() {
+let pollingActive = true;
+
+function checkStatusNow() {
+  if (!pollingActive) return;
   fetch('{{ route("payment.check") }}')
     .then(res => res.json())
     .then(data => {
       if (data.reload && data.status !== lastStatus) {
-        if (data.message) { alert(data.message); }
-        window.location.href = '{{ route("assignments.index") }}';
+        pollingActive = false;
+        if (data.status === 'approved') {
+          showApprovedModal(data.package);
+        } else if (data.status === 'rejected') {
+          window.location.reload();
+        } else {
+          window.location.href = '{{ route("payment.success") }}';
+        }
       }
     })
     .catch(err => console.error('Polling error:', err));
-}, 30000);
+}
+
+function showApprovedModal(pkgName) {
+  var modal = document.getElementById('payApprovedModal');
+  if (pkgName) {
+    var el = document.getElementById('approvedPkgName');
+    if (el) el.textContent = pkgName;
+  }
+  if (modal) {
+    modal.classList.add('bup-open');
+    document.body.style.overflow = 'hidden';
+  }
+  var secondsLeft = 3;
+  var cd = document.getElementById('approvedCountdown');
+  var timer = setInterval(function() {
+    secondsLeft--;
+    if (cd) cd.textContent = secondsLeft;
+    if (secondsLeft <= 0) {
+      clearInterval(timer);
+      window.location.href = '{{ route("payment.success") }}';
+    }
+  }, 1000);
+}
+
+setInterval(checkStatusNow, 5000);
 </script>
 @endpush

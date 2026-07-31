@@ -138,6 +138,29 @@
   </h2>
   <p style="color:var(--text2);font-size:0.875rem;margin-bottom:1.75rem;">Pantau sesi aktif, kirim pertanyaan, dan baca arsip feedback dari coach kamu.</p>
 
+  {{-- Active Coaching Status Banner --}}
+  @if(auth()->user()->has_paid || auth()->user()->coachingTransactions()->where('status', 'approved')->exists())
+    <div style="background:linear-gradient(135deg, rgba(0,212,170,0.12), rgba(124,111,224,0.12));border:1px solid rgba(0,212,170,0.3);border-radius:18px;padding:1.25rem 1.5rem;margin-bottom:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(0,212,170,0.18);border:1px solid rgba(0,212,170,0.4);display:flex;align-items:center;justify-content:center;color:var(--green);flex-shrink:0;">
+          <x-cs-icon name="check-circle" size="24" stroke="2.5" />
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+            <span style="font-size:0.7rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.6px;background:rgba(0,212,170,0.15);padding:2px 8px;border-radius:50px;display:inline-flex;align-items:center;gap:5px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:coaching-pulse 2s infinite;"></span> Sesi Aktif
+            </span>
+            <span style="font-size:0.75rem;color:var(--text3);">• Paket {{ auth()->user()->active_coaching_package ?? 'Coaching' }}</span>
+          </div>
+          <div style="font-size:0.92rem;font-weight:700;color:var(--text);">Pembayaran Berhasil & Sesi Coaching Siap!</div>
+        </div>
+      </div>
+      <a href="#panel-active" style="background:var(--grad-primary);color:#fff;padding:9px 18px;border-radius:10px;font-size:0.8rem;font-weight:700;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px -4px rgba(139,123,255,.5);">
+        Mulai Chat Coach ↓
+      </a>
+    </div>
+  @endif
+
   {{-- Tab Navigation --}}
   <div class="sess-tabs" role="tablist">
     @if($activeSessions->count() > 0)

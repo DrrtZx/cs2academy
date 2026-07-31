@@ -74,7 +74,7 @@ class CoachingController extends Controller
         }
 
         if ($transaction->status === 'approved') {
-            return redirect()->route('assignments.index')
+            return redirect()->route('payment.success')
                 ->with('success', '✅ Pembayaran kamu sudah dikonfirmasi! Sesi coaching kamu sudah aktif.');
         }
 
@@ -83,7 +83,13 @@ class CoachingController extends Controller
 
     public function success()
     {
-        return view('payment.success');
+        $transaction = auth()->user()
+            ->coachingTransactions()
+            ->where('status', 'approved')
+            ->latest()
+            ->first();
+
+        return view('payment.success', compact('transaction'));
     }
 
     public function uploadBukti(Request $request)
