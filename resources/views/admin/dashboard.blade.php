@@ -73,7 +73,7 @@
       <x-cs-icon name="zap" size="14" stroke="2" /> Sesi Coaching
     </a>
     <a href="{{ route('admin.courses') }}" class="admin-tab">
-      <x-cs-icon name="book-open" size="14" stroke="2" /> Kelola Course
+      <x-cs-icon name="book-open" size="14" stroke="2" /> Kelola Kursus
     </a>
   </div>
 

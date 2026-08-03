@@ -1,7 +1,7 @@
 # PROJECT DOCUMENTATION — CS2 Academy
 
-> Dokumentasi teknis lengkap — dipakai untuk UML diagram & navigasi struktur.
-> Last updated: 2026-07-13
+> Dokumentasi teknis untuk Activity Diagram, Use Case Diagram, dan Class Diagram
+> Last updated: 2026-08-01
 
 ---
 
@@ -9,494 +9,1242 @@
 
 CS2 Academy adalah platform edukasi Counter-Strike 2 berbasis web. User dapat mengakses kursus interaktif dengan kuis per modul dan membeli sesi coaching 1-on-1 dengan coach/pro player. Admin mengelola kursus, modul, kuis, user, dan sesi coaching melalui panel admin.
 
-### Role / Aktor
+---
 
-| Role | Deskripsi | Akses |
-|------|-----------|-------|
-| **Guest** | Pengunjung belum login | Lihat landing page, katalog kursus (locked, popup login), halaman coaching (popup login) |
-| **User (Pemain)** | User terdaftar dan login | Akses penuh katalog kursus + detail modul + quiz, beli paket coaching, chat dengan coach, profile settings |
-| **Admin** | Administrator platform | Dashboard, manajemen user, approve/reject pembayaran, chat coaching, kelola course/module/quiz, preview mode (lihat sebagai user) |
+## 2. AKTOR SISTEM
+
+### 2.1 User (Pemain)
+**Deskripsi:** User yang telah terdaftar dan login ke sistem
+
+**Hak Akses:**
+- Registrasi dan login/logout
+- Melihat dan mengakses kursus
+- Mengerjakan quiz per modul
+- Melihat progress kursus
+- Membeli paket coaching
+- Chat dengan coach (sesi aktif)
+- Mengelola profile (avatar, nama, email, discord ID, password)
+
+**Batasan:**
+- Hanya bisa akses kursus setelah login
+- Tidak bisa membeli paket coaching baru jika ada transaksi pending atau sesi aktif
+- Modul kursus unlock secara berurutan (harus selesaikan modul sebelumnya)
+
+### 2.2 Admin
+**Deskripsi:** Administrator platform dengan akses penuh
+
+**Hak Akses:**
+- Semua hak akses User
+- Melihat dashboard statistik
+- Mengelola semua user (lihat, search)
+- Approve/reject pembayaran coaching
+- Chat dengan user (sesi coaching)
+- Mengelola kursus (tambah, edit, hapus)
+- Mengelola modul dan quiz (tambah, edit, hapus, reorder)
+- Menyelesaikan sesi coaching
+- Preview mode (melihat sebagai user biasa)
 
 ---
 
-## 2. STRUKTUR ROUTE & NAVIGASI
+## 3. USE CASE UTAMA
 
-### 2A. Guest Routes (public — no middleware)
+### 3.1 Use Case User
 
-| Method | URL | Route Name | Controller | Keterangan |
-|--------|-----|------------|------------|------------|
-| GET | `/` | `home` | `HomeController@index` | Landing page + stats |
-| GET | `/courses` | `courses` | `CourseController@index` | Katalog kursus (grid card, locked untuk guest) |
-| GET | `/courses/{course}` | `courses.show` | `CourseController@show` | Detail modul (guest dapet modal login) |
-| GET | `/coaching` | `coaching` | `CoachingController@index` | Halaman paket coaching |
-| GET | `/login` | `login` | `Auth\AuthenticatedSessionController@create` | Login form |
-| POST | `/login` | — | `Auth\AuthenticatedSessionController@store` | Proses login |
-| GET | `/register` | `register` | `Auth\RegisteredUserController@create` | Register form |
-| POST | `/register` | — | `Auth\RegisteredUserController@store` | Proses register |
-| GET | `/forgot-password` | `password.request` | `PasswordResetLinkController@create` | Forgot password form |
-| POST | `/forgot-password` | `password.email` | `PasswordResetLinkController@store` | Kirim reset link |
-| GET | `/reset-password/{token}` | `password.reset` | `NewPasswordController@create` | Reset password form |
-| POST | `/reset-password` | `password.store` | `NewPasswordController@store` | Simpan password baru |
+#### UC-U01: Registrasi dan Login
+- **Aktor:** User
+- **Deskripsi:** User melakukan registrasi akun baru atau login dengan akun existing
+- **Precondition:** -
+- **Postcondition:** User berhasil login dan mendapat akses ke sistem
+- **Flow:**
+  1. User mengakses halaman register/login
+  2. User mengisi form (nama, email, password)
+  3. Sistem validasi data
+  4. Sistem membuat akun baru (register) atau verifikasi kredensial (login)
+  5. Sistem redirect ke halaman home dengan status login
 
-### 2B. Auth Routes (semua role — middleware `auth`)
+#### UC-U02: Mengakses dan Menyelesaikan Kursus
+- **Aktor:** User
+- **Deskripsi:** User mengakses kursus, mempelajari modul, dan mengerjakan quiz
+- **Precondition:** User sudah login
+- **Postcondition:** Progress modul tersimpan, modul berikutnya unlock
+- **Flow:**
+  1. User membuka katalog kursus
+  2. User memilih kursus yang ingin dipelajari
+  3. Sistem menampilkan daftar modul (done/active/locked)
+  4. User membuka modul aktif
+  5. Sistem menampilkan outline materi dan video YouTube
+  6. User menjawab semua quiz dalam modul
+  7. Sistem menyimpan ModuleProgress
+  8. Sistem unlock modul berikutnya
 
-| Method | URL | Route Name | Controller | Keterangan |
-|--------|-----|------------|------------|------------|
-| GET | `/profile` | `profile.edit` | `ProfileController@edit` | Profile settings |
-| PATCH | `/profile` | `profile.update` | `ProfileController@update` | Update info + avatar |
-| PUT | `/profile/password` | `profile.password` | `ProfileController@updatePassword` | Ganti password |
-| DELETE | `/profile` | `profile.destroy` | `ProfileController@destroy` | Hapus akun |
-| POST | `/logout` | `logout` | `Auth\...SessionController@destroy` | Logout |
-| GET | `/confirm-password` | `password.confirm` | `ConfirmablePasswordController@show` | Konfirmasi password |
-| POST | `/confirm-password` | — | `ConfirmablePasswordController@store` | Proses konfirmasi |
-| PUT | `/password` | `password.update` | `Auth\PasswordController@update` | Update password (dari Breeze) |
-| POST | `/email/verification-notification` | `verification.send` | `EmailVerificationNotificationController@store` | Kirim ulang verifikasi email |
-| GET | `/verify-email` | `verification.notice` | `EmailVerificationPromptController` | Notice verifikasi |
-| GET | `/verify-email/{id}/{hash}` | `verification.verify` | `VerifyEmailController` | Proses verifikasi |
+#### UC-U03: Membeli Paket Coaching
+- **Aktor:** User
+- **Deskripsi:** User membeli paket coaching dan menunggu approval admin
+- **Precondition:** User login, tidak ada transaksi pending atau sesi aktif
+- **Postcondition:** Transaksi coaching dibuat dengan status pending
+- **Flow:**
+  1. User membuka halaman coaching
+  2. User memilih paket (Textual Review/Panggil Pelatih/Demo Review)
+  3. Sistem generate Virtual Account code
+  4. User konfirmasi pembayaran
+  5. Sistem membuat CoachingTransaction dengan status pending
+  6. Sistem menampilkan VA dan instruksi pembayaran
+  7. User menunggu admin approve
 
-### 2C. User Routes (middleware `auth`)
+#### UC-U04: Chat dengan Coach (Sesi Coaching)
+- **Aktor:** User
+- **Deskripsi:** User berkomunikasi dengan coach dalam sesi coaching aktif
+- **Precondition:** User login, memiliki sesi coaching aktif (sudah approved admin)
+- **Postcondition:** Pesan tersimpan dalam CoachingMessage
+- **Flow:**
+  1. User membuka halaman "Tugas Saya" (/assignments)
+  2. Sistem menampilkan sesi aktif dan arsip selesai
+  3. User memilih sesi aktif
+  4. Sistem load pesan-pesan chat
+  5. User mengetik dan mengirim pesan
+  6. Sistem simpan pesan dengan sender_id = user
+  7. Sistem update status assignment menjadi 'diproses'
+  8. Coach/Admin menerima notifikasi pesan baru
 
-| Method | URL | Route Name | Controller | Keterangan |
-|--------|-----|------------|------------|------------|
-| GET | `/assignments` | `assignments.index` | `AssignmentController@index` | Halaman chat coaching user (sesi aktif + arsip) |
-| POST | `/assignments/{assignment}/reply` | `assignments.reply` | `AssignmentController@reply` | Kirim pesan chat user (JSON) |
-| GET | `/assignments/{assignment}/messages` | `assignments.messages` | `AssignmentController@messages` | Ambil pesan chat (JSON) |
-| POST | `/modules/{module}/complete` | `modules.complete` | `CourseController@markModuleComplete` | Simpan ModuleProgress (JSON) |
-| GET | `/payment` | `payment` | `CoachingController@payment` | Halaman pembayaran |
-| POST | `/payment/store` | `payment.store` | `CoachingController@store` | Buat transaksi baru |
-| GET | `/payment/pending` | `payment.pending` | `CoachingController@pendingStatus` | Status pembayaran pending |
-| GET | `/payment/success` | `payment.success` | `CoachingController@success` | Pembayaran sukses |
+#### UC-U05: Mengelola Profile
+- **Aktor:** User
+- **Deskripsi:** User mengubah data profile dan password
+- **Precondition:** User sudah login
+- **Postcondition:** Data profile terupdate di database
+- **Flow:**
+  1. User membuka halaman profile
+  2. User mengubah nama, email, discord ID, atau upload avatar
+  3. User klik simpan
+  4. Sistem validasi dan update data
+  5. Sistem tampilkan notifikasi sukses
 
-### 2D. Admin Routes (middleware `auth` + `can:admin-only`)
+### 3.2 Use Case Admin
 
-**Dashboard & User Management:**
+#### UC-A01: Login Admin
+- **Aktor:** Admin
+- **Deskripsi:** Admin login dengan akun role admin
+- **Precondition:** Admin memiliki akun dengan role = 'admin'
+- **Postcondition:** Admin masuk ke panel admin
+- **Flow:** Sama dengan UC-U01, tapi redirect ke dashboard admin
 
-| Method | URL | Route Name | Controller | Keterangan |
-|--------|-----|------------|------------|------------|
-| GET | `/admin` | `admin.dashboard` | `AdminController@dashboard` | Dashboard admin |
-| GET | `/admin/users` | `admin.users` | `AdminController@users` | Tabel daftar user |
-| GET | `/admin/users/search` | `admin.users.search` | `AdminController@searchUsers` | AJAX search user |
-| POST | `/admin/preview/on` | `admin.preview.on` | `AdminController@enablePreviewMode` | Mode lihat sebagai user |
-| POST | `/admin/preview/off` | `admin.preview.off` | `AdminController@disablePreviewMode` | Kembali ke admin |
+#### UC-A02: Melihat Dashboard
+- **Aktor:** Admin
+- **Deskripsi:** Admin melihat statistik dan aktivitas platform
+- **Precondition:** Admin sudah login
+- **Postcondition:** Dashboard ditampilkan dengan data real-time
+- **Flow:**
+  1. Admin membuka /admin
+  2. Sistem hitung statistik (total user, paid user, pending payment, total course, total transaksi)
+  3. Sistem load transaksi pending
+  4. Sistem load feed aktivitas coaching terbaru
+  5. Sistem tampilkan dashboard
 
-**Coaching & Chat:**
+#### UC-A03: Approve/Reject Pembayaran Coaching
+- **Aktor:** Admin
+- **Deskripsi:** Admin memverifikasi dan approve/reject pembayaran user
+- **Precondition:** Admin login, ada transaksi dengan status pending
+- **Postcondition:** Transaksi status berubah, jika approved maka sesi coaching dibuat
+- **Flow Approve:**
+  1. Admin buka dashboard atau halaman pembayaran
+  2. Admin klik tombol "Approve" pada transaksi pending
+  3. Sistem update transaction.status = 'approved'
+  4. Sistem update user.has_paid = true
+  5. Sistem update user.active_coaching_package = package_name
+  6. Sistem buat Assignment baru (status = 'diproses')
+  7. Sistem buat CoachingMessage prechat otomatis
+  8. Sistem tampilkan notifikasi sukses
+  9. User dapat akses sesi coaching di /assignments
 
-| Method | URL | Route Name | Controller | Keterangan |
-|--------|-----|------------|------------|------------|
-| GET | `/admin/assignments` | `admin.assignments` | `AdminController@assignments` | Halaman sesi coaching |
-| POST | `/admin/assignments/{assignment}` | `admin.assignments.update` | `AdminController@updateAssignment` | Update status/reply (legacy) |
-| DELETE | `/admin/assignments/{assignment}` | `admin.assignments.delete` | `AdminController@deleteAssignment` | Hapus sesi |
-| GET | `/admin/coaching-inbox/summary` | `admin.coaching.summary` | `AdminController@inboxSummary` | JSON sidebar chat |
-| GET | `/admin/coaching-inbox/{assignment}/messages` | `admin.coaching.messages` | `AdminController@inboxMessages` | JSON pesan chat |
-| POST | `/admin/coaching-inbox/{assignment}/reply` | `admin.coaching.reply` | `AdminController@replyToSession` | Kirim balasan admin |
-| POST | `/admin/coaching-inbox/{assignment}/complete` | `admin.coaching.complete` | `AdminController@completeSession` | Selesaikan sesi |
-| POST | `/admin/coaching/{transaction}/approve` | `admin.coaching.approve` | `AdminController@approveTransaction` | Approve pembayaran |
-| POST | `/admin/coaching/{transaction}/reject` | `admin.coaching.reject` | `AdminController@rejectTransaction` | Tolak pembayaran |
-| POST | `/admin/send-to-user` | `admin.send-to-user` | `AdminController@sendToUser` | Kirim pesan ke user (legacy) |
+**Flow Reject:**
+  1. Admin klik tombol "Reject"
+  2. Sistem update transaction.status = 'rejected'
+  3. User tidak dapat akses coaching
+  4. Sistem tampilkan notifikasi
 
-**Course & Module Management:**
+#### UC-A04: Chat dengan User (Coaching)
+- **Aktor:** Admin
+- **Deskripsi:** Admin membalas pesan user dalam sesi coaching
+- **Precondition:** Admin login, ada sesi coaching aktif
+- **Postcondition:** Pesan admin tersimpan, user menerima balasan
+- **Flow:**
+  1. Admin buka halaman sesi coaching atau floating chat widget
+  2. Sistem tampilkan sidebar daftar sesi (aktif/arsip)
+  3. Admin pilih sesi yang ada pesan baru
+  4. Sistem load semua pesan dalam sesi
+  5. Sistem mark pesan user sebagai read (read_at = now)
+  6. Admin ketik dan kirim balasan
+  7. Sistem simpan CoachingMessage dengan sender_id = admin.id
+  8. User menerima pesan secara real-time (polling)
 
-| Method | URL | Route Name | Controller | Keterangan |
-|--------|-----|------------|------------|------------|
-| GET | `/admin/courses` | `admin.courses` | `AdminController@courses` | Level 1: List course |
-| POST | `/admin/courses` | `admin.courses.store` | `AdminController@storeCourse` | Simpan course baru |
-| GET | `/admin/courses/create` | `admin.courses.create` | `AdminController@create` | Form tambah course |
-| GET | `/admin/courses/{course}/edit` | `admin.courses.edit` | `AdminController@edit` | Form edit course |
-| PUT | `/admin/courses/{course}` | `admin.courses.update` | `AdminController@updateCourse` | Update course |
-| DELETE | `/admin/courses/{course}` | `admin.courses.delete` | `AdminController@deleteCourse` | Hapus course |
-| GET | `/admin/courses/{course}/modules` | `admin.courses.modules` | `AdminController@modules` | Level 2: List modul |
-| GET | `/admin/courses/{course}/modules/create` | `admin.modules.create` | `AdminController@createModule` | Form tambah modul |
-| POST | `/admin/courses/{course}/modules` | `admin.modules.store` | `AdminController@storeModule` | Simpan modul + quiz |
-| GET | `/admin/modules/{module}/edit` | `admin.modules.edit` | `AdminController@editModule` | Form edit modul |
-| PUT | `/admin/modules/{module}` | `admin.modules.update` | `AdminController@updateModule` | Update modul + sync quiz |
-| DELETE | `/admin/modules/{module}` | `admin.modules.delete` | `AdminController@deleteModule` | Hapus modul |
-| POST | `/admin/modules/{module}/reorder` | `admin.modules.reorder` | `AdminController@reorderModule` | Reorder up/down |
+#### UC-A05: Menyelesaikan Sesi Coaching
+- **Aktor:** Admin
+- **Deskripsi:** Admin menandai sesi coaching sebagai selesai
+- **Precondition:** Admin login, ada sesi coaching aktif
+- **Postcondition:** Sesi coaching status = 'selesai', user bisa beli paket baru
+- **Flow:**
+  1. Admin buka sesi coaching
+  2. Admin klik tombol "Selesaikan Sesi"
+  3. Sistem update assignment.status = 'selesai'
+  4. Sistem update assignment.completed_at = now()
+  5. Sistem update user.active_coaching_package = null
+  6. Sistem pindahkan sesi ke tab "Arsip"
+  7. User dapat membeli paket coaching baru
 
-### 2E. Alur Navigasi
+#### UC-A06: Mengelola Kursus (CRUD)
+- **Aktor:** Admin
+- **Deskripsi:** Admin membuat, mengedit, atau menghapus kursus
+- **Precondition:** Admin login
+- **Postcondition:** Data kursus terupdate di database
+- **Flow Tambah:**
+  1. Admin buka /admin/courses
+  2. Admin klik "Tambah Course Baru"
+  3. Admin isi form (icon, title, body, level, durasi, type, is_popular, urutan)
+  4. Admin submit form
+  5. Sistem validasi dan simpan ke database
+  6. Sistem redirect ke list course
 
-```
-LANDING PAGE (/)
-├── Register → Login
-├── Courses (/courses)
-│   ├── Guest: modal login saat klik card
-│   └── User: klik card → Detail Modul (/courses/{id})
-│       ├── Sidebar: pilih modul (done/active/locked)
-│       ├── Main: outline + YouTube + quiz
-│       └── Quiz selesai → ModuleProgress tersimpan → modul berikutnya unlock
-│
-├── Coaching (/coaching)
-│   ├── Guest: popup login
-│   └── User: pilih paket → Payment (/payment) → Bayar → Pending → Admin approve
-│       └── Approve → Sesi coaching aktif → Chat di /assignments
-│
-├── Tugas Saya (/assignments)
-│   ├── Tab Sesi Aktif → Chat real-time dengan coach
-│   └── Tab Arsip Selesai → Read-only history
-│
-├── Profile Settings (/profile)
-│   ├── Upload avatar
-│   ├── Edit nama, email, discord ID
-│   └── Ganti password
-│
-└── ADMIN PANEL
-    ├── Dashboard (/admin)
-    │   ├── 5 stat cards
-    │   ├── Pembayaran menunggu verifikasi → Approve/Reject
-    │   └── Feed aktivitas coaching
-    │
-    ├── User (/admin/users)
-    │   └── Tabel user + search + summary
-    │
-    ├── Sesi Coaching (/admin/assignments)
-    │   ├── Sesi Aktif: chat inline + tombol "Selesaikan Sesi"
-    │   └── Arsip: accordion dropdown read-only
-    │
-    ├── Kelola Course (/admin/courses)
-    │   ├── Level 1: List course → Tambah/Edit/Hapus
-    │   ├── Level 2: List modul → Reorder/Tambah/Edit/Hapus
-    │   └── Level 3: Form modul → Info dasar + quiz accordion
-    │
-    └── Floating Chat Widget (semua halaman admin)
-        ├── Sidebar: Aktif | Arsip tab
-        ├── Chat panel: pesan real-time
-        └── Tombol "Selesaikan Sesi"
-```
+**Flow Edit:**
+  1. Admin klik tombol Edit pada course
+  2. Sistem tampilkan form dengan data existing
+  3. Admin ubah data
+  4. Admin submit
+  5. Sistem update course di database
+
+**Flow Hapus:**
+  1. Admin klik tombol Hapus
+  2. Sistem tampilkan konfirmasi
+  3. Admin konfirmasi
+  4. Sistem hapus course dan relasi (modules, quizzes)
+
+#### UC-A07: Mengelola Modul dan Quiz (CRUD)
+- **Aktor:** Admin
+- **Deskripsi:** Admin membuat, mengedit, menghapus, atau reorder modul
+- **Precondition:** Admin login, course sudah ada
+- **Postcondition:** Data modul dan quiz terupdate
+- **Flow Tambah Modul:**
+  1. Admin buka detail course → List Modul
+  2. Admin klik "Tambah Modul Baru"
+  3. Admin isi form modul (title, body outline, youtube_url, urutan)
+  4. Admin tambah quiz (pertanyaan, 4 opsi, jawaban_benar, penjelasan)
+  5. Admin submit
+  6. Sistem simpan Module dan Quiz
+  7. Sistem redirect ke list modul
+
+**Flow Edit Modul:**
+  1. Admin klik Edit pada modul
+  2. Sistem tampilkan form dengan data existing + quiz
+  3. Admin ubah data modul dan quiz
+  4. Admin submit
+  5. Sistem update Module dan sync Quiz
+
+**Flow Reorder Modul:**
+  1. Admin klik tombol ▲ (naik) atau ▼ (turun)
+  2. Sistem swap urutan dengan modul sebelah
+  3. Sistem update urutan di database
+  4. Sistem refresh list modul
+
+**Flow Hapus Modul:**
+  1. Admin klik tombol Hapus
+  2. Sistem konfirmasi
+  3. Admin konfirmasi
+  4. Sistem hapus modul dan quiz terkait
+
+#### UC-A08: Mengelola User
+- **Aktor:** Admin
+- **Deskripsi:** Admin melihat daftar user dan mencari user tertentu
+- **Precondition:** Admin login
+- **Postcondition:** Data user ditampilkan
+- **Flow:**
+  1. Admin buka /admin/users
+  2. Sistem load semua user dengan pagination
+  3. Sistem tampilkan tabel (avatar, nama, email, role, status paid/free, paket aktif, tanggal bergabung)
+  4. Admin bisa search berdasarkan nama/email
+  5. Sistem filter dan tampilkan hasil
 
 ---
 
-## 3. STRUKTUR DATABASE / MODEL
+## 4. CLASS DIAGRAM - MODEL DATABASE
 
-### 3A. Model: `User` → Tabel: `users`
+### 4.1 Class: User
+**Tabel:** `users`
 
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `name` | string(255) | Nama lengkap |
-| `email` | string(255) UNIQUE | Email login |
-| `email_verified_at` | timestamp nullable | Verifikasi email |
-| `password` | string(255) | Hashed password |
-| `role` | enum(`admin`,`user`) | Default: `user` |
-| `has_paid` | boolean | Pernah bayar coaching |
-| `active_coaching_package` | string nullable | Paket aktif saat ini (null = tidak ada) |
-| `discord_id` | string nullable | Discord ID (untuk Panggil Pelatih) |
-| `avatar` | string nullable | Path foto profile (`avatars/xxx.jpg`) |
-| `remember_token` | string | Remember me token |
-| `created_at/updated_at` | timestamp | |
+**Attributes:**
+- `id: bigint` (PK)
+- `name: string`
+- `email: string` (unique)
+- `email_verified_at: timestamp` (nullable)
+- `password: string`
+- `role: enum` (admin, user) — default: user
+- `has_paid: boolean` — default: false
+- `active_coaching_package: string` (nullable)
+- `discord_id: string` (nullable)
+- `avatar: string` (nullable)
+- `remember_token: string`
+- `created_at: timestamp`
+- `updated_at: timestamp`
 
-**Relasi:**
-- `hasMany(Assignment::class)` → assignments
-- `hasMany(CourseProgress::class)` → courseProgress
-- `hasMany(CoachingTransaction::class)` → coachingTransactions
+**Methods:**
+- `isAdmin(): bool`
+- `hasCourseAccess(): bool`
+- `hasPendingCoaching(): bool`
 
-**Helper Methods:**
-- `isAdmin(): bool` — cek role = admin
-- `hasCourseAccess(): bool` — has_paid ATAU isAdmin
-- `hasPendingCoaching(): bool` — ada transaksi pending ATAU (approved + assignment belum selesai)
+**Relationships:**
+- `assignments: hasMany(Assignment)`
+- `courseProgress: hasMany(CourseProgress)`
+- `coachingTransactions: hasMany(CoachingTransaction)`
+- `moduleProgress: hasMany(ModuleProgress)`
 
-### 3B. Model: `Course` → Tabel: `courses`
+---
 
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `icon` | string | Emoji (🎯, 🗺, dll) |
-| `title` | string(255) | Judul kursus |
-| `body` | text | Deskripsi singkat |
-| `level` | string(50) | Pemula / Menengah / Lanjutan |
-| `durasi` | string(50) | "45 menit", "1 jam", dll |
-| `type` | string(100) | Kursus Wajib / Kursus Lanjutan |
-| `is_popular` | boolean | Badge 🔥 Populer |
-| `urutan` | integer | Urutan tampil di katalog |
-| `created_at/updated_at` | timestamp | |
+### 4.2 Class: Course
+**Tabel:** `courses`
 
-**Relasi:**
-- `hasMany(Quiz::class)` → quizzes
-- `hasMany(Module::class)` → modules
+**Attributes:**
+- `id: bigint` (PK)
+- `icon: string`
+- `title: string`
+- `body: text`
+- `level: string`
+- `durasi: string`
+- `type: string`
+- `is_popular: boolean`
+- `urutan: integer`
+- `created_at: timestamp`
+- `updated_at: timestamp`
 
-**Helper Methods:**
-- `progressPercent(?int $userId): int` — berapa % modul selesai
-- `isUnlockedFor(?int $userId, array $allCourseIds, int $index): bool` — selalu return true (semua course unlocked)
+**Methods:**
+- `progressPercent(userId): int`
+- `isUnlockedFor(userId, allCourseIds, index): bool`
 
-### 3C. Model: `Module` → Tabel: `modules`
+**Relationships:**
+- `modules: hasMany(Module)`
+- `quizzes: hasMany(Quiz)`
 
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `course_id` | FK → courses | |
-| `title` | string(255) | Judul modul |
-| `body` | text nullable | Outline/poin materi (newline-separated) |
-| `youtube_url` | string nullable | Link YouTube |
-| `urutan` | integer | Urutan dalam course |
-| `created_at/updated_at` | timestamp | |
+---
 
-**Relasi:**
-- `belongsTo(Course::class)` → course
-- `hasMany(Quiz::class)` → quizzes
-- `hasMany(ModuleProgress::class)` → progress
+### 4.3 Class: Module
+**Tabel:** `modules`
+
+**Attributes:**
+- `id: bigint` (PK)
+- `course_id: bigint` (FK → courses)
+- `title: string`
+- `body: text` (nullable)
+- `youtube_url: string` (nullable)
+- `urutan: integer`
+- `created_at: timestamp`
+- `updated_at: timestamp`
+
+**Methods:**
+- `userProgress(userId): ModuleProgress`
+- `statusFor(userId, allModuleIds, index): string`
 
 **Accessors:**
-- `youtube_video_id` — ekstrak video ID dari URL (regex: watch?v=, youtu.be/, embed/, shorts/)
-- `youtube_embed_url` — URL embed siap iframe
+- `youtube_video_id: string`
+- `youtube_embed_url: string`
 
-**Helper Methods:**
-- `userProgress(?int $userId): ?ModuleProgress` — progress user untuk modul ini
-- `statusFor(?int $userId, array $allModuleIds, int $index): string` — return `done` / `active` / `locked`
-
-### 3D. Model: `Quiz` → Tabel: `quizzes`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `course_id` | FK → courses | |
-| `module_id` | FK → modules nullable | |
-| `pertanyaan` | text | Soal kuis |
-| `opsi` | JSON | Array 4 pilihan jawaban, cast ke array |
-| `jawaban_benar` | integer | Index 0-3 (jawaban yang benar) |
-| `penjelasan` | text nullable | Penjelasan jawaban |
-| `youtube_url` | string nullable | (legacy, dipindahkan ke modules) |
-| `created_at/updated_at` | timestamp | |
-
-**Relasi:**
-- `belongsTo(Course::class)` → course
-- `belongsTo(Module::class)` → module
-
-### 3E. Model: `ModuleProgress` → Tabel: `module_progress`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `user_id` | FK → users | |
-| `module_id` | FK → modules | |
-| `score` | integer | Skor quiz (0-1 per soal) |
-| `completed_at` | timestamp nullable | Kapan selesai |
-| `created_at/updated_at` | timestamp | |
-| UNIQUE | `[user_id, module_id]` | |
-
-**Relasi:**
-- `belongsTo(User::class)` → user
-- `belongsTo(Module::class)` → module
-
-### 3F. Model: `Assignment` → Tabel: `assignments`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `user_id` | FK → users | |
-| `from_admin` | boolean | Selalu true (sesi coaching) |
-| `judul` | string(255) | "Sesi Textual Review", dll |
-| `tugas_teks` | text | Template pesan pembuka |
-| `status` | enum(`menunggu`,`diproses`,`selesai`) | Status sesi |
-| `completed_at` | timestamp nullable | Kapan diselesaikan |
-| `balasan_admin` | text nullable | (legacy, digantikan coaching_messages) |
-| `created_at/updated_at` | timestamp | |
-
-**Relasi:**
-- `belongsTo(User::class)` → user
-- `hasMany(CoachingMessage::class)` → messages
-
-**Helper Methods:**
-- `unreadCount(): int` — pesan user yang belum dibaca admin
-- `lastMessage(): ?CoachingMessage` — pesan terbaru
-
-**Status Flow:** `menunggu` → `diproses` → `selesai`
-
-### 3G. Model: `CoachingMessage` → Tabel: `coaching_messages`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `assignment_id` | FK → assignments | |
-| `sender_id` | FK → users | |
-| `message` | text | Isi pesan |
-| `read_at` | timestamp nullable | null = unread, timestamp = read |
-| `created_at/updated_at` | timestamp | |
-
-**Relasi:**
-- `belongsTo(Assignment::class)` → assignment
-- `belongsTo(User::class, 'sender_id')` → sender
-
-**Helper Methods:**
-- `markAsRead(): void` — set read_at = now()
-
-### 3H. Model: `CoachingTransaction` → Tabel: `coaching_transactions`
-
-| Kolom | Tipe | Keterangan |
-|-------|------|------------|
-| `id` | bigint PK | |
-| `user_id` | FK → users | |
-| `package_name` | string(255) | Textual Review / Panggil Pelatih / Demo Review |
-| `package_price` | string(50) | "Rp 100.000", dll |
-| `va_code` | string | Kode VA dummy (prefix 8808) |
-| `status` | enum(`pending`,`approved`,`rejected`) | |
-| `created_at/updated_at` | timestamp | |
-
-**Relasi:** `belongsTo(User::class)` → user
-**Scopes:** `pending()`, `approved()`
-**Status Flow:** `pending` → `approved` / `rejected`
-
-### 3I. Model: `CourseProgress` → Tabel: `course_progress`
-
-Legacy table — digunakan di sistem lama (quiz langsung per course). Sekarang progress dilacak via `ModuleProgress`.
+**Relationships:**
+- `course: belongsTo(Course)`
+- `quizzes: hasMany(Quiz)`
+- `progress: hasMany(ModuleProgress)`
 
 ---
 
-## 4. CONTROLLER & LOGIC UTAMA
+### 4.4 Class: Quiz
+**Tabel:** `quizzes`
 
-### 4A. `HomeController`
-- `index()` — Ambil stats (total_players, total_courses, total_completions, total_coaching) → render home.blade.php
+**Attributes:**
+- `id: bigint` (PK)
+- `course_id: bigint` (FK → courses)
+- `module_id: bigint` (FK → modules, nullable)
+- `pertanyaan: text`
+- `opsi: JSON` (array of 4 strings)
+- `jawaban_benar: integer` (0-3)
+- `penjelasan: text` (nullable)
+- `youtube_url: string` (nullable, legacy)
+- `created_at: timestamp`
+- `updated_at: timestamp`
 
-### 4B. `CourseController`
-- `index()` — Ambil semua courses dengan modules.quizzes → map ke array data (progress, unlocked, quizzes_count) → render katalog grid
-- `show(Course $course)` — Load modules + quizzes → map ke array (status done/active/locked, outline, quiz data, youtube_id) → render sidebar + main panel
-- `markModuleComplete(Request, Module $module)` — `ModuleProgress::updateOrCreate(...)` → return JSON
+**Relationships:**
+- `course: belongsTo(Course)`
+- `module: belongsTo(Module)`
 
-### 4C. `CoachingController`
-- `index()` — Render halaman paket coaching
-- `payment(Request)` — Validasi `hasPendingCoaching()` → generate VA preview → render halaman payment
-- `store(Request)` — Validasi + `CoachingTransaction::create(status=pending)` + generate VA code → redirect ke pending
-- `pendingStatus()` — Cek transaksi user → tampilkan status
-- `success()` — Render halaman sukses
+---
 
-### 4D. `AssignmentController`
-- `index()` — Query sesi aktif (status != selesai) + arsip (status = selesai) → render
-- `reply(Request, Assignment)` — Validasi ownership + status → `messages()->create(...)` → update status → return JSON
-- `messages(Assignment)` — Validasi ownership → mark as read → map messages → return JSON
+### 4.5 Class: ModuleProgress
+**Tabel:** `module_progress`
 
-### 4E. `AdminController`
-- `dashboard()` — Stats + pending transactions + coaching activity feed → render
-- `users(Request)` — Search + paginate → render tabel user
-- `approveTransaction(CoachingTransaction $transaction)` — **Alur (lihat 4F)**
-- `rejectTransaction(CoachingTransaction $transaction)` — Set status=rejected
-- `assignments()` — Sesi coaching aktif + selesai → render
-- `inboxSummary(Request)` — JSON: semua sesi untuk sidebar chat
-- `inboxMessages(Assignment)` — Mark as read + return messages JSON
-- `replyToSession(Request, Assignment)` — Validasi + create message + return JSON
-- `completeSession(Assignment)` — Set status=selesai + completed_at + clear `active_coaching_package` user
-- `courses()` — List course + count modules/quizzes → render
-- `create()` → `edit(Course)` → `storeCourse(Request)` → `updateCourse(Request, Course)` → `deleteCourse(Course)`
-- `modules(Course)` — List modul + quizzes_count → render
-- `createModule(Course)` → `editModule(Module)` → `storeModule(Request, Course)` → `updateModule(Request, Module)` → `deleteModule(Module)` → `reorderModule(Request, Module)`
+**Attributes:**
+- `id: bigint` (PK)
+- `user_id: bigint` (FK → users)
+- `module_id: bigint` (FK → modules)
+- `score: integer`
+- `completed_at: timestamp` (nullable)
+- `created_at: timestamp`
+- `updated_at: timestamp`
 
-### 4F. Logic: Alur Pembelian Coaching
+**Constraints:**
+- UNIQUE `[user_id, module_id]`
+
+**Relationships:**
+- `user: belongsTo(User)`
+- `module: belongsTo(Module)`
+
+---
+
+### 4.6 Class: Assignment
+**Tabel:** `assignments`
+
+**Attributes:**
+- `id: bigint` (PK)
+- `user_id: bigint` (FK → users)
+- `from_admin: boolean` — default: true
+- `judul: string`
+- `tugas_teks: text`
+- `status: enum` (menunggu, diproses, selesai)
+- `completed_at: timestamp` (nullable)
+- `balasan_admin: text` (nullable, legacy)
+- `created_at: timestamp`
+- `updated_at: timestamp`
+
+**Methods:**
+- `unreadCount(): int`
+- `lastMessage(): CoachingMessage`
+
+**Relationships:**
+- `user: belongsTo(User)`
+- `messages: hasMany(CoachingMessage)`
+
+---
+
+### 4.7 Class: CoachingMessage
+**Tabel:** `coaching_messages`
+
+**Attributes:**
+- `id: bigint` (PK)
+- `assignment_id: bigint` (FK → assignments)
+- `sender_id: bigint` (FK → users)
+- `message: text`
+- `read_at: timestamp` (nullable)
+- `created_at: timestamp`
+- `updated_at: timestamp`
+
+**Methods:**
+- `markAsRead(): void`
+
+**Relationships:**
+- `assignment: belongsTo(Assignment)`
+- `sender: belongsTo(User)`
+
+---
+
+### 4.8 Class: CoachingTransaction
+**Tabel:** `coaching_transactions`
+
+**Attributes:**
+- `id: bigint` (PK)
+- `user_id: bigint` (FK → users)
+- `package_name: string`
+- `package_price: string`
+- `va_code: string`
+- `status: enum` (pending, approved, rejected)
+- `created_at: timestamp`
+- `updated_at: timestamp`
+
+**Scopes:**
+- `pending(): Builder`
+- `approved(): Builder`
+
+**Relationships:**
+- `user: belongsTo(User)`
+
+---
+
+### 4.9 Class: CourseProgress (Legacy)
+**Tabel:** `course_progress`
+
+**Keterangan:** 
+Legacy table dari sistem lama. Sekarang progress dilacak via `ModuleProgress`.
+
+---
+
+## 5. ACTIVITY DIAGRAM - BUSINESS FLOW
+
+### 5.1 Activity: User Menyelesaikan Modul Kursus
 
 ```
-1. User klik "Pilih Paket" di /coaching
-2. GET /payment?layanan=X&harga=Y
-3. CoachingController@payment:
-   - Cek hasPendingCoaching() → kalau true, redirect balik + error
-   - Generate VA preview → tampilkan halaman
-4. User klik "Bayar Sekarang"
-5. POST /payment/store
-6. CoachingController@store:
-   - Validasi package_name, package_price
-   - Cek hasPendingCoaching() lagi
-   - CoachingTransaction::create(status='pending')
-   - Generate VA code (8808 + padded user_id + transaction_id)
-   - Redirect ke /payment/pending
-7. Admin buka /admin dashboard
-8. Admin klik "✅ Approve"
-9. POST /admin/coaching/{id}/approve
-10. AdminController@approveTransaction:
-    - Set transaction.status = 'approved'
-    - Set user.has_paid = true, user.active_coaching_package = package_name
-    - Assignment::create(from_admin=true, judul='Sesi X', tugas_teks=template, status='diproses')
-    - CoachingMessage::create(prechat message beda per paket)
-    - Kembali ke dashboard dengan flash success
-11. User buka /assignments → sesi coaching muncul + pesan prechat dari coach
-12. User & admin chat via polling
-```
-
-### 4G. Logic: Alur Selesai Sesi Coaching
-
-```
-1. Admin klik "✓ Selesaikan Sesi" (di widget atau /admin/assignments)
-2. POST /admin/coaching-inbox/{id}/complete
-3. AdminController@completeSession:
-   - assignment.status = 'selesai'
-   - assignment.completed_at = now()
-   - assignment.user.active_coaching_package = null
-4. User refresh/buka /assignments:
-   - Sesi pindah ke tab "Arsip Selesai"
-   - Input chat disembunyikan, muncul banner "Sesi selesai" + CTA "Pilih Paket Coaching Baru"
-5. User bisa beli paket baru (hasPendingCoaching() return false)
-```
-
-### 4H. Logic: Alur Unlock Modul & Progress Kursus
-
-```
-1. User buka /courses/{course_id}
-2. CourseController@show memanggil Module::statusFor() untuk setiap modul:
-   - Modul 0: selalu 'active' (pertama)
-   - Modul N: cek ModuleProgress modul N-1 → done ? 'active' : 'locked'
-   - Modul yang sudah ada completed_at → 'done'
-3. User klik modul 'active' di sidebar
-4. User jawab SEMUA quiz dalam modul tersebut dengan benar
-5. JS kirim POST /modules/{module_id}/complete dengan score
-6. CourseController@markModuleComplete:
-   - ModuleProgress::updateOrCreate(...)
-   - Kembalikan JSON success + course_done flag
-7. JS update sidebar: modul saat ini → 'done', modul berikutnya → 'active'
-8. Progress bar update
+[START]
+  ↓
+User login
+  ↓
+User membuka katalog kursus
+  ↓
+User memilih kursus
+  ↓
+Sistem load daftar modul
+  ↓
+Sistem cek progress user → tentukan status modul (done/active/locked)
+  ↓
+User membuka modul dengan status "active"
+  ↓
+Sistem tampilkan outline, video YouTube, dan quiz
+  ↓
+User menjawab quiz (semua soal)
+  ↓
+<Decision: Semua jawaban benar?>
+  ├─ NO → Sistem tampilkan feedback "Coba lagi"
+  │          ↓
+  │      User ulangi quiz
+  │          ↓
+  │      [Kembali ke menjawab quiz]
+  │
+  └─ YES → Sistem simpan ModuleProgress
+             ↓
+         Sistem update status modul → "done"
+             ↓
+         Sistem unlock modul berikutnya → "active"
+             ↓
+         <Decision: Masih ada modul selanjutnya?>
+             ├─ YES → User bisa lanjut ke modul berikutnya
+             │         ↓
+             │     [Kembali ke membuka modul]
+             │
+             └─ NO → Kursus selesai 100%
+                       ↓
+                   [END]
 ```
 
 ---
 
-## 5. FITUR UTAMA per HALAMAN
+### 5.2 Activity: User Membeli Paket Coaching
 
-### 5A. User Side
-
-| Halaman | URL | Fitur |
-|---------|-----|-------|
-| **Home** | `/` | Hero section, stats (total pemain, kursus, completion, coaching), topic bar, cara kerja steps, CTA |
-| **Katalog Kursus** | `/courses` | Grid card: icon, badge type/populer, title, deskripsi, meta (durasi, level, modul), progress bar, locked/unlocked. Guest dapet modal login |
-| **Detail Modul** | `/courses/{id}` | Sidebar: list modul (done/active/locked icons + progress bar). Main panel: module header, YouTube embed, outline poin, quiz interaktif (pertanyaan + 4 opsi + feedback + dots navigasi). Multi-quiz per module |
-| **Coaching** | `/coaching` | 3 tab paket (Textual Review / Panggil Pelatih / Demo Review). CTA "Pilih Paket" mengarah ke /payment |
-| **Pembayaran** | `/payment` | Tampilkan VA code + nominal + instruksi bayar. Redirect ke pending |
-| **Tugas Saya** | `/assignments` | Tab: Sesi Aktif (chat real-time, bubble coach/user, input reply) + Arsip Selesai (read-only history). Polling 4 detik. Auto-transisi closed |
-| **Profile** | `/profile` | Header avatar + info. Form: nama, email, avatar upload (max 2MB), discord ID. Form: ganti password |
-
-### 5B. Admin Side
-
-| Halaman | URL | Fitur |
-|---------|-----|-------|
-| **Dashboard** | `/admin` | 5 stat cards (Total Pemain, Sudah Bayar, Menunggu Bayar, Total Kursus, Total Transaksi). Tabel Pembayaran Menunggu (approve/reject). Feed aktivitas coaching |
-| **User** | `/admin/users` | Tabel semua user: #, avatar, nama, email, role badge (Admin/User), status badge (Paid/Free), paket aktif, tgl bergabung. Search bar. Summary bar (total, admin, user, paid). Pagination |
-| **Sesi Coaching** | `/admin/assignments` | Sesi aktif: card dengan user info + chat box inline + input reply + tombol "Selesaikan Sesi". Arsip: accordion dropdown (klik header expand chat history) |
-| **Kelola Course** | `/admin/courses` | Level 1: Card list course (icon, title, badges, meta). Tombol: Kelola Modul, Edit (✎), Hapus (🗑). Level 2: List modul (reorder ▲/▼, Edit, Hapus). Level 3: Form tambah/edit modul (info dasar + outline rows + quiz accordion + YouTube preview) |
-| **Floating Chat Widget** | Semua halaman admin | Tombol 💬 pojok kanan bawah dengan unread badge. Panel meluncur: sidebar sesi (tab Aktif/Arsip) + chat detail + input + "Selesaikan Sesi". Polling auto |
-| **Preview Mode** | — | Admin bisa lihat situs sebagai user biasa via toggle di navbar |
+```
+[START]
+  ↓
+User login
+  ↓
+User membuka halaman /coaching
+  ↓
+User memilih paket coaching (Textual Review / Panggil Pelatih / Demo Review)
+  ↓
+Sistem cek: hasPendingCoaching()?
+  ↓
+<Decision: Ada transaksi pending atau sesi aktif?>
+  ├─ YES → Sistem tampilkan error "Anda masih punya transaksi pending"
+  │          ↓
+  │      User tidak bisa lanjut
+  │          ↓
+  │      [END]
+  │
+  └─ NO → Sistem redirect ke /payment
+            ↓
+        Sistem generate Virtual Account code (8808 + user_id + transaction_id)
+            ↓
+        Sistem tampilkan form pembayaran (VA, nominal, instruksi)
+            ↓
+        User klik "Bayar Sekarang"
+            ↓
+        Sistem buat CoachingTransaction (status = 'pending')
+            ↓
+        Sistem redirect ke /payment/pending
+            ↓
+        Sistem tampilkan status "Menunggu Verifikasi Admin"
+            ↓
+        [User menunggu]
+            ↓
+        Admin login → buka Dashboard
+            ↓
+        Admin lihat tabel "Pembayaran Menunggu Verifikasi"
+            ↓
+        <Decision: Admin approve atau reject?>
+            ├─ REJECT → Sistem update transaction.status = 'rejected'
+            │              ↓
+            │          User tidak dapat akses coaching
+            │              ↓
+            │          [END]
+            │
+            └─ APPROVE → Sistem update transaction.status = 'approved'
+                           ↓
+                       Sistem update user.has_paid = true
+                           ↓
+                       Sistem update user.active_coaching_package = package_name
+                           ↓
+                       Sistem buat Assignment baru (status = 'diproses')
+                           ↓
+                       Sistem buat CoachingMessage prechat otomatis
+                           ↓
+                       User buka /assignments
+                           ↓
+                       Sistem tampilkan sesi coaching aktif + prechat message
+                           ↓
+                       User mulai chat dengan coach
+                           ↓
+                       [END]
+```
 
 ---
 
-## 6. LOKALISASI BAHASA INDONESIA
+### 5.3 Activity: User dan Admin Chat dalam Sesi Coaching
 
-Project menggunakan Bahasa Indonesia untuk UI, dengan kaidah: **serapan umum tetap** (Coaching, Admin, Dashboard, Discord, YouTube, Password, Email — sudah lazim), **sisanya Bahasa Indonesia natural**.
+```
+[START - User Side]
+  ↓
+User login
+  ↓
+User buka /assignments
+  ↓
+Sistem load sesi aktif (status != 'selesai') dan arsip (status = 'selesai')
+  ↓
+User pilih sesi aktif
+  ↓
+Sistem load semua CoachingMessage untuk sesi ini
+  ↓
+Sistem mark pesan dari admin sebagai read (read_at = now)
+  ↓
+Sistem tampilkan chat interface (bubble user/coach)
+  ↓
+User ketik pesan
+  ↓
+User klik "Kirim"
+  ↓
+Sistem simpan CoachingMessage (sender_id = user.id, read_at = null)
+  ↓
+Sistem update assignment.status = 'diproses' (jika sebelumnya 'menunggu')
+  ↓
+[Polling 4 detik] → Sistem cek pesan baru
+  ↓
+<Decision: Ada balasan dari admin?>
+  ├─ NO → [Tetap polling]
+  │
+  └─ YES → Sistem tampilkan pesan admin baru
+             ↓
+         User baca pesan
+             ↓
+         [Kembali ke User ketik pesan atau END]
 
-### 6A. File Bahasa Laravel — `lang/id/`
 
-| File | Fungsi |
-|------|--------|
-| `lang/id/auth.php` | Pesan error auth: `failed`, `password`, `throttle` |
-| `lang/id/pagination.php` | Label pagination: `previous` → "Sebelumnya", `next` → "Berikutnya" |
-| `lang/id/passwords.php` | Pesan reset password: `reset`, `sent`, `throttled`, `token`, `user` |
-| `lang/id/validation.php` | 100+ aturan validasi + `attributes` (nama, email, judul, discord_id, dll) + custom message (avatar.max → "Foto terlalu besar! Maksimal 2MB.") |
+[START - Admin Side]
+  ↓
+Admin login
+  ↓
+Admin buka /admin/assignments atau floating chat widget
+  ↓
+Sistem load sidebar: daftar sesi (tab Aktif / Arsip)
+  ↓
+Sistem tampilkan badge unread count pada sesi dengan pesan baru
+  ↓
+Admin pilih sesi dengan pesan baru
+  ↓
+Sistem load semua CoachingMessage
+  ↓
+Sistem mark pesan dari user sebagai read (read_at = now)
+  ↓
+Sistem tampilkan chat interface
+  ↓
+Admin ketik balasan
+  ↓
+Admin klik "Kirim"
+  ↓
+Sistem simpan CoachingMessage (sender_id = admin.id, read_at = null)
+  ↓
+User menerima pesan via polling
+  ↓
+<Decision: Sesi sudah selesai?>
+  ├─ NO → [Admin bisa lanjut balas atau END]
+  │
+  └─ YES → Admin klik "Selesaikan Sesi"
+             ↓
+         Sistem update assignment.status = 'selesai'
+             ↓
+         Sistem update assignment.completed_at = now()
+             ↓
+         Sistem update user.active_coaching_package = null
+             ↓
+         Sesi pindah ke tab "Arsip"
+             ↓
+         User bisa membeli paket coaching baru
+             ↓
+         [END]
+```
 
-### 6B. Konfigurasi
+---
 
-- `APP_LOCALE=id` di `.env` + `.env.example`
+### 5.4 Activity: Admin Mengelola Kursus dan Modul
+
+```
+[START]
+  ↓
+Admin login
+  ↓
+Admin buka /admin/courses
+  ↓
+Sistem tampilkan daftar course (Level 1)
+  ↓
+<Decision: Admin ingin apa?>
+  │
+  ├─ [Tambah Course Baru]
+  │    ↓
+  │  Admin klik "Tambah Course Baru"
+  │    ↓
+  │  Admin isi form (icon, title, body, level, durasi, type, is_popular, urutan)
+  │    ↓
+  │  Admin submit
+  │    ↓
+  │  Sistem validasi data
+  │    ↓
+  │  Sistem simpan Course baru
+  │    ↓
+  │  [Kembali ke daftar course]
+  │
+  ├─ [Edit Course]
+  │    ↓
+  │  Admin klik tombol "Edit" pada course
+  │    ↓
+  │  Sistem load data course
+  │    ↓
+  │  Admin ubah data
+  │    ↓
+  │  Admin submit
+  │    ↓
+  │  Sistem update Course
+  │    ↓
+  │  [Kembali ke daftar course]
+  │
+  ├─ [Hapus Course]
+  │    ↓
+  │  Admin klik tombol "Hapus"
+  │    ↓
+  │  Sistem tampilkan konfirmasi
+  │    ↓
+  │  Admin konfirmasi
+  │    ↓
+  │  Sistem hapus Course + Modules + Quizzes terkait
+  │    ↓
+  │  [Kembali ke daftar course]
+  │
+  └─ [Kelola Modul]
+       ↓
+     Admin klik "Kelola Modul" pada course
+       ↓
+     Sistem tampilkan daftar modul (Level 2)
+       ↓
+     <Decision: Admin ingin apa?>
+       │
+       ├─ [Tambah Modul]
+       │    ↓
+       │  Admin klik "Tambah Modul Baru"
+       │    ↓
+       │  Admin isi form modul (title, body, youtube_url, urutan)
+       │    ↓
+       │  Admin tambah quiz (pertanyaan, 4 opsi, jawaban_benar, penjelasan)
+       │    ↓
+       │  Admin bisa tambah multiple quiz
+       │    ↓
+       │  Admin submit
+       │    ↓
+       │  Sistem simpan Module + Quiz
+       │    ↓
+       │  [Kembali ke daftar modul]
+       │
+       ├─ [Edit Modul]
+       │    ↓
+       │  Admin klik "Edit" pada modul
+       │    ↓
+       │  Sistem load data modul + quiz
+       │    ↓
+       │  Admin ubah data
+       │    ↓
+       │  Admin submit
+       │    ↓
+       │  Sistem update Module + sync Quiz
+       │    ↓
+       │  [Kembali ke daftar modul]
+       │
+       ├─ [Reorder Modul]
+       │    ↓
+       │  Admin klik tombol ▲ (naik) atau ▼ (turun)
+       │    ↓
+       │  Sistem swap urutan modul
+       │    ↓
+       │  Sistem refresh daftar
+       │    ↓
+       │  [Kembali ke daftar modul]
+       │
+       └─ [Hapus Modul]
+            ↓
+          Admin klik "Hapus"
+            ↓
+          Sistem konfirmasi
+            ↓
+          Admin konfirmasi
+            ↓
+          Sistem hapus Module + Quiz terkait
+            ↓
+          [Kembali ke daftar modul]
+            ↓
+          [END]
+```
+
+---
+
+## 6. SEQUENCE DIAGRAM - KEY INTERACTIONS
+
+### 6.1 Sequence: User Menyelesaikan Quiz Modul
+
+```
+User -> Browser: Buka modul kursus
+Browser -> CourseController: GET /courses/{course_id}
+CourseController -> Module: Load modules dengan quiz
+Module -> ModuleProgress: Cek progress user
+ModuleProgress --> CourseController: Return data progress
+CourseController --> Browser: Render halaman detail modul
+Browser --> User: Tampilkan modul + quiz
+
+User -> Browser: Jawab semua quiz dengan benar
+Browser -> CourseController: POST /modules/{module_id}/complete (score)
+CourseController -> ModuleProgress: updateOrCreate(user_id, module_id, score, completed_at)
+ModuleProgress --> CourseController: Progress tersimpan
+CourseController --> Browser: Return JSON {success: true, course_done: false}
+Browser -> Browser: Update UI (modul done, unlock modul next)
+Browser --> User: Tampilkan modul berikutnya unlock
+```
+
+---
+
+### 6.2 Sequence: Admin Approve Pembayaran Coaching
+
+```
+User -> Browser: Pilih paket coaching
+Browser -> CoachingController: POST /payment/store
+CoachingController -> CoachingTransaction: create(status='pending', va_code=...)
+CoachingTransaction --> CoachingController: Transaction created
+CoachingController --> Browser: Redirect /payment/pending
+Browser --> User: Tampilkan "Menunggu Verifikasi"
+
+[...User menunggu...]
+
+Admin -> Browser: Buka Dashboard
+Browser -> AdminController: GET /admin
+AdminController -> CoachingTransaction: where(status='pending')->get()
+CoachingTransaction --> AdminController: List transaksi pending
+AdminController --> Browser: Render dashboard
+Browser --> Admin: Tampilkan tabel pembayaran pending
+
+Admin -> Browser: Klik "Approve" pada transaksi
+Browser -> AdminController: POST /admin/coaching/{transaction_id}/approve
+AdminController -> CoachingTransaction: update(status='approved')
+AdminController -> User: update(has_paid=true, active_coaching_package=package_name)
+AdminController -> Assignment: create(user_id, from_admin=true, status='diproses')
+AdminController -> CoachingMessage: create(assignment_id, sender_id=admin, message=prechat)
+CoachingMessage --> AdminController: Message created
+AdminController --> Browser: Redirect dengan flash success
+Browser --> Admin: Tampilkan "Pembayaran berhasil diapprove"
+
+User -> Browser: Buka /assignments
+Browser -> AssignmentController: GET /assignments
+AssignmentController -> Assignment: where(user_id, status!='selesai')
+Assignment --> AssignmentController: Sesi aktif
+AssignmentController --> Browser: Render halaman assignments
+Browser --> User: Tampilkan sesi coaching aktif + prechat
+```
+
+---
+
+### 6.3 Sequence: Chat Coaching antara User dan Admin
+
+```
+User -> Browser: Buka /assignments, pilih sesi aktif
+Browser -> AssignmentController: GET /assignments/{assignment_id}/messages
+AssignmentController -> CoachingMessage: where(assignment_id)->orderBy('created_at')->get()
+CoachingMessage --> AssignmentController: List pesan
+AssignmentController -> CoachingMessage: update(read_at=now) untuk pesan admin
+AssignmentController --> Browser: Return JSON messages
+Browser --> User: Tampilkan chat history
+
+User -> Browser: Ketik pesan dan klik kirim
+Browser -> AssignmentController: POST /assignments/{assignment_id}/reply (message)
+AssignmentController -> CoachingMessage: create(assignment_id, sender_id=user.id, message)
+AssignmentController -> Assignment: update(status='diproses')
+Assignment --> AssignmentController: Updated
+AssignmentController --> Browser: Return JSON {success: true, message}
+Browser --> User: Tampilkan pesan user baru
+
+[Polling 4 detik]
+Browser -> AssignmentController: GET /assignments/{assignment_id}/messages
+AssignmentController -> CoachingMessage: where(assignment_id)->get()
+CoachingMessage --> AssignmentController: List pesan (termasuk balasan admin baru)
+AssignmentController --> Browser: Return JSON
+Browser --> User: Tampilkan balasan admin
+
+[Parallel - Admin Side]
+Admin -> Browser: Buka floating chat widget
+Browser -> AdminController: GET /admin/coaching-inbox/summary
+AdminController -> Assignment: Load semua assignment dengan unread count
+Assignment --> AdminController: List sesi + unread badge
+AdminController --> Browser: Return JSON sidebar
+Browser --> Admin: Tampilkan sidebar dengan badge unread
+
+Admin -> Browser: Klik sesi dengan badge unread
+Browser -> AdminController: GET /admin/coaching-inbox/{assignment_id}/messages
+AdminController -> CoachingMessage: where(assignment_id)->get()
+CoachingMessage --> AdminController: List pesan
+AdminController -> CoachingMessage: update(read_at=now) untuk pesan user
+AdminController --> Browser: Return JSON messages
+Browser --> Admin: Tampilkan chat + pesan user
+
+Admin -> Browser: Ketik balasan dan kirim
+Browser -> AdminController: POST /admin/coaching-inbox/{assignment_id}/reply
+AdminController -> CoachingMessage: create(assignment_id, sender_id=admin.id, message)
+CoachingMessage --> AdminController: Created
+AdminController --> Browser: Return JSON {success: true}
+Browser --> Admin: Tampilkan balasan admin
+
+[User side polling detects new message]
+Browser -> AssignmentController: GET /assignments/{assignment_id}/messages
+AssignmentController --> Browser: Return messages dengan balasan admin baru
+Browser --> User: Tampilkan balasan admin real-time
+```
+
+---
+
+## 7. STATE DIAGRAM - STATUS FLOW
+
+### 7.1 State: Assignment Status
+
+```
+[menunggu]
+    ↓ (User kirim pesan pertama)
+[diproses]
+    ↓ (Admin klik "Selesaikan Sesi")
+[selesai] — FINAL STATE
+```
+
+**Keterangan:**
+- `menunggu`: Sesi baru dibuat, belum ada interaksi user
+- `diproses`: User sudah kirim pesan, sesi aktif
+- `selesai`: Admin tandai sesi selesai, masuk ke arsip
+
+---
+
+### 7.2 State: CoachingTransaction Status
+
+```
+[pending]
+    ↓
+    ├─ (Admin approve) → [approved] — FINAL STATE
+    │
+    └─ (Admin reject) → [rejected] — FINAL STATE
+```
+
+**Keterangan:**
+- `pending`: Transaksi baru dibuat, menunggu verifikasi admin
+- `approved`: Admin approve, sesi coaching dibuat, user dapat akses
+- `rejected`: Admin reject, user tidak dapat akses coaching
+
+---
+
+### 7.3 State: Module Status (untuk User)
+
+```
+[locked] — Modul terkunci
+    ↓ (Modul sebelumnya selesai OR modul pertama)
+[active] — Modul bisa diakses
+    ↓ (User selesaikan semua quiz dengan benar)
+[done] — Modul selesai, unlock modul berikutnya
+```
+
+**Keterangan:**
+- `locked`: User belum bisa akses, harus selesaikan modul sebelumnya
+- `active`: User bisa akses, belajar, dan kerjakan quiz
+- `done`: User sudah selesai, progress tersimpan
+
+---
+
+## 8. BUSINESS RULES & CONSTRAINTS
+
+### 8.1 Rules untuk User
+
+1. **Course Access:**
+   - User harus login untuk akses katalog kursus
+   - Semua kursus unlocked secara default (tidak ada prerequisite)
+
+2. **Module Unlock:**
+   - Modul pertama dalam kursus selalu unlock (active)
+   - Modul berikutnya unlock setelah modul sebelumnya selesai (completed_at != null)
+   - User harus jawab SEMUA quiz dalam modul dengan benar untuk unlock modul next
+
+3. **Coaching Purchase:**
+   - User tidak bisa membeli paket coaching baru jika:
+     - Ada CoachingTransaction dengan status = 'pending', ATAU
+     - Ada Assignment dengan status != 'selesai' (sesi aktif)
+   - Satu user hanya bisa punya satu sesi coaching aktif
+
+4. **Chat Coaching:**
+   - User hanya bisa chat di sesi dengan status != 'selesai'
+   - Setelah sesi selesai, chat menjadi read-only di tab "Arsip"
+
+---
+
+### 8.2 Rules untuk Admin
+
+1. **Payment Approval:**
+   - Admin bisa approve/reject transaksi dengan status = 'pending'
+   - Saat approve:
+     - Transaction.status → 'approved'
+     - User.has_paid → true
+     - User.active_coaching_package → package_name
+     - Assignment dibuat otomatis (from_admin=true, status='diproses')
+     - CoachingMessage prechat otomatis dibuat (beda per paket)
+   - Saat reject:
+     - Transaction.status → 'rejected'
+     - User tidak dapat akses coaching
+
+2. **Coaching Session:**
+   - Admin bisa chat di semua sesi (aktif & arsip)
+   - Admin bisa "Selesaikan Sesi":
+     - Assignment.status → 'selesai'
+     - Assignment.completed_at → now()
+     - User.active_coaching_package → null
+     - Sesi pindah ke tab Arsip
+     - User bisa beli paket baru
+
+3. **Course & Module Management:**
+   - Admin bisa CRUD course tanpa batasan
+   - Hapus course akan cascade delete modules dan quizzes terkait
+   - Admin bisa reorder modul (swap urutan dengan modul sebelah)
+   - Hapus modul akan cascade delete quizzes terkait
+
+4. **Preview Mode:**
+   - Admin bisa toggle preview mode (lihat situs sebagai user)
+   - Saat preview mode ON, admin kehilangan akses admin panel
+   - Admin bisa kembali ke mode admin via toggle
+
+---
+
+## 9. DATA VALIDATION & CONSTRAINTS
+
+### 9.1 Validasi User Input
+
+**Register/Login:**
+- `name`: required, string, max 255
+- `email`: required, email, unique di table users
+- `password`: required, min 8 karakter, confirmed
+
+**Profile Update:**
+- `name`: required, string, max 255
+- `email`: required, email, unique (kecuali email sendiri)
+- `discord_id`: nullable, string, max 255
+- `avatar`: nullable, image (jpg, jpeg, png), max 2MB
+
+**Coaching Payment:**
+- `package_name`: required, in:[Textual Review, Panggil Pelatih, Demo Review]
+- `package_price`: required, string
+
+**Chat Message:**
+- `message`: required, string, tidak boleh kosong
+
+---
+
+### 9.2 Validasi Admin Input
+
+**Course:**
+- `icon`: required, string (emoji)
+- `title`: required, string, max 255
+- `body`: required, text
+- `level`: required, in:[Pemula, Menengah, Lanjutan]
+- `durasi`: required, string
+- `type`: required, in:[Kursus Wajib, Kursus Lanjutan]
+- `is_popular`: boolean
+- `urutan`: required, integer, unique per course
+
+**Module:**
+- `title`: required, string, max 255
+- `body`: nullable, text (outline, newline-separated)
+- `youtube_url`: nullable, url, regex untuk YouTube URL
+- `urutan`: required, integer, unique per course
+
+**Quiz:**
+- `pertanyaan`: required, text
+- `opsi`: required, array, size 4
+- `opsi.*`: required, string
+- `jawaban_benar`: required, integer, between 0-3
+- `penjelasan`: nullable, text
+
+---
+
+## 10. RELASI ANTAR ENTITY (ERD)
+
+```
+User (1) ────< (N) ModuleProgress
+  │
+  ├──< (N) Assignment
+  │      │
+  │      └──< (N) CoachingMessage
+  │
+  ├──< (N) CoachingTransaction
+  │
+  └──< (N) CourseProgress (legacy)
+
+Course (1) ────< (N) Module
+   │               │
+   │               └──< (N) Quiz
+   │               │
+   │               └──< (N) ModuleProgress
+   │
+   └──< (N) Quiz (langsung ke course, optional)
+```
+
+**Keterangan Relasi:**
+
+- `User → ModuleProgress`: One-to-Many (1 user punya banyak progress modul)
+- `User → Assignment`: One-to-Many (1 user punya banyak sesi coaching)
+- `User → CoachingTransaction`: One-to-Many (1 user punya banyak transaksi)
+- `Assignment → CoachingMessage`: One-to-Many (1 sesi punya banyak pesan)
+- `User → CoachingMessage` (sender): One-to-Many (1 user kirim banyak pesan)
+- `Course → Module`: One-to-Many (1 course punya banyak modul)
+- `Course → Quiz`: One-to-Many (1 course punya banyak quiz)
+- `Module → Quiz`: One-to-Many (1 modul punya banyak quiz)
+- `Module → ModuleProgress`: One-to-Many (1 modul punya banyak progress dari user berbeda)
+
+**Unique Constraints:**
+- `users.email`: unique
+- `module_progress (user_id, module_id)`: unique (1 user hanya punya 1 progress per modul)
+
+---
+
+## 11. API ENDPOINTS SUMMARY
+
+### 11.1 User Endpoints (JSON Response)
+
+| Method | Endpoint | Fungsi | Response |
+|--------|----------|--------|----------|
+| POST | `/modules/{module}/complete` | Simpan progress modul | `{success: true, course_done: bool}` |
+| POST | `/assignments/{assignment}/reply` | Kirim pesan chat user | `{success: true, message: {...}}` |
+| GET | `/assignments/{assignment}/messages` | Ambil semua pesan chat | `{messages: [...]`} |
+
+### 11.2 Admin Endpoints (JSON Response)
+
+| Method | Endpoint | Fungsi | Response |
+|--------|----------|--------|----------|
+| GET | `/admin/users/search` | Search user (AJAX) | `{users: [...]}` |
+| GET | `/admin/coaching-inbox/summary` | Sidebar chat (sesi list) | `{active: [...], completed: [...]}` |
+| GET | `/admin/coaching-inbox/{assignment}/messages` | Load pesan chat | `{messages: [...]}` |
+| POST | `/admin/coaching-inbox/{assignment}/reply` | Kirim balasan admin | `{success: true}` |
+| POST | `/admin/coaching-inbox/{assignment}/complete` | Selesaikan sesi | `{success: true}` |
+
+---
+
+## 12. LOKALISASI BAHASA INDONESIA
+
+Project menggunakan **Bahasa Indonesia** untuk seluruh UI dengan kaidah:
+
+**Tetap bahasa asli (serapan umum):**
+- Coaching, Admin, Dashboard, Discord, YouTube, Password, Email
+- Textual Review, Panggil Pelatih, Demo Review
+- Quiz, User, Profile, Virtual Account
+
+**Diterjemahkan:**
+- Home → **Beranda**
+- Courses → **Kursus**
+- Assignments → **Tugas Saya**
+- Remember me → **Ingat saya**
+- Forgot password → **Lupa password?**
+- Log in → **Masuk**
+- Register → **Daftar**
+- Update Password → **Ganti Password**
+
+**File Lokalisasi:**
+- `lang/id/auth.php` — Pesan error auth
+- `lang/id/pagination.php` — Label pagination
+- `lang/id/passwords.php` — Pesan reset password
+- `lang/id/validation.php` — 100+ aturan validasi + custom messages
+
+**Konfigurasi:**
+- `APP_LOCALE=id` di `.env`
 - `config/app.php` → `locale` = `id`
 
-### 6C. Perubahan Blade (non-exhaustive)
+---
 
-| Area | Before | After |
-|------|--------|-------|
-| Navbar | `Home` / `Courses` | **Beranda** / **Kursus** |
-| Auth views | `Remember me`, `Forgot password`, `Log in`, `Register` | **Ingat saya**, **Lupa password?**, **Masuk**, **Daftar** |
-| Assignments | `read-only` | **hanya bisa dibaca** |
-| Profile | `Update Password` | **Ganti Password** |
-| Payment | `BCA Virtual Account Number` | **Nomer BCA Virtual Account** |
+## 13. TEKNOLOGI STACK
 
-### 6D. Kata yang Sengaja TIDAK Diterjemahkan
+**Backend:**
+- Laravel 11.x (PHP Framework)
+- MySQL 8.0 (Database)
+- Laravel Breeze (Authentication scaffold)
 
-Coaching, Dashboard, Admin, Password, Email, Textual Review, Panggil Pelatih, Demo Review, Discord, YouTube, BCA Virtual Account, Aim & Movement, Map Control, User, Profile, Quiz — semua dianggap serapan umum atau istilah gaming/esports.
+**Frontend:**
+- Blade Templates (Laravel templating)
+- Tailwind CSS 3.x (Styling)
+- Alpine.js (Minimal JavaScript interactions)
+- Vite (Asset bundler)
 
-> Detail lengkap: lihat `BAHASA.md` di root project.
+**Key Laravel Features:**
+- Eloquent ORM (Models & Relationships)
+- Migration & Seeder (Database versioning)
+- Route Model Binding
+- Policies & Gates (Authorization)
+- Form Request Validation
+- File Storage (Avatar upload)
+
+**Development Tools:**
+- Composer (PHP package manager)
+- NPM (Node package manager)
+- Laragon (Local development environment)
+- Git (Version control)
+
+---
+
+## 14. DEPLOYMENT NOTES
+
+**Environment Requirements:**
+- PHP >= 8.2
+- MySQL >= 8.0
+- Node.js >= 18.x
+- Composer >= 2.x
+
+**Laravel Configuration:**
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_URL=https://cs2academy.com`
+- Database credentials di `.env`
+- Mail driver untuk reset password
+- Storage link: `php artisan storage:link`
+
+**Build Assets:**
+```bash
+npm install
+npm run build
+```
+
+**Database Migration:**
+```bash
+php artisan migrate --seed
+```
+
+**Permissions:**
+- `storage/` → writable (untuk avatar upload)
+- `bootstrap/cache/` → writable
+
+---
+
+## 15. KESIMPULAN
+
+Dokumentasi ini mencakup seluruh aspek sistem CS2 Academy untuk keperluan pembuatan:
+
+1. **Use Case Diagram** — Lihat section 3 (Use Case Utama)
+2. **Activity Diagram** — Lihat section 5 (Activity Diagram - Business Flow)
+3. **Class Diagram** — Lihat section 4 (Class Diagram - Model Database) & section 10 (ERD)
+4. **Sequence Diagram** — Lihat section 6 (Sequence Diagram - Key Interactions)
+5. **State Diagram** — Lihat section 7 (State Diagram - Status Flow)
+
+**Key Points untuk Diagram:**
+- **2 Aktor Utama**: User dan Admin
+- **3 Domain Fitur**: Kursus (Course/Module), Coaching (Payment/Chat), Profile
+- **8 Model Utama**: User, Course, Module, Quiz, ModuleProgress, Assignment, CoachingMessage, CoachingTransaction
+- **Status Flow**: Assignment (menunggu → diproses → selesai), Transaction (pending → approved/rejected), Module (locked → active → done)
+
+Semua informasi sudah lengkap dan fokus pada User dan Admin tanpa menyertakan Guest untuk memudahkan pembuatan diagram UML.
+
+---
+
+**END OF DOCUMENTATION**

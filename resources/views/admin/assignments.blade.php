@@ -57,7 +57,7 @@
     <a href="{{ route('admin.assignments') }}" class="admin-tab active"><x-cs-icon name="zap" size="14" stroke="2" /> Sesi Coaching
       @if($coachingCount > 0)<span class="admin-tab-badge">{{ $coachingCount }}</span>@endif
     </a>
-    <a href="{{ route('admin.courses') }}" class="admin-tab"><x-cs-icon name="book-open" size="14" stroke="2" /> Kelola Course</a>
+    <a href="{{ route('admin.courses') }}" class="admin-tab"><x-cs-icon name="book-open" size="14" stroke="2" /> Kelola Kursus</a>
   </div>
 
   <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:0.3rem;">Sesi Coaching</h2>

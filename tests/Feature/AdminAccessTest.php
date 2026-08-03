@@ -30,7 +30,7 @@ class AdminAccessTest extends TestCase
         $response->assertOk();
         $response->assertDontSee("Tugas Saya");
         $response->assertSee("Lihat sebagai User");
-        $response->assertSee("⚙ Admin", false);
+        $response->assertSee("nav-link--admin");
     }
 
     public function test_admin_can_enable_preview_mode_to_see_user_nav(): void
@@ -38,6 +38,12 @@ class AdminAccessTest extends TestCase
         $admin = User::factory()->create([
             "role" => "admin",
             "has_paid" => false,
+        ]);
+        Assignment::create([
+            "user_id" => $admin->id,
+            "judul" => "Tugas admin",
+            "tugas_teks" => "Teks",
+            "status" => "menunggu",
         ]);
 
         $this->actingAs($admin)
@@ -49,12 +55,18 @@ class AdminAccessTest extends TestCase
         $response->assertOk();
         $response->assertSee("Tugas Saya");
         $response->assertSee("Kembali ke Admin");
-        $response->assertDontSee("⚙ Admin", false);
+        $response->assertDontSee("nav-link--admin");
     }
 
     public function test_admin_can_disable_preview_mode(): void
     {
         $admin = User::factory()->create(["role" => "admin"]);
+        Assignment::create([
+            "user_id" => $admin->id,
+            "judul" => "Tugas admin",
+            "tugas_teks" => "Teks",
+            "status" => "menunggu",
+        ]);
         $this->actingAs($admin)->post("/admin/preview/on");
 
         $response = $this->actingAs($admin)->post("/admin/preview/off");
@@ -72,18 +84,20 @@ class AdminAccessTest extends TestCase
         $this->actingAs($admin)->get("/assignments")->assertOk();
     }
 
-    public function test_admin_can_submit_assignment(): void
+    public function test_admin_can_send_message_to_user(): void
     {
         $admin = User::factory()->create(["role" => "admin"]);
+        $user = User::factory()->create(["role" => "user"]);
 
-        $response = $this->actingAs($admin)->post("/assignments", [
+        $response = $this->actingAs($admin)->post("/admin/send-to-user", [
+            "user_id" => $user->id,
             "judul" => "Pertanyaan dari admin",
             "tugas_teks" => "Tolong review demo saya",
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas("assignments", [
-            "user_id" => $admin->id,
+            "user_id" => $user->id,
             "judul" => "Pertanyaan dari admin",
         ]);
     }
@@ -105,11 +119,20 @@ class AdminAccessTest extends TestCase
 
         $this->actingAs($admin)->get("/payment")->assertOk();
 
-        $response = $this->actingAs($admin)->post("/payment/confirm", [
-            "layanan" => "Textual+Review",
+        $response = $this->actingAs($admin)->post("/payment/store", [
+            "package_name" => "Textual Review",
+            "package_price" => "Rp 100.000",
         ]);
 
-        $response->assertRedirect(route("payment.success"));
+        $response->assertRedirect(route("payment.pending"));
+        
+        $transaction = $admin->coachingTransactions()->first();
+        $this->assertNotNull($transaction);
+        $this->assertEquals("pending", $transaction->status);
+
+        $responseApprove = $this->actingAs($admin)->post("/admin/coaching/{$transaction->id}/approve");
+        $responseApprove->assertRedirect();
+        
         $this->assertTrue($admin->fresh()->has_paid);
     }
 
